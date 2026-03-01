@@ -21,13 +21,14 @@ export default async (req: Request, context: Context) => {
   const c = client;
   const weeks = parseInt(c.courseWeeks) || 4;
   const totalDays = weeks * 7;
+  const clientLang = c.lang || "en";
 
   let html = PAGE;
   html = html.replace(/__NAME__/g, escH(c.name || "Client"));
   html = html.replace(/__KCAL__/g, escH(c.kcal || "1500-1600"));
   html = html.replace(/__STATS_MET__/g, escH((c.heightMet || "165 cm") + " \u00b7 " + (c.weightMet || "60 kg")));
   html = html.replace(/__CITY__/g, escH(c.city || ""));
-  html = html.replace(/__LANG__/g, c.lang || "en");
+  html = html.replace(/__LANG__/g, clientLang);
   html = html.replace(/__TZ__/g, c.timezone || "Europe/Berlin");
   html = html.replace(/__WA__/g, c.whatsapp || "");
   html = html.replace(/__WEEKS__/g, String(weeks));
@@ -165,7 +166,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 </div>
 <script>
 var C=__CLIENT_JSON__,DB=__DB_JSON__;
-var lang='__LANG__',tz='__TZ__',weeks=__WEEKS__,totalDays=__DAYS__,curDay=1,done={},water=0;
+var lang='__LANG__',tz='__TZ__',weeks=parseInt('__WEEKS__')||4,totalDays=parseInt('__DAYS__')||28,curDay=1,done={},water=0;
 var I={water:{en:'Daily water',uk:'Денна вода',ru:'Дневная вода',de:'Wasser',es:'Agua'},wgoal:{en:'Target: 2.4 L (8 × 300ml)',uk:'Ціль: 2.4 л (8 × 300мл)',ru:'Цель: 2.4 л (8 × 300мл)',de:'Ziel: 2.4 L (8 × 300ml)',es:'Meta: 2.4 L (8 × 300ml)'},done:{en:'✅ Done',uk:'✅ Виконано',ru:'✅ Выполнено',de:'✅ Erledigt',es:'✅ Hecho'},ing:{en:'Ingredients',uk:'Інгредієнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},grocery:{en:'🛒 Grocery list',uk:'🛒 Список продуктів',ru:'🛒 Список продуктов',de:'🛒 Einkaufsliste',es:'🛒 Compras'},gcopy:{en:'📋 Copy list',uk:'📋 Копіювати',ru:'📋 Копировать',de:'📋 Kopieren',es:'📋 Copiar'},gshare:{en:'📤 Send to Notes',uk:'📤 В нотатки',ru:'📤 В заметки',de:'📤 Notizen',es:'📤 Notas'},gchecked:{en:'📤 Send checked',uk:'📤 Відмічені',ru:'📤 Отмеченные',de:'📤 Markierte',es:'📤 Marcados'},gday:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 día'},gweek:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},g2week:{en:'2 weeks',uk:'2 тижні',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},gall:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Сніданок',ru:'Завтрак',de:'Frühstück',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обід',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},course:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
 var ICONS={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack1:'🍎',Snack2:'🍎'};
 var DN={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sá','Do']};
@@ -175,7 +176,7 @@ function getStartDate(){
   if(!C.courseStart){var dow=d.getDay();d.setDate(d.getDate()-(dow===0?6:dow-1));}
   d.setHours(0,0,0,0);return d;
 }
-function dayDate(dayNum){var s=getStartDate();s.setDate(s.getDate()+dayNum-1);return s;}
+function dayDate(dayNum){var s=new Date(getStartDate().getTime());s.setDate(s.getDate()+dayNum-1);return s;}
 function todayDayNum(){
   var now=new Date(),start=getStartDate();
   var diff=Math.floor((now-start)/(86400000))+1;
