@@ -188,9 +188,25 @@
                 <input type="text" class="fi" id="cWI" placeholder="132 lbs">
             </div>
         </div>
+        <div class="fr">
+            <div class="fg">
+                <label class="fl">🔥 Целевые калории</label>
+                <input type="text" class="fi" id="cKcal" placeholder="1500-1600">
+            </div>
+            <div class="fg">
+                <label class="fl">📅 Кол-во недель курса</label>
+                <select class="fs" id="cWeeks">
+                    <option value="1">1 неделя (7 дней)</option>
+                    <option value="2">2 недели (14 дней)</option>
+                    <option value="3">3 недели (21 день)</option>
+                    <option value="4" selected>4 недели (28 дней)</option>
+                </select>
+            </div>
+        </div>
         <div class="fg">
-            <label class="fl">🔥 Целевые калории</label>
-            <input type="text" class="fi" id="cKcal" placeholder="1500-1600">
+            <label class="fl">🗓️ Дата начала курса</label>
+            <input type="date" class="fi" id="cStart">
+            <div class="hint">Оставьте пустым — курс начнётся с ближайшего понедельника</div>
         </div>
         <div class="fr">
             <div class="fg">
@@ -466,6 +482,8 @@ async function createClient(){
                 heightImp:document.getElementById('cHI').value.trim()||"5'5\"",
                 weightImp:document.getElementById('cWI').value.trim()||'132 lbs',
                 kcal:document.getElementById('cKcal').value.trim()||'1500-1600',
+                courseWeeks:document.getElementById('cWeeks').value||'4',
+                courseStart:document.getElementById('cStart').value||'',
                 city:document.getElementById('cCity').value.trim()||'Kleve, Germany',
                 timezone:document.getElementById('cTZ').value,
                 whatsapp:document.getElementById('cWA').value.trim()||'380505827191',
@@ -494,7 +512,7 @@ function copyLink(){
 }
 
 function resetForm(){
-    ['cName','cAlias','cHM','cWM','cHI','cWI','cKcal','cCity'].forEach(id=>document.getElementById(id).value='');
+    ['cName','cAlias','cHM','cWM','cHI','cWI','cKcal','cCity','cStart'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('aliasPreview').textContent='___';
     document.getElementById('successBox').classList.remove('show');
     const btn=document.getElementById('createBtn');
