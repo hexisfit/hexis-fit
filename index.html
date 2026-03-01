@@ -148,6 +148,7 @@
     <div class="tabs">
         <button class="tab active" onclick="switchTab('create')">➕ Создать клиента</button>
         <button class="tab" onclick="switchTab('list')">👥 Мои клиенты</button>
+        <button class="tab" onclick="switchTab('recipes')">🍽️ База рецептов</button>
     </div>
 
     <!-- CREATE -->
@@ -251,6 +252,30 @@
         <div id="clientListWrap"><div class="loading">Загрузка...</div></div>
     </div>
 
+    <!-- RECIPES -->
+    <div class="panel" id="panelRecipes">
+        <div class="panel-title">🍽️ База рецептов</div>
+        <div class="panel-desc">Загрузите базу рецептов из JSON. Конвертируйте Excel через Coach Panel.</div>
+
+        <div id="recipeStats" style="margin-bottom:20px"></div>
+
+        <div class="fg">
+            <label class="fl">📂 Загрузить JSON базу рецептов</label>
+            <input type="file" id="recipeFile" accept=".json" style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#e2e8f0;font-family:inherit" onchange="previewRecipeFile()">
+        </div>
+
+        <div id="recipePreview" style="display:none;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.15);border-radius:16px;padding:16px;margin-bottom:16px">
+            <div style="font-weight:700;color:#c084fc;margin-bottom:8px">📊 Превью базы:</div>
+            <div id="recipePreviewContent" style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#94a3b8"></div>
+        </div>
+
+        <button class="btn-create" id="uploadRecipesBtn" onclick="uploadRecipes()" style="display:none">
+            📤 Загрузить базу рецептов на сервер
+        </button>
+
+        <div id="recipeList" style="margin-top:24px"></div>
+    </div>
+
     <div class="quote">✨ <span>Strong is the new beautiful</span> · Создавайте персональные планы за секунды</div>
 </div><div class="toast" id="toast"></div>
 
@@ -300,10 +325,118 @@ function doLogout(){
 
 // === TABS ===
 function switchTab(tab){
-    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='create'?0:1)));
-    document.getElementById('panelCreate').classList.toggle('active',tab==='create');
-    document.getElementById('panelList').classList.toggle('active',tab==='list');
+    const tabs=['create','list','recipes'];
+    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+    tabs.forEach(t=>document.getElementById('panel'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab));
     if(tab==='list') loadClients();
+    if(tab==='recipes') loadRecipeStats();
+}
+
+// === RECIPES ===
+let recipeData = null;
+
+async function loadRecipeStats(){
+    const wrap=document.getElementById('recipeStats');
+    try{
+        const res=await fetch('/api/recipes/stats',{headers:{'x-coach-pwd':coachPwd}});
+        const data=await res.json();
+        if(!data.uploaded){
+            wrap.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">📭 База рецептов ещё не загружена</div>';
+            return;
+        }
+        wrap.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
+            <div style="background:rgba(168,85,247,0.1);padding:14px;border-radius:14px;text-align:center">
+                <div style="font-size:1.8rem;font-weight:800;color:#c084fc">${data.totalRecipes}</div>
+                <div style="color:#94a3b8;font-size:0.8rem">Рецептов</div>
+            </div>
+            <div style="background:rgba(236,72,153,0.1);padding:14px;border-radius:14px;text-align:center">
+                <div style="font-size:1.8rem;font-weight:800;color:#f472b6">${data.totalIngredients}</div>
+                <div style="color:#94a3b8;font-size:0.8rem">Ингредиентов</div>
+            </div>
+            <div style="background:rgba(6,182,212,0.1);padding:14px;border-radius:14px;text-align:center">
+                <div style="font-size:1.8rem;font-weight:800;color:#22d3ee">${data.menuDays}</div>
+                <div style="color:#94a3b8;font-size:0.8rem">Дней меню</div>
+            </div>
+            <div style="background:rgba(245,158,11,0.1);padding:14px;border-radius:14px;text-align:center">
+                <div style="font-size:1.8rem;font-weight:800;color:#fbbf24">5</div>
+                <div style="color:#94a3b8;font-size:0.8rem">Языков</div>
+            </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;font-size:0.8rem">
+            <span style="background:rgba(255,255,255,0.05);padding:4px 12px;border-radius:20px">🍳 Завтраки: ${data.meals.breakfast}</span>
+            <span style="background:rgba(255,255,255,0.05);padding:4px 12px;border-radius:20px">🥗 Обеды: ${data.meals.lunch}</span>
+            <span style="background:rgba(255,255,255,0.05);padding:4px 12px;border-radius:20px">🍽️ Ужины: ${data.meals.dinner}</span>
+            <span style="background:rgba(255,255,255,0.05);padding:4px 12px;border-radius:20px">🍎 Снеки: ${data.meals.snack}</span>
+        </div>`;
+        loadRecipeList();
+    }catch(err){
+        wrap.innerHTML='<div style="color:#fb7185">❌ '+esc(err.message)+'</div>';
+    }
+}
+
+function previewRecipeFile(){
+    const file=document.getElementById('recipeFile').files[0];
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=function(e){
+        try{
+            recipeData=JSON.parse(e.target.result);
+            const rc=Object.keys(recipeData.recipes||{}).length;
+            const ic=Object.keys(recipeData.ingredientNames||{}).length;
+            const mc=(recipeData.menu28||[]).length;
+            document.getElementById('recipePreviewContent').innerHTML=
+                '✅ Рецептов: <strong>'+rc+'</strong><br>'+
+                '✅ Ингредиентов: <strong>'+ic+'</strong><br>'+
+                '✅ Меню слотов: <strong>'+mc+'</strong> ('+Math.floor(mc/5)+' дней × 5 приёмов)';
+            document.getElementById('recipePreview').style.display='block';
+            document.getElementById('uploadRecipesBtn').style.display='flex';
+        }catch(err){
+            toast('❌ Невалидный JSON: '+err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+async function uploadRecipes(){
+    if(!recipeData){toast('❌ Сначала выберите файл');return;}
+    const btn=document.getElementById('uploadRecipesBtn');
+    btn.disabled=true;btn.innerHTML='⏳ Загружаю...';
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(recipeData)
+        });
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error);
+        toast('✅ База загружена: '+data.recipes+' рецептов');
+        btn.innerHTML='✅ Загружено!';
+        loadRecipeStats();
+    }catch(err){
+        toast('❌ '+err.message);
+        btn.disabled=false;btn.innerHTML='📤 Загрузить базу рецептов на сервер';
+    }
+}
+
+async function loadRecipeList(){
+    const wrap=document.getElementById('recipeList');
+    try{
+        const res=await fetch('/api/recipes',{headers:{'x-coach-pwd':coachPwd}});
+        if(!res.ok)return;
+        const db=await res.json();
+        const recipes=Object.values(db.recipes);
+        const mealIcons={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack:'🍎'};
+        wrap.innerHTML='<div style="font-weight:700;margin-bottom:12px;color:#c084fc">📋 Все рецепты</div>'+
+            recipes.map(r=>`<div class="cl-item">
+                <div class="cl-info">
+                    <div class="cl-av" style="background:${r.vegan?'#22c55e':r.meal==='Breakfast'?'#f59e0b':r.meal==='Lunch'?'#3b82f6':r.meal==='Dinner'?'#8b5cf6':'#ec4899'};font-size:1.2rem">${mealIcons[r.meal]||'🍴'}</div>
+                    <div>
+                        <div class="cl-name">${esc(r.names?.en||r.id)}</div>
+                        <div class="cl-meta">🔥 ${r.baseKcal} kcal · P${r.protein} F${r.fat} C${r.carbs} · ⏱ ${r.cookTimeMin}min${r.vegan?' · 🌱':''}</div>
+                    </div>
+                </div>
+            </div>`).join('');
+    }catch(err){}
 }
 
 // === CREATE ===

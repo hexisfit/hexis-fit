@@ -26,6 +26,50 @@ export default async (req: Request, context: Context) => {
   if (pwd !== COACH_PWD) return unauthorized();
 
   const store = getStore({ name: "clients", consistency: "strong" });
+  const recipeStore = getStore({ name: "recipes", consistency: "strong" });
+
+  // === RECIPE DATABASE ===
+
+  // POST /api/recipes — upload full recipe database
+  if (req.method === "POST" && path === "/recipes") {
+    try {
+      const data = await req.json();
+      if (!data.recipes || !data.ingredientNames || !data.menu28) {
+        return json({ error: "Invalid database format" }, 400);
+      }
+      await recipeStore.setJSON("database", data);
+      return json({ ok: true, recipes: Object.keys(data.recipes).length, menu: data.menu28.length });
+    } catch (e: any) {
+      return json({ error: e.message }, 500);
+    }
+  }
+
+  // GET /api/recipes — get full recipe database
+  if (req.method === "GET" && path === "/recipes") {
+    const db = await recipeStore.get("database", { type: "json" });
+    if (!db) return json({ error: "No recipe database uploaded" }, 404);
+    return json(db);
+  }
+
+  // GET /api/recipes/stats — quick stats
+  if (req.method === "GET" && path === "/recipes/stats") {
+    const db: any = await recipeStore.get("database", { type: "json" });
+    if (!db) return json({ uploaded: false });
+    return json({
+      uploaded: true,
+      totalRecipes: Object.keys(db.recipes).length,
+      totalIngredients: Object.keys(db.ingredientNames).length,
+      menuDays: db.meta?.menuDays || 28,
+      meals: {
+        breakfast: Object.values(db.recipes).filter((r: any) => r.meal === 'Breakfast').length,
+        lunch: Object.values(db.recipes).filter((r: any) => r.meal === 'Lunch').length,
+        dinner: Object.values(db.recipes).filter((r: any) => r.meal === 'Dinner').length,
+        snack: Object.values(db.recipes).filter((r: any) => r.meal === 'Snack').length,
+      }
+    });
+  }
+
+  // === CLIENTS ===
 
   // POST /api/clients — create client
   if (req.method === "POST" && path === "/clients") {
