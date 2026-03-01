@@ -9,6 +9,16 @@ function escJs(s: string) {
   return s.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
+function rr(id: string, val: string, html: string): string {
+  const re = new RegExp('(<[^>]*id="' + id + '"[^>]*>)[^<]*');
+  return html.replace(re, "$1" + val);
+}
+
+function rv(id: string, val: string, html: string): string {
+  const re = new RegExp('(<input[^>]*id="' + id + '"[^>]*value=")[^"]*');
+  return html.replace(re, "$1" + val);
+}
+
 export default async (req: Request, context: Context) => {
   const url = new URL(req.url);
   const alias = url.pathname.replace("/c/", "").replace(/\.html$/, "").toLowerCase();
@@ -41,21 +51,19 @@ export default async (req: Request, context: Context) => {
     "let clientSettings = {name:'" + escJs(d.name) + "',city:'" + escJs(d.city) + "',timezone:'" + d.timezone + "',kcal:'" + escJs(d.kcal) + "',heightImp:'" + escJs(d.heightImp) + "',weightImp:'" + escJs(d.weightImp) + "',heightMet:'" + escJs(d.heightMet) + "',weightMet:'" + escJs(d.weightMet) + "',whatsapp:'" + d.whatsapp + "'}"
   );
 
-  const statsMetRegex = new RegExp('(<span class="stats-metric" id="statsMet"[^>]*>)[^<]*');
-
-  html = html.replace(/(<div class="hero-name" id="clientName">)[^<]*/, "$1" + escHtml(d.name));
-  html = html.replace(/(<span class="stats-imperial" id="statsImp")[^>]*>)[^<]*/, "$1" + escHtml(d.heightImp + " · " + d.weightImp));
-  html = html.replace(statsMetRegex, "$1" + escHtml(d.heightMet + " · " + d.weightMet));
-  html = html.replace(/(<div class="hero-kcal" id="kcalBadge">)[^<]*/, "$1🔥 " + escHtml(d.kcal) + " kcal");
-  html = html.replace(/(<input type="text" id="setName" value=")[^"]*/, "$1" + escHtml(d.name));
-  html = html.replace(/(<input type="text" id="setCity" value=")[^"]*/, "$1" + escHtml(d.city));
-  html = html.replace(/(<input type="text" id="setKcal" value=")[^"]*/, "$1" + escHtml(d.kcal));
-  html = html.replace(/(<input type="text" id="setHeightImp" value=")[^"]*/, "$1" + escHtml(d.heightImp));
-  html = html.replace(/(<input type="text" id="setWeightImp" value=")[^"]*/, "$1" + escHtml(d.weightImp));
-  html = html.replace(/(<input type="text" id="setHeightMet" value=")[^"]*/, "$1" + escHtml(d.heightMet));
-  html = html.replace(/(<input type="text" id="setWeightMet" value=")[^"]*/, "$1" + escHtml(d.weightMet));
-  html = html.replace(/(<input type="text" id="setWhatsApp" value=")[^"]*/, "$1" + escHtml(d.whatsapp));
-  html = html.replace(/<title>[^<]*<\/title>/, "<title>🌱 " + escHtml(d.name) + " · Wellness · hexis.fit</title>");
+  html = rr("clientName", escHtml(d.name), html);
+  html = rr("statsImp", escHtml(d.heightImp + " \u00b7 " + d.weightImp), html);
+  html = rr("statsMet", escHtml(d.heightMet + " \u00b7 " + d.weightMet), html);
+  html = rr("kcalBadge", "\ud83d\udd25 " + escHtml(d.kcal) + " kcal", html);
+  html = rv("setName", escHtml(d.name), html);
+  html = rv("setCity", escHtml(d.city), html);
+  html = rv("setKcal", escHtml(d.kcal), html);
+  html = rv("setHeightImp", escHtml(d.heightImp), html);
+  html = rv("setWeightImp", escHtml(d.weightImp), html);
+  html = rv("setHeightMet", escHtml(d.heightMet), html);
+  html = rv("setWeightMet", escHtml(d.weightMet), html);
+  html = rv("setWhatsApp", escHtml(d.whatsapp), html);
+  html = html.replace(/<title>[^<]*<\/title>/, "<title>\ud83c\udf31 " + escHtml(d.name) + " \u00b7 Wellness \u00b7 hexis.fit</title>");
 
   const lang = d.lang || "en";
   html = html.replace(
