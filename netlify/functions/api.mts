@@ -49,6 +49,7 @@ export default async (req: Request, context: Context) => {
         city: data.city || "Kleve, Germany",
         timezone: data.timezone || "Europe/Berlin",
         whatsapp: data.whatsapp || "380505827191",
+        lang: data.lang || "en",
         created: new Date().toISOString(),
       };
 

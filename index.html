@@ -194,9 +194,21 @@
                 </select>
             </div>
         </div>
-        <div class="fg">
-            <label class="fl">📱 WhatsApp тренера</label>
-            <input type="text" class="fi" id="cWA" value="380505827191">
+        <div class="fr">
+            <div class="fg">
+                <label class="fl">📱 WhatsApp тренера</label>
+                <input type="text" class="fi" id="cWA" value="380505827191">
+            </div>
+            <div class="fg">
+                <label class="fl">🌐 Язык по умолчанию</label>
+                <select class="fs" id="cLang">
+                    <option value="uk">🇺🇦 Українська</option>
+                    <option value="ru">🇷🇺 Русский</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="es">🇪🇸 Español</option>
+                </select>
+            </div>
         </div>
 
         <button class="btn-create" id="createBtn" onclick="createClient()">
@@ -305,7 +317,8 @@ async function createClient(){
                 kcal:document.getElementById('cKcal').value.trim()||'1500-1600',
                 city:document.getElementById('cCity').value.trim()||'Kleve, Germany',
                 timezone:document.getElementById('cTZ').value,
-                whatsapp:document.getElementById('cWA').value.trim()||'380505827191'
+                whatsapp:document.getElementById('cWA').value.trim()||'380505827191',
+                lang:document.getElementById('cLang').value
             })
         });
         const data=await res.json();
@@ -363,7 +376,7 @@ async function loadClients(){
                     <div class="cl-av" style="background:${col}">${ini}</div>
                     <div>
                         <div class="cl-name">${esc(c.name)}</div>
-                        <div class="cl-meta">${esc(c.kcal)} kcal · ${date}</div>
+                        <div class="cl-meta">${esc(c.kcal)} kcal · ${langLabel(c.lang)} · ${date}</div>
                         <a class="cl-link" href="${link}" target="_blank">${link}</a>
                     </div>
                 </div>
@@ -389,6 +402,7 @@ async function deleteClient(alias){
 
 // === UTILS ===
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function langLabel(l){const m={en:'🇬🇧 EN',uk:'🇺🇦 UA',ru:'🇷🇺 RU',de:'🇩🇪 DE',es:'🇪🇸 ES'};return m[l]||l||'EN';}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
 </body>
