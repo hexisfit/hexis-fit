@@ -98,9 +98,17 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .day-total{background:#e3eaf3;padding:14px 22px;border-radius:40px;display:flex;justify-content:space-between;font-weight:700;margin:12px 0;flex-wrap:wrap;font-size:0.95rem}
 .total-done{color:#22c55e;font-size:1.2rem}
 .grocery-section{background:#f0f7e8;border-radius:20px;padding:14px 20px;margin:12px 0;border-left:5px solid #6b8e6b}
-.grocery-title{font-size:1rem;font-weight:700;color:#2d4a2d;margin-bottom:10px}
-.grocery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
-.grocery-item{display:flex;justify-content:space-between;background:white;padding:6px 12px;border-radius:12px;font-size:0.85rem}
+.grocery-title{font-size:1rem;font-weight:700;color:#2d4a2d;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.grocery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.grocery-item{display:flex;align-items:center;gap:8px;background:white;padding:6px 12px;border-radius:12px;font-size:0.85rem;cursor:pointer;transition:0.15s}
+.grocery-item.checked{opacity:0.5;text-decoration:line-through}
+.grocery-item input[type=checkbox]{width:18px;height:18px;accent-color:#6b8e6b;cursor:pointer;flex-shrink:0}
+.grocery-item .gi-name{flex:1}
+.grocery-share{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.grocery-share button{padding:8px 16px;border-radius:30px;font-weight:600;font-size:0.85rem;cursor:pointer;border:none;font-family:inherit;transition:0.2s;display:flex;align-items:center;gap:6px}
+.grocery-share .gs-copy{background:#2d4a2d;color:white}
+.grocery-share .gs-share{background:#25D366;color:white}
+.grocery-share .gs-checked{background:#1565c0;color:white}
 .action-bar{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
 .action-btn{background:white;border:1px solid #cbd5e2;padding:10px 18px;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:8px;color:#1f2a3a;text-decoration:none;transition:0.2s;font-family:inherit}
 .action-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
@@ -150,7 +158,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 <script>
 var C=__CLIENT_JSON__,DB=__DB_JSON__;
 var lang='__LANG__',tz='__TZ__',weeks=__WEEKS__,totalDays=__DAYS__,curDay=1,done={},water=0;
-var I={water:{en:'Daily water',uk:'Денна вода',ru:'Дневная вода',de:'Wasser',es:'Agua'},wgoal:{en:'Target: 2.4 L (8 × 300ml)',uk:'Ціль: 2.4 л (8 × 300мл)',ru:'Цель: 2.4 л (8 × 300мл)',de:'Ziel: 2.4 L (8 × 300ml)',es:'Meta: 2.4 L (8 × 300ml)'},done:{en:'✅ Done',uk:'✅ Виконано',ru:'✅ Выполнено',de:'✅ Erledigt',es:'✅ Hecho'},ing:{en:'Ingredients',uk:'Інгредієнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},grocery:{en:'🛒 Grocery list',uk:'🛒 Список продуктів',ru:'🛒 Список продуктов',de:'🛒 Einkaufsliste',es:'🛒 Compras'},Breakfast:{en:'Breakfast',uk:'Сніданок',ru:'Завтрак',de:'Frühstück',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обід',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},course:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
+var I={water:{en:'Daily water',uk:'Денна вода',ru:'Дневная вода',de:'Wasser',es:'Agua'},wgoal:{en:'Target: 2.4 L (8 × 300ml)',uk:'Ціль: 2.4 л (8 × 300мл)',ru:'Цель: 2.4 л (8 × 300мл)',de:'Ziel: 2.4 L (8 × 300ml)',es:'Meta: 2.4 L (8 × 300ml)'},done:{en:'✅ Done',uk:'✅ Виконано',ru:'✅ Выполнено',de:'✅ Erledigt',es:'✅ Hecho'},ing:{en:'Ingredients',uk:'Інгредієнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},grocery:{en:'🛒 Grocery list',uk:'🛒 Список продуктів',ru:'🛒 Список продуктов',de:'🛒 Einkaufsliste',es:'🛒 Compras'},gcopy:{en:'📋 Copy list',uk:'📋 Копіювати',ru:'📋 Копировать',de:'📋 Kopieren',es:'📋 Copiar'},gshare:{en:'📤 Send to Notes',uk:'📤 В нотатки',ru:'📤 В заметки',de:'📤 Notizen',es:'📤 Notas'},gchecked:{en:'📤 Send checked',uk:'📤 Відмічені',ru:'📤 Отмеченные',de:'📤 Markierte',es:'📤 Marcados'},Breakfast:{en:'Breakfast',uk:'Сніданок',ru:'Завтрак',de:'Frühstück',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обід',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},course:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
 var ICONS={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack1:'🍎',Snack2:'🍎'};
 var DN={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sá','Do']};
 function t(k){return I[k]&&I[k][lang]||I[k]&&I[k].en||k}
@@ -248,11 +256,42 @@ function rg(){
   var m=gm(curDay);
   var items={};
   m.forEach(function(s){var r=DB.recipes[s.recipeId];if(!r||!r.ingredients)return;r.ingredients.forEach(function(i){var g=Math.round(i.gramsBase*s.scaledFactor);if(items[i.key])items[i.key].g+=g;else items[i.key]={k:i.key,g:g}})});
-  var arr=Object.values(items).sort(function(a,b){var na=DB.ingredientNames[a.k]?(DB.ingredientNames[a.k][lang]||DB.ingredientNames[a.k].en):a.k;var nb=DB.ingredientNames[b.k]?(DB.ingredientNames[b.k][lang]||DB.ingredientNames[b.k].en):b.k;return na.localeCompare(nb)});
+  var arr=Object.values(items);
+  arr.forEach(function(a){a.n=DB.ingredientNames[a.k]?(DB.ingredientNames[a.k][lang]||DB.ingredientNames[a.k].en):a.k});
+  var loc=lang==='uk'?'uk-UA':lang==='ru'?'ru-RU':lang==='de'?'de-DE':lang==='es'?'es-ES':'en-US';
+  arr.sort(function(a,b){return a.n.localeCompare(b.n,loc)});
   if(!arr.length){document.getElementById('grocery').innerHTML='';return}
-  var h='<div class="grocery-section"><div class="grocery-title">'+t('grocery')+'</div><div class="grocery-grid">';
-  arr.forEach(function(i){var n=DB.ingredientNames[i.k]?(DB.ingredientNames[i.k][lang]||DB.ingredientNames[i.k].en):i.k;h+='<div class="grocery-item"><span>'+n+'</span><span class="ing-g">'+i.g+' g</span></div>'});
-  document.getElementById('grocery').innerHTML=h+'</div></div>';
+  var h='<div class="grocery-section"><div class="grocery-title"><span>'+t('grocery')+'</span><span style="font-size:0.8rem;font-weight:500;color:#5f748b">'+arr.length+' items</span></div><div class="grocery-grid">';
+  arr.forEach(function(i,idx){
+    h+='<label class="grocery-item" id="gi-'+idx+'"><input type="checkbox" onchange="gcheck('+idx+')"><span class="gi-name">'+i.n+'</span><span class="ing-g">'+i.g+' g</span></label>';
+  });
+  h+='</div><div class="grocery-share">';
+  h+='<button class="gs-copy" onclick="gcopy(0)">'+t('gcopy')+'</button>';
+  h+='<button class="gs-share" onclick="gshareAll()">'+t('gshare')+'</button>';
+  h+='<button class="gs-checked" onclick="gcopy(1)">'+t('gchecked')+'</button>';
+  h+='</div></div>';
+  document.getElementById('grocery').innerHTML=h;
+}
+function gcheck(idx){var el=document.getElementById('gi-'+idx);if(el)el.classList.toggle('checked')}
+function gtext(onlyChecked){
+  var lines=[],items=document.querySelectorAll('.grocery-item');
+  items.forEach(function(el,i){
+    var cb=el.querySelector('input[type=checkbox]');
+    if(onlyChecked&&!cb.checked)return;
+    var nm=el.querySelector('.gi-name').textContent;
+    var gr=el.querySelector('.ing-g').textContent;
+    lines.push((onlyChecked&&cb.checked?'✅ ':'☐ ')+nm+' — '+gr);
+  });
+  return t('grocery')+' (Day '+curDay+')\\n'+lines.join('\\n');
+}
+function gcopy(onlyChecked){
+  var txt=gtext(onlyChecked);
+  navigator.clipboard.writeText(txt).then(function(){alert(lang==='uk'?'Скопійовано!':lang==='ru'?'Скопировано!':'Copied!')}).catch(function(){});
+}
+function gshareAll(){
+  var txt=gtext(0);
+  if(navigator.share){navigator.share({title:t('grocery'),text:txt}).catch(function(){gcopy(0)})}
+  else{gcopy(0)}
 }
 function clock(){
   var now=new Date();
