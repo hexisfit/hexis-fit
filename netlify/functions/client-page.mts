@@ -184,7 +184,8 @@ function todayDayNum(){
 }
 function setLang(l){lang=l;document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.dataset.lang===l)});document.getElementById('waterLabel').textContent=t('water');document.getElementById('waterGoal').textContent=t('wgoal');document.getElementById('courseLabel').textContent=weeks+t('course')+' · '+totalDays+' days';renderDays();render();clock()}
 function init(){
-  if(!DB){document.getElementById('meals').innerHTML='<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">Recipe database not loaded</p>';return}
+  try{
+  if(!DB||!DB.menu28||!DB.recipes){document.getElementById('meals').innerHTML='<p style="padding:40px;color:#e55;text-align:center;grid-column:1/-1">DB status: '+(DB?'loaded but menu28='+(DB.menu28?DB.menu28.length:'missing')+' recipes='+(DB.recipes?Object.keys(DB.recipes).length:'missing'):'NULL - recipe database not uploaded')+'</p>';return}
   curDay=todayDayNum();
   var fb='';
   if(C.filterVegan)fb+='<span style="background:#dcfce7;color:#166534;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">🌱 Vegan</span>';
@@ -192,8 +193,10 @@ function init(){
   if(C.filterLF)fb+='<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">🥛✕ Lactose-free</span>';
   if(C.filterSpeed)fb+='<span style="background:#f0f4ff;color:#4338ca;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">⏱ '+C.filterSpeed+'</span>';
   document.getElementById('filterBadges').innerHTML=fb;
-  setLang(lang);initWater();renderDays();render();clock();loadWeather();
+  setLang(lang);initWater();renderDays();render();clock();
+  try{loadWeather()}catch(we){}
   document.getElementById('actions').innerHTML='<a class="action-btn wa" href="https://wa.me/__WA__" target="_blank">💬 WhatsApp</a><button class="action-btn" onclick="shr()">🔗 Share</button>';
+  }catch(err){document.getElementById('meals').innerHTML='<p style="padding:40px;color:red;text-align:center;grid-column:1/-1">Error: '+err.message+'</p>'}
 }
 function initWater(){
   var h='';for(var i=1;i<=8;i++)h+='<button class="water-btn" onclick="tw('+i+')"><span>'+i+'</span><span class="vol">'+i*300+'ml</span></button>';
