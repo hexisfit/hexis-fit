@@ -61,6 +61,10 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .info-bar{background:white;border-radius:50px;padding:8px 18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px;box-shadow:0 3px 8px rgba(0,0,0,0.02);border:1px solid #e2eaf3;gap:8px;font-size:0.9rem}
 .current-day-highlight{background:#fff5f5;padding:4px 12px;border-radius:50px;font-weight:700;color:#1f2a3a;font-size:0.95rem;border:2px solid #ff6b6b}
 .time{font-family:monospace;font-size:1rem;font-weight:600;color:#1f2a3a;background:#f0f5fc;padding:3px 10px;border-radius:30px}
+.weather{display:flex;align-items:center;gap:6px}
+.weather-icon{font-size:1.2rem}
+.weather-temp{font-weight:700;font-size:1rem;color:#1f2a3a}
+.weather-desc{color:#5f748b;font-size:0.82rem}
 .water-tracker{background:#e3f2fd;border-radius:24px;padding:12px 18px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
 .water-title{font-weight:700;color:#0277bd;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 .water-goal{font-size:0.85rem;font-weight:600;color:#01579b}
@@ -106,6 +110,9 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .grocery-item .gi-name{flex:1}
 .grocery-share{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .grocery-share button{padding:8px 16px;border-radius:30px;font-weight:600;font-size:0.85rem;cursor:pointer;border:none;font-family:inherit;transition:0.2s;display:flex;align-items:center;gap:6px}
+.grocery-period{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.gp-btn{background:white;border:1px solid #c5d5c5;padding:5px 12px;border-radius:30px;font-weight:600;cursor:pointer;color:#2d4a2d;font-size:0.8rem;transition:0.2s;font-family:inherit}
+.gp-btn.active{background:#2d4a2d;color:white;border-color:#2d4a2d}
 .grocery-share .gs-copy{background:#2d4a2d;color:white}
 .grocery-share .gs-share{background:#25D366;color:white}
 .grocery-share .gs-checked{background:#1565c0;color:white}
@@ -141,6 +148,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 <div class="info-bar">
   <span id="fullDate"></span>
   <span class="current-day-highlight" id="todayBadge"></span>
+  <div class="weather" id="weatherBox"><span class="weather-icon">🌱</span><span class="weather-temp" id="wTemp">--</span><span class="weather-desc" id="wDesc"></span></div>
   <span class="time" id="clock"></span>
 </div>
 <div class="water-tracker">
@@ -158,7 +166,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 <script>
 var C=__CLIENT_JSON__,DB=__DB_JSON__;
 var lang='__LANG__',tz='__TZ__',weeks=__WEEKS__,totalDays=__DAYS__,curDay=1,done={},water=0;
-var I={water:{en:'Daily water',uk:'Денна вода',ru:'Дневная вода',de:'Wasser',es:'Agua'},wgoal:{en:'Target: 2.4 L (8 × 300ml)',uk:'Ціль: 2.4 л (8 × 300мл)',ru:'Цель: 2.4 л (8 × 300мл)',de:'Ziel: 2.4 L (8 × 300ml)',es:'Meta: 2.4 L (8 × 300ml)'},done:{en:'✅ Done',uk:'✅ Виконано',ru:'✅ Выполнено',de:'✅ Erledigt',es:'✅ Hecho'},ing:{en:'Ingredients',uk:'Інгредієнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},grocery:{en:'🛒 Grocery list',uk:'🛒 Список продуктів',ru:'🛒 Список продуктов',de:'🛒 Einkaufsliste',es:'🛒 Compras'},gcopy:{en:'📋 Copy list',uk:'📋 Копіювати',ru:'📋 Копировать',de:'📋 Kopieren',es:'📋 Copiar'},gshare:{en:'📤 Send to Notes',uk:'📤 В нотатки',ru:'📤 В заметки',de:'📤 Notizen',es:'📤 Notas'},gchecked:{en:'📤 Send checked',uk:'📤 Відмічені',ru:'📤 Отмеченные',de:'📤 Markierte',es:'📤 Marcados'},Breakfast:{en:'Breakfast',uk:'Сніданок',ru:'Завтрак',de:'Frühstück',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обід',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},course:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
+var I={water:{en:'Daily water',uk:'Денна вода',ru:'Дневная вода',de:'Wasser',es:'Agua'},wgoal:{en:'Target: 2.4 L (8 × 300ml)',uk:'Ціль: 2.4 л (8 × 300мл)',ru:'Цель: 2.4 л (8 × 300мл)',de:'Ziel: 2.4 L (8 × 300ml)',es:'Meta: 2.4 L (8 × 300ml)'},done:{en:'✅ Done',uk:'✅ Виконано',ru:'✅ Выполнено',de:'✅ Erledigt',es:'✅ Hecho'},ing:{en:'Ingredients',uk:'Інгредієнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},grocery:{en:'🛒 Grocery list',uk:'🛒 Список продуктів',ru:'🛒 Список продуктов',de:'🛒 Einkaufsliste',es:'🛒 Compras'},gcopy:{en:'📋 Copy list',uk:'📋 Копіювати',ru:'📋 Копировать',de:'📋 Kopieren',es:'📋 Copiar'},gshare:{en:'📤 Send to Notes',uk:'📤 В нотатки',ru:'📤 В заметки',de:'📤 Notizen',es:'📤 Notas'},gchecked:{en:'📤 Send checked',uk:'📤 Відмічені',ru:'📤 Отмеченные',de:'📤 Markierte',es:'📤 Marcados'},gday:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 día'},gweek:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},g2week:{en:'2 weeks',uk:'2 тижні',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},gall:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Сніданок',ru:'Завтрак',de:'Frühstück',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обід',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},course:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
 var ICONS={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack1:'🍎',Snack2:'🍎'};
 var DN={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sá','Do']};
 function t(k){return I[k]&&I[k][lang]||I[k]&&I[k].en||k}
@@ -183,7 +191,7 @@ function init(){
   if(C.filterLF)fb+='<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">🥛✕ Lactose-free</span>';
   if(C.filterSpeed)fb+='<span style="background:#f0f4ff;color:#4338ca;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">⏱ '+C.filterSpeed+'</span>';
   document.getElementById('filterBadges').innerHTML=fb;
-  setLang(lang);initWater();renderDays();render();clock();
+  setLang(lang);initWater();renderDays();render();clock();loadWeather();
   document.getElementById('actions').innerHTML='<a class="action-btn wa" href="https://wa.me/__WA__" target="_blank">💬 WhatsApp</a><button class="action-btn" onclick="shr()">🔗 Share</button>';
 }
 function initWater(){
@@ -255,43 +263,77 @@ function ut(){
 function rg(){
   var m=gm(curDay);
   var items={};
-  m.forEach(function(s){var r=DB.recipes[s.recipeId];if(!r||!r.ingredients)return;r.ingredients.forEach(function(i){var g=Math.round(i.gramsBase*s.scaledFactor);if(items[i.key])items[i.key].g+=g;else items[i.key]={k:i.key,g:g}})});
+  var dFrom=curDay,dTo=curDay;
+  if(groceryPeriod==='week'){dFrom=curDay;dTo=Math.min(curDay+6,totalDays)}
+  else if(groceryPeriod==='2week'){dFrom=curDay;dTo=Math.min(curDay+13,totalDays)}
+  else if(groceryPeriod==='all'){dFrom=1;dTo=totalDays}
+  for(var dd=dFrom;dd<=dTo;dd++){
+    var dm=gm(dd);
+    dm.forEach(function(s){var r=DB.recipes[s.recipeId];if(!r||!r.ingredients)return;r.ingredients.forEach(function(i){var g=Math.round(i.gramsBase*s.scaledFactor);if(items[i.key])items[i.key].g+=g;else items[i.key]={k:i.key,g:g}})});
+  }
   var arr=Object.values(items);
   arr.forEach(function(a){a.n=DB.ingredientNames[a.k]?(DB.ingredientNames[a.k][lang]||DB.ingredientNames[a.k].en):a.k});
   var loc=lang==='uk'?'uk-UA':lang==='ru'?'ru-RU':lang==='de'?'de-DE':lang==='es'?'es-ES':'en-US';
   arr.sort(function(a,b){return a.n.localeCompare(b.n,loc)});
   if(!arr.length){document.getElementById('grocery').innerHTML='';return}
-  var h='<div class="grocery-section"><div class="grocery-title"><span>'+t('grocery')+'</span><span style="font-size:0.8rem;font-weight:500;color:#5f748b">'+arr.length+' items</span></div><div class="grocery-grid">';
+  var h='<div class="grocery-section"><div class="grocery-title"><span>'+t('grocery')+'</span><span style="font-size:0.8rem;font-weight:500;color:#5f748b">'+arr.length+' items</span></div>';
+  h+='<div class="grocery-period">';
+  h+='<button class="gp-btn'+(groceryPeriod==='day'?' active':'')+'" onclick="setGP(\'day\')">'+t('gday')+'</button>';
+  h+='<button class="gp-btn'+(groceryPeriod==='week'?' active':'')+'" onclick="setGP(\'week\')">'+t('gweek')+'</button>';
+  h+='<button class="gp-btn'+(groceryPeriod==='2week'?' active':'')+'" onclick="setGP(\'2week\')">'+t('g2week')+'</button>';
+  h+='<button class="gp-btn'+(groceryPeriod==='all'?' active':'')+'" onclick="setGP(\'all\')">'+t('gall')+'</button>';
+  h+='</div>';
+  h+='<div class="grocery-grid">';
   arr.forEach(function(i,idx){
-    h+='<label class="grocery-item" id="gi-'+idx+'"><input type="checkbox" onchange="gcheck('+idx+')"><span class="gi-name">'+i.n+'</span><span class="ing-g">'+i.g+' g</span></label>';
+    h+='<label class="grocery-item" id="gi-'+idx+'"><input type="checkbox" onchange="gcheck(this)"><span class="gi-name">'+i.n+'</span><span class="ing-g">'+i.g+' g</span></label>';
   });
   h+='</div><div class="grocery-share">';
-  h+='<button class="gs-copy" onclick="gcopy(0)">'+t('gcopy')+'</button>';
-  h+='<button class="gs-share" onclick="gshareAll()">'+t('gshare')+'</button>';
-  h+='<button class="gs-checked" onclick="gcopy(1)">'+t('gchecked')+'</button>';
+  h+='<button class="gs-copy" onclick="gcopy(false)">'+t('gcopy')+'</button>';
+  h+='<button class="gs-share" onclick="gshareList(false)">'+t('gshare')+'</button>';
+  h+='<button class="gs-checked" onclick="gshareList(true)">'+t('gchecked')+'</button>';
   h+='</div></div>';
   document.getElementById('grocery').innerHTML=h;
 }
-function gcheck(idx){var el=document.getElementById('gi-'+idx);if(el)el.classList.toggle('checked')}
+var groceryPeriod='day';
+function setGP(p){groceryPeriod=p;rg()}
+function gcheck(cb){var el=cb.closest('.grocery-item');if(el)el.classList.toggle('checked',cb.checked)}
 function gtext(onlyChecked){
-  var lines=[],items=document.querySelectorAll('.grocery-item');
-  items.forEach(function(el,i){
+  var lines=[];
+  document.querySelectorAll('.grocery-item').forEach(function(el){
     var cb=el.querySelector('input[type=checkbox]');
-    if(onlyChecked&&!cb.checked)return;
+    if(onlyChecked && !cb.checked) return;
     var nm=el.querySelector('.gi-name').textContent;
     var gr=el.querySelector('.ing-g').textContent;
-    lines.push((onlyChecked&&cb.checked?'✅ ':'☐ ')+nm+' — '+gr);
+    lines.push((cb.checked?'\\u2705 ':'\\u2610 ')+nm+' \\u2014 '+gr);
   });
-  return t('grocery')+' (Day '+curDay+')\\n'+lines.join('\\n');
+  var label=groceryPeriod==='day'?'Day '+curDay:groceryPeriod==='week'?t('gweek'):groceryPeriod==='2week'?t('g2week'):t('gall');
+  return t('grocery')+' ('+label+')\\n'+lines.join('\\n');
 }
 function gcopy(onlyChecked){
   var txt=gtext(onlyChecked);
   navigator.clipboard.writeText(txt).then(function(){alert(lang==='uk'?'Скопійовано!':lang==='ru'?'Скопировано!':'Copied!')}).catch(function(){});
 }
-function gshareAll(){
-  var txt=gtext(0);
-  if(navigator.share){navigator.share({title:t('grocery'),text:txt}).catch(function(){gcopy(0)})}
-  else{gcopy(0)}
+function gshareList(onlyChecked){
+  var txt=gtext(onlyChecked);
+  if(navigator.share){navigator.share({title:t('grocery'),text:txt}).catch(function(){gcopy(onlyChecked)})}
+  else{gcopy(onlyChecked)}
+}
+function loadWeather(){
+  var city=C.city||'Kleve';
+  city=city.split(',')[0].trim();
+  try{
+    fetch('https://wttr.in/'+encodeURIComponent(city)+'?format=j1').then(function(r){return r.json()}).then(function(d){
+      var cur=d.current_condition&&d.current_condition[0];
+      if(!cur)return;
+      var temp=cur.temp_C;
+      var code=parseInt(cur.weatherCode)||0;
+      var icon=code===113?'\\u2600\\ufe0f':code<300?'\\u26c5':code<600?'\\ud83c\\udf27\\ufe0f':code<700?'\\u2744\\ufe0f':'\\ud83c\\udf2b\\ufe0f';
+      var desc=cur.weatherDesc&&cur.weatherDesc[0]?cur.weatherDesc[0].value:'';
+      document.getElementById('wTemp').textContent=temp+'\\u00b0C';
+      document.getElementById('wDesc').textContent=desc;
+      document.querySelector('.weather-icon').textContent=icon;
+    }).catch(function(){});
+  }catch(e){}
 }
 function clock(){
   var now=new Date();
