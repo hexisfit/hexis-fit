@@ -117,6 +117,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
     <div class="hero-name">__NAME__</div>
     <div class="hero-course" id="courseLabel">__WEEKS__-week course · __DAYS__ days</div>
     <div class="hero-stats"><span>__STATS_MET__</span><span>📍 __CITY__</span></div>
+    <div id="filterBadges" style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"></div>
   </div>
   <div class="hero-kcal">🔥 __KCAL__ kcal</div>
 </div>
@@ -168,6 +169,12 @@ function setLang(l){lang=l;document.querySelectorAll('.lang-btn').forEach(functi
 function init(){
   if(!DB){document.getElementById('meals').innerHTML='<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">Recipe database not loaded</p>';return}
   curDay=todayDayNum();
+  var fb='';
+  if(C.filterVegan)fb+='<span style="background:#dcfce7;color:#166534;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">🌱 Vegan</span>';
+  if(C.filterHalal)fb+='<span style="background:#e0e7ff;color:#3730a3;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">☪️ Halal</span>';
+  if(C.filterLF)fb+='<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">🥛✕ Lactose-free</span>';
+  if(C.filterSpeed)fb+='<span style="background:#f0f4ff;color:#4338ca;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600">⏱ '+C.filterSpeed+'</span>';
+  document.getElementById('filterBadges').innerHTML=fb;
   setLang(lang);initWater();renderDays();render();clock();
   document.getElementById('actions').innerHTML='<a class="action-btn wa" href="https://wa.me/__WA__" target="_blank">💬 WhatsApp</a><button class="action-btn" onclick="shr()">🔗 Share</button>';
 }
@@ -186,13 +193,21 @@ function renderDays(){
   document.getElementById('dayTabs').innerHTML=h;
 }
 function sd(d){curDay=d;renderDays();render()}
-function gm(d){return DB&&DB.menu28?DB.menu28.filter(function(m){return m.day===d}):[]}
+function gm(d){
+  if(!DB||!DB.menu28)return[];
+  var raw=DB.menu28.filter(function(m){return m.day===d});
+  if(!raw.length){raw=DB.menu28.filter(function(m){return m.day===((d-1)%28)+1})}
+  return raw.filter(function(slot){
+    var r=DB.recipes[slot.recipeId];if(!r)return false;
+    if(C.filterVegan&&!r.vegan)return false;
+    if(C.filterHalal&&!r.halal)return false;
+    if(C.filterLF&&!r.lactoseFree)return false;
+    if(C.filterSpeed&&r.cookSpeed!==C.filterSpeed)return false;
+    return true;
+  });
+}
 function render(){
   var meals=gm(curDay),h='';
-  if(!meals.length){
-    var usedDay=((curDay-1)%28)+1;
-    meals=gm(usedDay);
-  }
   meals.forEach(function(slot){
     var r=DB.recipes[slot.recipeId];if(!r)return;
     var nm=r.names?(r.names[lang]||r.names.en):'?';
@@ -226,12 +241,11 @@ function render(){
 function td(b){var k=b.dataset.k;done[k]=!done[k];b.classList.toggle('active');ut()}
 function ut(){
   var m=gm(curDay),d=0,p=0;
-  if(!m.length)m=gm(((curDay-1)%28)+1);
   m.forEach(function(s){p+=s.scaledKcal;if(done[curDay+'-'+s.slot])d+=s.scaledKcal});
   document.getElementById('dayTotal').innerHTML='<span>📊 Day '+curDay+'</span><span><span class="total-done">'+d+'</span> / '+p+' kcal</span>';
 }
 function rg(){
-  var m=gm(curDay);if(!m.length)m=gm(((curDay-1)%28)+1);
+  var m=gm(curDay);
   var items={};
   m.forEach(function(s){var r=DB.recipes[s.recipeId];if(!r||!r.ingredients)return;r.ingredients.forEach(function(i){var g=Math.round(i.gramsBase*s.scaledFactor);if(items[i.key])items[i.key].g+=g;else items[i.key]={k:i.key,g:g}})});
   var arr=Object.values(items).sort(function(a,b){var na=DB.ingredientNames[a.k]?(DB.ingredientNames[a.k][lang]||DB.ingredientNames[a.k].en):a.k;var nb=DB.ingredientNames[b.k]?(DB.ingredientNames[b.k][lang]||DB.ingredientNames[b.k].en):b.k;return na.localeCompare(nb)});

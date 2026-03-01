@@ -208,6 +208,29 @@
             <input type="date" class="fi" id="cStart">
             <div class="hint">Оставьте пустым — курс начнётся с ближайшего понедельника</div>
         </div>
+
+        <div style="background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:16px;padding:14px 18px;margin-bottom:12px">
+            <label class="fl" style="margin-bottom:10px;display:block">🍽️ Диетические фильтры</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <label style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);padding:8px 14px;border-radius:12px;cursor:pointer;font-size:0.9rem">
+                    <input type="checkbox" id="cVegan" style="width:18px;height:18px;accent-color:#22c55e"> 🌱 Vegan
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);padding:8px 14px;border-radius:12px;cursor:pointer;font-size:0.9rem">
+                    <input type="checkbox" id="cHalal" style="width:18px;height:18px;accent-color:#6366f1"> ☪️ Halal
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);padding:8px 14px;border-radius:12px;cursor:pointer;font-size:0.9rem">
+                    <input type="checkbox" id="cLF" style="width:18px;height:18px;accent-color:#f59e0b"> 🥛✕ Без лактози
+                </label>
+            </div>
+            <div style="margin-top:10px">
+                <label class="fl" style="margin-bottom:6px;display:block">⏱ Скорость готовки</label>
+                <select class="fs" id="cSpeed">
+                    <option value="">Все рецепты</option>
+                    <option value="FAST">⚡ Быстрые (до 20 мин)</option>
+                    <option value="MEDIUM">🕐 Средние (до 40 мин)</option>
+                </select>
+            </div>
+        </div>
         <div class="fr">
             <div class="fg">
                 <label class="fl">🌍 Город</label>
@@ -484,6 +507,10 @@ async function createClient(){
                 kcal:document.getElementById('cKcal').value.trim()||'1500-1600',
                 courseWeeks:document.getElementById('cWeeks').value||'4',
                 courseStart:document.getElementById('cStart').value||'',
+                filterVegan:document.getElementById('cVegan').checked,
+                filterHalal:document.getElementById('cHalal').checked,
+                filterLF:document.getElementById('cLF').checked,
+                filterSpeed:document.getElementById('cSpeed').value||'',
                 city:document.getElementById('cCity').value.trim()||'Kleve, Germany',
                 timezone:document.getElementById('cTZ').value,
                 whatsapp:document.getElementById('cWA').value.trim()||'380505827191',
