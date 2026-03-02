@@ -157,7 +157,6 @@ function buildPage(): string {
   p('window.sl=function(l){L=l;document.querySelectorAll(".lb").forEach(function(b){b.classList.toggle("active",b.dataset.l===l)});document.getElementById("wl").textContent=t("water");document.getElementById("wg").textContent=t("wg");document.getElementById("csub").textContent=WK+t("crs")+" - "+TD+" days";rdts();ren();clk()};');
   p('function init(){');
   p('  try{');
-  p('    document.getElementById("ms").innerHTML="<p style=\'padding:10px;color:#999;text-align:center;grid-column:1/-1\'>Loading... DB="+(DB?"yes":"null")+" menu28="+(DB&&DB.menu28?DB.menu28.length:"none")+" recipes="+(DB&&DB.recipes?Object.keys(DB.recipes).length:"none")+"</p>";');
   p('    if(!DB||!DB.menu28||!DB.recipes){document.getElementById("ms").innerHTML="<p style=\'padding:40px;color:#e55;text-align:center;grid-column:1/-1\'>DB: "+(DB?"keys="+Object.keys(DB).join(","):"null")+"</p>";return}');
   p('    cd=tdn();');
   p('    var fb="";');
@@ -209,10 +208,10 @@ function buildPage(): string {
   p('  if(!arr.length){document.getElementById("gr").innerHTML="";return}');
   p('  var h="<div class=\'gs\'><div class=\'gs-t\'><span>"+t("gl")+"</span><span style=\'font-size:0.8rem;color:#5f748b\'>"+arr.length+"</span></div>";');
   p('  h+="<div class=\'gp\'>";');
-  p('  h+="<button class=\'gpb"+(gper==="day"?" on":"")+"\' onclick=\'sgp(\"day\")\'>"+t("p1")+"</button>";');
-  p('  h+="<button class=\'gpb"+(gper==="week"?" on":"")+"\' onclick=\'sgp(\"week\")\'>"+t("p7")+"</button>";');
-  p('  h+="<button class=\'gpb"+(gper==="2week"?" on":"")+"\' onclick=\'sgp(\"2week\")\'>"+t("p14")+"</button>";');
-  p('  h+="<button class=\'gpb"+(gper==="all"?" on":"")+"\' onclick=\'sgp(\"all\")\'>"+t("pa")+"</button>";');
+  p('  h+="<button class=\'gpb"+(gper==="day"?" on":"")+"\' onclick=\'sgp(&quot;day&quot;)\'>"+t("p1")+"</button>";');
+  p('  h+="<button class=\'gpb"+(gper==="week"?" on":"")+"\' onclick=\'sgp(&quot;week&quot;)\'>"+t("p7")+"</button>";');
+  p('  h+="<button class=\'gpb"+(gper==="2week"?" on":"")+"\' onclick=\'sgp(&quot;2week&quot;)\'>"+t("p14")+"</button>";');
+  p('  h+="<button class=\'gpb"+(gper==="all"?" on":"")+"\' onclick=\'sgp(&quot;all&quot;)\'>"+t("pa")+"</button>";');
   p('  h+="</div><div class=\'gg\'>";');
   p('  arr.forEach(function(i){h+="<label class=\'gi\'><input type=\'checkbox\' onchange=\'gc(this)\'><span class=\'gn\'>"+i.n+"</span><span class=\'ig\'>"+i.g+" g</span></label>"});');
   p('  h+="</div><div class=\'gshr\'>";');
