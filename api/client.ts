@@ -164,108 +164,108 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 <script>
 var C=JSON.parse(XCLIENTJSONX);
 var DB=XDBJSONX!=="null"?JSON.parse(XDBJSONX):null;
-var L='XLANGX',TZ='XTZX',WK=parseInt('XWEEKSX')||4,TD=parseInt('XDAYSX')||28;
-var cd=1,done={},wtr=0,gper='day';
-var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
-var IC={Breakfast:'B',Lunch:'L',Dinner:'D',Snack1:'S',Snack2:'S'};
-var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sa','Do']};
+var L="XLANGX",TZ="XTZX",WK=parseInt("XWEEKSX")||4,TD=parseInt("XDAYSX")||28;
+var cd=1,done={},wtr=0,gper="day";
+var T={water:{en:"Water",uk:"Вода",ru:"Вода",de:"Wasser",es:"Agua"},wg:{en:"Target: 2.4 L (8 x 300ml)",uk:"2.4 л (8 x 300мл)",ru:"2.4 л (8 x 300мл)",de:"Ziel: 2.4 L",es:"Meta: 2.4 L"},dn:{en:"Done",uk:"Готово",ru:"Готово",de:"Erledigt",es:"Hecho"},ing:{en:"Ingredients",uk:"Iнгредiєнти",ru:"Ингредиенты",de:"Zutaten",es:"Ingredientes"},gl:{en:"Grocery list",uk:"Список продуктiв",ru:"Список продуктов",de:"Einkaufsliste",es:"Compras"},cp:{en:"Copy all",uk:"Копiювати",ru:"Копировать",de:"Kopieren",es:"Copiar"},sn:{en:"Share",uk:"Надiслати",ru:"Отправить",de:"Teilen",es:"Compartir"},sc:{en:"Send checked",uk:"Вiдмiченi",ru:"Отмеченные",de:"Markierte",es:"Marcados"},p1:{en:"1 day",uk:"1 день",ru:"1 день",de:"1 Tag",es:"1 dia"},p7:{en:"1 week",uk:"1 тиждень",ru:"1 неделя",de:"1 Woche",es:"1 semana"},p14:{en:"2 weeks",uk:"2 тижнi",ru:"2 недели",de:"2 Wochen",es:"2 semanas"},pa:{en:"All",uk:"Весь курс",ru:"Весь курс",de:"Alles",es:"Todo"},Breakfast:{en:"Breakfast",uk:"Снiданок",ru:"Завтрак",de:"Fruehstueck",es:"Desayuno"},Lunch:{en:"Lunch",uk:"Обiд",ru:"Обед",de:"Mittagessen",es:"Almuerzo"},Dinner:{en:"Dinner",uk:"Вечеря",ru:"Ужин",de:"Abendessen",es:"Cena"},Snack1:{en:"Snack",uk:"Перекус",ru:"Перекус",de:"Snack",es:"Snack"},Snack2:{en:"Snack 2",uk:"Перекус 2",ru:"Перекус 2",de:"Snack 2",es:"Snack 2"},crs:{en:"-week course",uk:"-тижневий курс",ru:"-недельный курс",de:"-Wochen-Kurs",es:" semanas"}};
+var IC={Breakfast:"B",Lunch:"L",Dinner:"D",Snack1:"S",Snack2:"S"};
+var DNM={en:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],uk:["Пн","Вт","Ср","Чт","Пт","Сб","Нд"],ru:["Пн","Вт","Ср","Чт","Пт","Сб","Вс"],de:["Mo","Di","Mi","Do","Fr","Sa","So"],es:["Lu","Ma","Mi","Ju","Vi","Sa","Do"]};
 function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
 function sdate(){var d=C.courseStart?new Date(C.courseStart):new Date();if(!C.courseStart){var w=d.getDay();d.setDate(d.getDate()-(w===0?6:w-1))}d.setHours(0,0,0,0);return d}
 function ddate(n){var s=new Date(sdate().getTime());s.setDate(s.getDate()+n-1);return s}
 function tdn(){var n=new Date(),s=sdate(),d=Math.floor((n-s)/86400000)+1;return d>=1&&d<=TD?d:1}
-function sl(l){L=l;document.querySelectorAll('.lb').forEach(function(b){b.classList.toggle('active',b.dataset.l===l)});document.getElementById('wl').textContent=t('water');document.getElementById('wg').textContent=t('wg');document.getElementById('csub').textContent=WK+t('crs')+' - '+TD+' days';rdts();ren();clk()}
+function sl(l){L=l;document.querySelectorAll(".lb").forEach(function(b){b.classList.toggle("active",b.dataset.l===l)});document.getElementById("wl").textContent=t("water");document.getElementById("wg").textContent=t("wg");document.getElementById("csub").textContent=WK+t("crs")+" - "+TD+" days";rdts();ren();clk()}
 function init(){
   try{
-    if(!DB||!DB.menu28||!DB.recipes){document.getElementById('ms').innerHTML='<p style="padding:40px;color:#e55;text-align:center;grid-column:1/-1">DB: '+(DB?'keys='+Object.keys(DB).join(','):'null')+'</p>';return}
+    if(!DB||!DB.menu28||!DB.recipes){document.getElementById("ms").innerHTML="<p style=\\"padding:40px;color:#e55;text-align:center;grid-column:1/-1\\">DB: "+(DB?"keys="+Object.keys(DB).join(","):"null")+"</p>";return}
     cd=tdn();
-    var fb='';
-    if(C.filterVegan)fb+='<span class="fb" style="background:#dcfce7;color:#166534">Vegan</span>';
-    if(C.filterHalal)fb+='<span class="fb" style="background:#e0e7ff;color:#3730a3">Halal</span>';
-    if(C.filterLF)fb+='<span class="fb" style="background:#fef3c7;color:#92400e">LF</span>';
-    document.getElementById('fb').innerHTML=fb;
+    var fb="";
+    if(C.filterVegan)fb+="<span class=\\"fb\\" style=\\"background:#dcfce7;color:#166534\\">Vegan</span>";
+    if(C.filterHalal)fb+="<span class=\\"fb\\" style=\\"background:#e0e7ff;color:#3730a3\\">Halal</span>";
+    if(C.filterLF)fb+="<span class=\\"fb\\" style=\\"background:#fef3c7;color:#92400e\\">LF</span>";
+    document.getElementById("fb").innerHTML=fb;
     sl(L);iw();rdts();ren();clk();
-    document.getElementById('acts').innerHTML='<a class="ab wa" href="https://wa.me/XWAX" target="_blank">WhatsApp</a><button class="ab" onclick="shr()">Share</button>';
-  }catch(e){document.getElementById('ms').innerHTML='<p style="padding:40px;color:red;text-align:center;grid-column:1/-1">ERR: '+e.message+'</p>'}
+    document.getElementById("acts").innerHTML="<a class=\\"ab wa\\" href=\\"https://wa.me/XWAX\\" target=\\"_blank\\">WhatsApp</a><button class=\\"ab\\" onclick=\\"shr()\\">Share</button>";
+  }catch(e){document.getElementById("ms").innerHTML="<p style=\\"padding:40px;color:red;text-align:center;grid-column:1/-1\\">ERR: "+e.message+"</p>"}
 }
-function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')"><span>'+i+'</span><span class="wv">'+(i*300)+'ml</span></button>';document.getElementById('wbs').innerHTML=h}
-function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll('.wb').forEach(function(b,i){b.classList.toggle('on',i<wtr)});document.getElementById('wc').textContent=(wtr*0.3).toFixed(1)+' / 2.4 L'}
-function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[(d-1)%7]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
+function iw(){var h="";for(var i=1;i<=8;i++)h+="<button class=\\"wb\\" onclick=\\"tw("+i+")\\"><span>"+i+"</span><span class=\\"wv\\">"+(i*300)+"ml</span></button>";document.getElementById("wbs").innerHTML=h}
+function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll(".wb").forEach(function(b,i){b.classList.toggle("on",i<wtr)});document.getElementById("wc").textContent=(wtr*0.3).toFixed(1)+" / 2.4 L"}
+function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h="";for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+"."+(dt.getMonth()+1);var c="dt";if(d===cd)c+=" act";if(d===td)c+=" now";h+="<button class=\\""+c+"\\" onclick=\\"sd("+d+")\\">"+dn[(d-1)%7]+"<span class=\\"dn\\">"+dd+"</span></button>"}document.getElementById("dts").innerHTML=h}
 function sd(d){cd=d;rdts();ren()}
 function gm(d){if(!DB||!DB.menu28)return[];var r=DB.menu28.filter(function(m){return m.day===d});if(!r.length)r=DB.menu28.filter(function(m){return m.day===((d-1)%28)+1});return r.filter(function(s){var rc=DB.recipes[s.recipeId];if(!rc)return false;if(C.filterVegan&&!rc.vegan)return false;if(C.filterHalal&&!rc.halal)return false;if(C.filterLF&&!rc.lactoseFree)return false;if(C.filterSpeed&&rc.cookSpeed!==C.filterSpeed)return false;return true})}
 function ren(){
-  var ms=gm(cd),h='';
+  var ms=gm(cd),h="";
   ms.forEach(function(s){
     var r=DB.recipes[s.recipeId];if(!r)return;
-    var nm=r.names?(r.names[L]||r.names.en):'?';
+    var nm=r.names?(r.names[L]||r.names.en):"?";
     var f=s.scaledFactor,kc=s.scaledKcal;
     var p=Math.round(r.protein*f),fa=Math.round(r.fat*f),ca=Math.round(r.carbs*f);
-    var dk=cd+'-'+s.slot,isd=!!done[dk];
-    var tg='';if(r.vegan)tg+='<span class="mtag tv">Vegan</span>';if(r.halal)tg+='<span class="mtag th">Halal</span>';if(r.lactoseFree)tg+='<span class="mtag tl">LF</span>';
-    var ig='';
-    if(r.ingredients){ig='<div class="mi"><h4>'+t('ing')+'</h4>';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;ig+='<div class="ir"><span>'+n+'</span><span class="ig">'+Math.round(i.gramsBase*f)+' g</span></div>'});ig+='</div>'}
-    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
-    if(tg)h+='<div class="mtags">'+tg+'</div>';
+    var dk=cd+"-"+s.slot,isd=!!done[dk];
+    var tg="";if(r.vegan)tg+="<span class=\\"mtag tv\\">Vegan</span>";if(r.halal)tg+="<span class=\\"mtag th\\">Halal</span>";if(r.lactoseFree)tg+="<span class=\\"mtag tl\\">LF</span>";
+    var ig="";
+    if(r.ingredients){ig="<div class=\\"mi\\"><h4>"+t("ing")+"</h4>";r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;ig+="<div class=\\"ir\\"><span>"+n+"</span><span class=\\"ig\\">"+Math.round(i.gramsBase*f)+" g</span></div>"});ig+="</div>"}
+    h+="<div class=\\"mc\\"><div class=\\"mt\\">"+IC[s.slot]+" "+t(s.slot)+"</div><div class=\\"mn\\">"+nm+"</div><div class=\\"mb\\">"+kc+" kcal - P"+p+" F"+fa+" C"+ca+" - "+r.cookTimeMin+"min</div>";
+    if(tg)h+="<div class=\\"mtags\\">"+tg+"</div>";
     h+=ig;
-    h+='<button class="db'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div>';
+    h+="<button class=\\"db"+(isd?" on":"")+"\\" data-k=\\""+dk+"\\" onclick=\\"td(this)\\">"+t("dn")+"</button></div>";
   });
-  document.getElementById('ms').innerHTML=h||'<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">No meals</p>';
+  document.getElementById("ms").innerHTML=h||"<p style=\\"padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1\\">No meals</p>";
   ut();rg();
 }
-function td(b){var k=b.dataset.k;done[k]=!done[k];b.classList.toggle('on');ut()}
-function ut(){var m=gm(cd),d=0,p=0;m.forEach(function(s){p+=s.scaledKcal;if(done[cd+'-'+s.slot])d+=s.scaledKcal});document.getElementById('tot').innerHTML='<span>Day '+cd+'</span><span><span class="tdone">'+d+'</span> / '+p+' kcal</span>'}
+function td(b){var k=b.dataset.k;done[k]=!done[k];b.classList.toggle("on");ut()}
+function ut(){var m=gm(cd),d=0,p=0;m.forEach(function(s){p+=s.scaledKcal;if(done[cd+"-"+s.slot])d+=s.scaledKcal});document.getElementById("tot").innerHTML="<span>Day "+cd+"</span><span><span class=\\"tdone\\">"+d+"</span> / "+p+" kcal</span>"}
 function rg(){
   var df=cd,dt=cd;
-  if(gper==='week'){df=cd;dt=Math.min(cd+6,TD)}
-  else if(gper==='2week'){df=cd;dt=Math.min(cd+13,TD)}
-  else if(gper==='all'){df=1;dt=TD}
+  if(gper==="week"){df=cd;dt=Math.min(cd+6,TD)}
+  else if(gper==="2week"){df=cd;dt=Math.min(cd+13,TD)}
+  else if(gper==="all"){df=1;dt=TD}
   var items={};
   for(var dd=df;dd<=dt;dd++){gm(dd).forEach(function(s){var r=DB.recipes[s.recipeId];if(!r||!r.ingredients)return;r.ingredients.forEach(function(i){var g=Math.round(i.gramsBase*s.scaledFactor);if(items[i.key])items[i.key].g+=g;else items[i.key]={k:i.key,g:g}})})}
   var arr=Object.values(items);
   arr.forEach(function(a){a.n=DB.ingredientNames[a.k]?(DB.ingredientNames[a.k][L]||DB.ingredientNames[a.k].en):a.k});
-  var loc=L==='uk'?'uk':L==='ru'?'ru':L==='de'?'de':L==='es'?'es':'en';
+  var loc=L==="uk"?"uk":L==="ru"?"ru":L==="de"?"de":L==="es"?"es":"en";
   arr.sort(function(a,b){return a.n.localeCompare(b.n,loc)});
-  if(!arr.length){document.getElementById('gr').innerHTML='';return}
-  var h='<div class="gs"><div class="gs-t"><span>'+t('gl')+'</span><span style="font-size:0.8rem;color:#5f748b">'+arr.length+'</span></div>';
-  h+='<div class="gp">';
-  h+='<button class="gpb'+(gper==='day'?' on':'')+'" onclick="sgp(\'day\')">'+t('p1')+'</button>';
-  h+='<button class="gpb'+(gper==='week'?' on':'')+'" onclick="sgp(\'week\')">'+t('p7')+'</button>';
-  h+='<button class="gpb'+(gper==='2week'?' on':'')+'" onclick="sgp(\'2week\')">'+t('p14')+'</button>';
-  h+='<button class="gpb'+(gper==='all'?' on':'')+'" onclick="sgp(\'all\')">'+t('pa')+'</button>';
-  h+='</div><div class="gg">';
-  arr.forEach(function(i){h+='<label class="gi"><input type="checkbox" onchange="gc(this)"><span class="gn">'+i.n+'</span><span class="ig">'+i.g+' g</span></label>'});
-  h+='</div><div class="gshr">';
-  h+='<button class="gcb" onclick="gcp(false)">'+t('cp')+'</button>';
-  h+='<button class="gsh" onclick="gss(false)">'+t('sn')+'</button>';
-  h+='<button class="gck" onclick="gss(true)">'+t('sc')+'</button>';
-  h+='</div></div>';
-  document.getElementById('gr').innerHTML=h;
+  if(!arr.length){document.getElementById("gr").innerHTML="";return}
+  var h="<div class=\\"gs\\"><div class=\\"gs-t\\"><span>"+t("gl")+"</span><span style=\\"font-size:0.8rem;color:#5f748b\\">"+arr.length+"</span></div>";
+  h+="<div class=\\"gp\\">";
+  h+="<button class=\\"gpb"+(gper==="day"?" on":"")+"\\" onclick=\\"sgp(&#39;day&#39;)\\">"+t("p1")+"</button>";
+  h+="<button class=\\"gpb"+(gper==="week"?" on":"")+"\\" onclick=\\"sgp(&#39;week&#39;)\\">"+t("p7")+"</button>";
+  h+="<button class=\\"gpb"+(gper==="2week"?" on":"")+"\\" onclick=\\"sgp(&#39;2week&#39;)\\">"+t("p14")+"</button>";
+  h+="<button class=\\"gpb"+(gper==="all"?" on":"")+"\\" onclick=\\"sgp(&#39;all&#39;)\\">"+t("pa")+"</button>";
+  h+="</div><div class=\\"gg\\">";
+  arr.forEach(function(i){h+="<label class=\\"gi\\"><input type=\\"checkbox\\" onchange=\\"gc(this)\\"><span class=\\"gn\\">"+i.n+"</span><span class=\\"ig\\">"+i.g+" g</span></label>"});
+  h+="</div><div class=\\"gshr\\">";
+  h+="<button class=\\"gcb\\" onclick=\\"gcp(false)\\">"+t("cp")+"</button>";
+  h+="<button class=\\"gsh\\" onclick=\\"gss(false)\\">"+t("sn")+"</button>";
+  h+="<button class=\\"gck\\" onclick=\\"gss(true)\\">"+t("sc")+"</button>";
+  h+="</div></div>";
+  document.getElementById("gr").innerHTML=h;
 }
 function sgp(p){gper=p;rg()}
-function gc(cb){var el=cb.closest('.gi');if(el)el.classList.toggle('chk',cb.checked)}
+function gc(cb){var el=cb.closest(".gi");if(el)el.classList.toggle("chk",cb.checked)}
 function gtxt(only){
   var lines=[];
-  document.querySelectorAll('.gi').forEach(function(el){
-    var cb=el.querySelector('input');
+  document.querySelectorAll(".gi").forEach(function(el){
+    var cb=el.querySelector("input");
     if(only&&!cb.checked)return;
-    lines.push((cb.checked?'[x] ':'[ ] ')+el.querySelector('.gn').textContent+' - '+el.querySelector('.ig').textContent);
+    lines.push((cb.checked?"[x] ":"[ ] ")+el.querySelector(".gn").textContent+" - "+el.querySelector(".ig").textContent);
   });
-  return t('gl')+' (Day '+cd+')\\n'+lines.join('\\n');
+  return t("gl")+" (Day "+cd+")\\n"+lines.join("\\n");
 }
-function gcp(only){navigator.clipboard.writeText(gtxt(only)).then(function(){alert('OK')}).catch(function(){})}
-function gss(only){var tx=gtxt(only);if(navigator.share)navigator.share({title:t('gl'),text:tx}).catch(function(){gcp(only)});else gcp(only)}
+function gcp(only){navigator.clipboard.writeText(gtxt(only)).then(function(){alert("OK")}).catch(function(){})}
+function gss(only){var tx=gtxt(only);if(navigator.share)navigator.share({title:t("gl"),text:tx}).catch(function(){gcp(only)});else gcp(only)}
 function clk(){
   var n=new Date();
   try{
-    document.getElementById('fd').textContent=n.toLocaleDateString(L==='uk'?'uk-UA':L==='ru'?'ru-RU':L==='de'?'de-DE':'en-US',{timeZone:TZ,year:'numeric',month:'long',day:'numeric'});
-    document.getElementById('ck').textContent=n.toLocaleTimeString('en-US',{timeZone:TZ,hour12:false,hour:'2-digit',minute:'2-digit'});
-    var dnames={en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],uk:['Недiля','Понедiлок','Вiвторок','Середа','Четвер','Пятниця','Субота'],ru:['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],de:['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag']};
+    document.getElementById("fd").textContent=n.toLocaleDateString(L==="uk"?"uk-UA":L==="ru"?"ru-RU":L==="de"?"de-DE":"en-US",{timeZone:TZ,year:"numeric",month:"long",day:"numeric"});
+    document.getElementById("ck").textContent=n.toLocaleTimeString("en-US",{timeZone:TZ,hour12:false,hour:"2-digit",minute:"2-digit"});
+    var dnames={en:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],uk:["Недiля","Понедiлок","Вiвторок","Середа","Четвер","Пятниця","Субота"],ru:["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"],de:["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"]};
     var dn=dnames[L]||dnames.en;
-    var ln=new Date(n.toLocaleString('en-US',{timeZone:TZ}));
-    document.getElementById('tb').textContent=dn[ln.getDay()];
+    var ln=new Date(n.toLocaleString("en-US",{timeZone:TZ}));
+    document.getElementById("tb").textContent=dn[ln.getDay()];
   }catch(e){}
   setTimeout(clk,30000);
 }
-function shr(){if(navigator.share)navigator.share({title:'Wellness',url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert('Link copied')}}
+function shr(){if(navigator.share)navigator.share({title:"Wellness",url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert("Link copied")}}
 window.onload=init;
 <\/script>
 </body>
