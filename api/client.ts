@@ -147,6 +147,7 @@ function buildPage(): string {
   p('var C=d.c,DB=d.db;');
   p('var L=d.lang,TZ=d.tz,WK=d.weeks,TD=d.days;');
   p('var cd=1,done={},wtr=0,gper="day";');
+  p('var GP=["day","week","2week","all"];');
   p('var T={water:{en:"Water",uk:"Вода",ru:"Вода",de:"Wasser",es:"Agua"},wg:{en:"Target: 2.4 L (8 x 300ml)",uk:"2.4 л (8 x 300мл)",ru:"2.4 л (8 x 300мл)",de:"Ziel: 2.4 L",es:"Meta: 2.4 L"},dn:{en:"Done",uk:"Готово",ru:"Готово",de:"Erledigt",es:"Hecho"},ing:{en:"Ingredients",uk:"Iнгредiєнти",ru:"Ингредиенты",de:"Zutaten",es:"Ingredientes"},gl:{en:"Grocery list",uk:"Список продуктiв",ru:"Список продуктов",de:"Einkaufsliste",es:"Compras"},cp:{en:"Copy all",uk:"Копiювати",ru:"Копировать",de:"Kopieren",es:"Copiar"},sn:{en:"Share",uk:"Надiслати",ru:"Отправить",de:"Teilen",es:"Compartir"},sc:{en:"Send checked",uk:"Вiдмiченi",ru:"Отмеченные",de:"Markierte",es:"Marcados"},sv:{en:"Save to notes",uk:"Зберегти в нотатки",ru:"Сохранить в заметки",de:"In Notizen speichern",es:"Guardar en notas"},p1:{en:"1 day",uk:"1 день",ru:"1 день",de:"1 Tag",es:"1 dia"},p7:{en:"1 week",uk:"1 тиждень",ru:"1 неделя",de:"1 Woche",es:"1 semana"},p14:{en:"2 weeks",uk:"2 тижнi",ru:"2 недели",de:"2 Wochen",es:"2 semanas"},pa:{en:"All",uk:"Весь курс",ru:"Весь курс",de:"Alles",es:"Todo"},Breakfast:{en:"Breakfast",uk:"Снiданок",ru:"Завтрак",de:"Fruehstueck",es:"Desayuno"},Lunch:{en:"Lunch",uk:"Обiд",ru:"Обед",de:"Mittagessen",es:"Almuerzo"},Dinner:{en:"Dinner",uk:"Вечеря",ru:"Ужин",de:"Abendessen",es:"Cena"},Snack1:{en:"Snack",uk:"Перекус",ru:"Перекус",de:"Snack",es:"Snack"},Snack2:{en:"Snack 2",uk:"Перекус 2",ru:"Перекус 2",de:"Snack 2",es:"Snack 2"},crs:{en:"-week course",uk:"-тижневий курс",ru:"-недельный курс",de:"-Wochen-Kurs",es:" semanas"}};');
   p('var IC={Breakfast:"B",Lunch:"L",Dinner:"D",Snack1:"S",Snack2:"S"};');
   p('var DNM={en:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],uk:["Пн","Вт","Ср","Чт","Пт","Сб","Нд"],ru:["Пн","Вт","Ср","Чт","Пт","Сб","Вс"],de:["Mo","Di","Mi","Do","Fr","Sa","So"],es:["Lu","Ma","Mi","Ju","Vi","Sa","Do"]};');
@@ -208,10 +209,10 @@ function buildPage(): string {
   p('  if(!arr.length){document.getElementById("gr").innerHTML="";return}');
   p('  var h="<div class=\'gs\'><div class=\'gs-t\'><span>"+t("gl")+"</span><span style=\'font-size:0.8rem;color:#5f748b\'>"+arr.length+"</span></div>";');
   p('  h+="<div class=\'gp\'>";');
-  p('  h+="<button class=\'gpb"+(gper==="day"?" on":"")+"\' onclick=\'sgp(&quot;day&quot;)\'>"+t("p1")+"</button>";');
-  p('  h+="<button class=\'gpb"+(gper==="week"?" on":"")+"\' onclick=\'sgp(&quot;week&quot;)\'>"+t("p7")+"</button>";');
-  p('  h+="<button class=\'gpb"+(gper==="2week"?" on":"")+"\' onclick=\'sgp(&quot;2week&quot;)\'>"+t("p14")+"</button>";');
-  p('  h+="<button class=\'gpb"+(gper==="all"?" on":"")+"\' onclick=\'sgp(&quot;all&quot;)\'>"+t("pa")+"</button>";');
+  p('  h+="<button class=\'gpb"+(gper==="day"?" on":"")+"\' onclick=\'sgp(0)\'>"+t("p1")+"</button>";');
+  p('  h+="<button class=\'gpb"+(gper==="week"?" on":"")+"\' onclick=\'sgp(1)\'>"+t("p7")+"</button>";');
+  p('  h+="<button class=\'gpb"+(gper==="2week"?" on":"")+"\' onclick=\'sgp(2)\'>"+t("p14")+"</button>";');
+  p('  h+="<button class=\'gpb"+(gper==="all"?" on":"")+"\' onclick=\'sgp(3)\'>"+t("pa")+"</button>";');
   p('  h+="</div><div class=\'gg\'>";');
   p('  arr.forEach(function(i){h+="<label class=\'gi\'><input type=\'checkbox\' onchange=\'gc(this)\'><span class=\'gn\'>"+i.n+"</span><span class=\'ig\'>"+i.g+" g</span></label>"});');
   p('  h+="</div><div class=\'gshr\'>";');
@@ -222,7 +223,7 @@ function buildPage(): string {
   p('  h+="</div></div>";');
   p('  document.getElementById("gr").innerHTML=h;');
   p('}');
-  p('window.sgp=function(pp){gper=pp;rg()};');
+  p('window.sgp=function(idx){gper=GP[idx]||"day";rg()};');
   p('window.gc=function(cb){var el=cb.closest(".gi");if(el)el.classList.toggle("chk",cb.checked)};');
   p('function gtxt(only){');
   p('  var lines=[];');
