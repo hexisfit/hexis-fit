@@ -81,4 +81,4 @@ export default async function handler(req: Request) {
   return new Response(JSON.stringify({ clients }), { headers: H });
 }
 
-export const config = { runtime: "nodejs20.x" };
+export const config = { runtime: "nodejs" };
