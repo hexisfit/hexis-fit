@@ -503,9 +503,16 @@ async function loadRecipeStats(){
     const wrap=document.getElementById('recipeStats');
     try{
         const res=await fetch('/api/recipes/stats',{headers:{'x-coach-pwd':coachPwd}});
+        const ct=res.headers.get('content-type')||'';
+        if(!ct.includes('json')){
+            wrap.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">📭 База рецептов ещё не загружена (stats endpoint не найден)</div>';
+            loadRecipeList();
+            return;
+        }
         const data=await res.json();
         if(!data.uploaded){
             wrap.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">📭 База рецептов ещё не загружена</div>';
+            loadRecipeList();
             return;
         }
         wrap.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
@@ -590,7 +597,8 @@ async function loadRecipeList(){
     wrap.innerHTML='<div class="loading">⏳ Загрузка рецептов...</div>';
     try{
         const res=await fetch('/api/recipes',{headers:{'x-coach-pwd':coachPwd}});
-        if(!res.ok){wrap.innerHTML='<div class="empty">📭 База пока не загружена</div>';return;}
+        const ct=res.headers.get('content-type')||'';
+        if(!res.ok||!ct.includes('json')){wrap.innerHTML='<div class="empty">📭 База пока не загружена. Загрузите JSON через раздел ниже.</div>';return;}
         fullRecipeDB=await res.json();
         renderRecipeList();
     }catch(err){
