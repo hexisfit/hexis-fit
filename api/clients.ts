@@ -20,7 +20,7 @@ async function blobGet(key: string): Promise<any> {
 
 async function blobSet(key: string, data: any): Promise<void> {
   await put(key + ".json", JSON.stringify(data), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
     token: process.env.BLOB_READ_WRITE_TOKEN!,
   });
