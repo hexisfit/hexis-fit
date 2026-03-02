@@ -1,7 +1,7 @@
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { put, list } from "@vercel/blob";
 
 const COACH_PWD = "29051980";
-const H = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "*" };
 
 async function blobGet(key: string): Promise<any> {
   try {
@@ -12,44 +12,46 @@ async function blobGet(key: string): Promise<any> {
   } catch { return null; }
 }
 
-export default async function handler(req: Request) {
-  if (req.method === "OPTIONS") return new Response(null, { headers: H });
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.setHeader("Access-Control-Allow-Methods", "*");
 
-  const pwd = req.headers.get("x-coach-pwd") || "";
-  if (pwd !== COACH_PWD) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: H });
+  if (req.method === "OPTIONS") return res.status(200).end();
+
+  const pwd = (req.headers["x-coach-pwd"] as string) || "";
+  if (pwd !== COACH_PWD) return res.status(401).json({ error: "Unauthorized" });
 
   // Extract alias from URL: /api/clients/ALIAS/menu
-  const url = new URL(req.url);
-  const parts = url.pathname.split("/").filter(Boolean);
-  // parts = ['api','clients','ALIAS','menu']
-  const alias = parts[2] || "";
-  
+  const parts = (req.url || "").split("/").filter(Boolean);
+  // parts like ['api','clients','ALIAS','menu']
+  const aliasIdx = parts.indexOf("clients");
+  const alias = aliasIdx >= 0 ? parts[aliasIdx + 1] || "" : "";
+
   if (!alias) {
-    return new Response(JSON.stringify({ error: "No alias provided" }), { status: 400, headers: H });
+    return res.status(400).json({ error: "No alias provided" });
   }
 
   const blobKey = `client-menu/${alias}`;
 
   if (req.method === "POST") {
     try {
-      const data = await req.json();
-      await put(blobKey + ".json", JSON.stringify(data), { 
-        access: "public", 
-        addRandomSuffix: false, 
-        token: process.env.BLOB_READ_WRITE_TOKEN 
+      const data = req.body;
+      await put(blobKey + ".json", JSON.stringify(data), {
+        access: "public",
+        addRandomSuffix: false,
+        token: process.env.BLOB_READ_WRITE_TOKEN
       });
-      return new Response(JSON.stringify({ ok: true, alias, slots: (data.menu || []).length }), { headers: H });
+      return res.status(200).json({ ok: true, alias, slots: (data.menu || []).length });
     } catch (e: any) {
-      return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: H });
+      return res.status(500).json({ error: e.message });
     }
   }
 
   // GET
   const data = await blobGet(blobKey);
   if (!data) {
-    return new Response(JSON.stringify({ menu: [] }), { headers: H });
+    return res.status(200).json({ menu: [] });
   }
-  return new Response(JSON.stringify(data), { headers: H });
+  return res.status(200).json(data);
 }
-
-export const config = { runtime: "edge" };
