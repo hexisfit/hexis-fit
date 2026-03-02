@@ -1,3 +1,4 @@
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { list } from "@vercel/blob";
 
 function escH(s: string): string {
@@ -6,7 +7,7 @@ function escH(s: string): string {
 
 async function blobGet(key: string): Promise<any> {
   try {
-    const result = await list({ prefix: key + ".json", token: process.env.BLOB_READ_WRITE_TOKEN });
+    const result = await list({ prefix: key + ".json", token: process.env.BLOB_READ_WRITE_TOKEN! });
     if (!result.blobs.length) return null;
     const resp = await fetch(result.blobs[0].url);
     if (!resp.ok) return null;
@@ -14,14 +15,13 @@ async function blobGet(key: string): Promise<any> {
   } catch { return null; }
 }
 
-export default async function handler(req: Request) {
-  const url = new URL(req.url);
-  const alias = url.pathname.replace("/c/", "").replace(".html", "").toLowerCase();
-  if (!alias) return new Response("Not found", { status: 404 });
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const alias = (req.url || "").replace("/c/", "").replace(".html", "").toLowerCase();
+  if (!alias) return res.status(404).send("Not found");
 
   const client: any = await blobGet("clients/" + alias);
   if (!client) {
-    return new Response("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>", { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
+    return res.status(404).setHeader("Content-Type", "text/html; charset=utf-8").send("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>");
   }
 
   const db: any = await blobGet("recipes/database");
@@ -45,13 +45,11 @@ export default async function handler(req: Request) {
   html = html.split("XCLIENTJSONX").join(cJson);
   html = html.split("XDBJSONX").join(dbJson);
 
-  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  return res.send(html);
 }
 
-export const config = { runtime: "edge" };
-
-const PAGE = `
-<!DOCTYPE html>
+const PAGE = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -250,7 +248,7 @@ function gtxt(only){
     if(only&&!cb.checked)return;
     lines.push((cb.checked?'[x] ':'[ ] ')+el.querySelector('.gn').textContent+' - '+el.querySelector('.ig').textContent);
   });
-  return t('gl')+' (Day '+cd+')\n'+lines.join('\n');
+  return t('gl')+' (Day '+cd+')\\n'+lines.join('\\n');
 }
 function gcp(only){navigator.clipboard.writeText(gtxt(only)).then(function(){alert('OK')}).catch(function(){})}
 function gss(only){var tx=gtxt(only);if(navigator.share)navigator.share({title:t('gl'),text:tx}).catch(function(){gcp(only)});else gcp(only)}
@@ -268,6 +266,6 @@ function clk(){
 }
 function shr(){if(navigator.share)navigator.share({title:'Wellness',url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert('Link copied')}}
 window.onload=init;
-</script>
+<\/script>
 </body>
 </html>`;
