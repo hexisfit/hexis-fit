@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/c/:alias", "destination": "/api/client" },
+    { "source": "/api/recipes/:path*", "destination": "/api/api" },
+    { "source": "/api/clients/:path*", "destination": "/api/api" },
+    { "source": "/api/clients", "destination": "/api/api" },
+    { "source": "/api/recipes", "destination": "/api/api" }
+  ]
+}

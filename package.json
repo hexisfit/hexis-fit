@@ -1,8 +1,6 @@
 {
-  "name": "hexis-fit",
   "private": true,
   "dependencies": {
-    "@netlify/blobs": "^8.0.0",
-    "@netlify/functions": "^3.0.0"
+    "@vercel/blob": "^0.27.0"
   }
 }

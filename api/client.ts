@@ -1,28 +1,34 @@
-import { getStore } from "@netlify/blobs";
-import type { Context, Config } from "@netlify/functions";
+import { list } from "@vercel/blob";
 
 function escH(s: string): string {
   return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;").split('"').join("&quot;");
 }
 
-export default async (req: Request, context: Context) => {
-  const url = new URL(req.url);
-  const seg = url.pathname.replace("/c/", "").replace(".html", "").toLowerCase();
-  if (!seg) return new Response("Not found", { status: 404 });
+async function blobGet(key: string): Promise<any> {
+  try {
+    const result = await list({ prefix: key + ".json", token: process.env.BLOB_READ_WRITE_TOKEN });
+    if (!result.blobs.length) return null;
+    const resp = await fetch(result.blobs[0].url);
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch { return null; }
+}
 
-  const clientStore = getStore({ name: "clients", consistency: "strong" });
-  const recipeStore = getStore({ name: "recipes", consistency: "strong" });
-  const client: any = await clientStore.get(seg, { type: "json" });
+export default async function handler(req: Request) {
+  const url = new URL(req.url);
+  const alias = url.pathname.replace("/c/", "").replace(".html", "").toLowerCase();
+  if (!alias) return new Response("Not found", { status: 404 });
+
+  const client: any = await blobGet("clients/" + alias);
   if (!client) {
-    return new Response("<html><body><h1>404</h1></body></html>", { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
+    return new Response("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>", { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
   }
 
-  const db: any = await recipeStore.get("database", { type: "json" });
+  const db: any = await blobGet("recipes/database");
   const c = client;
   const weeks = parseInt(c.courseWeeks) || 4;
   const totalDays = weeks * 7;
 
-  // Safe JSON - replace < with unicode escape to prevent </script> breaking
   const cJson = JSON.stringify(c).split("</").join("<\\/");
   const dbJson = db ? JSON.stringify(db).split("</").join("<\\/") : "null";
 
@@ -40,9 +46,12 @@ export default async (req: Request, context: Context) => {
   html = html.split("XDBJSONX").join(dbJson);
 
   return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
-};
+}
 
-const PAGE = `<!DOCTYPE html>
+export const config = { runtime: "edge" };
+
+const PAGE = `
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -262,7 +271,3 @@ window.onload=init;
 </script>
 </body>
 </html>`;
-
-export const config: Config = {
-  path: "/c/*",
-};
