@@ -1,58 +1,45 @@
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+
 const COACH_PWD = "29051980";
 const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY || "sk-b892e099b1dd4ba98c0cfefa5ca8fae0";
-const H = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "*" };
 
-export default async function handler(req: Request) {
-  if (req.method === "OPTIONS") return new Response(null, { headers: H });
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.setHeader("Access-Control-Allow-Methods", "*");
 
-  const pwd = req.headers.get("x-coach-pwd") || "";
-  if (pwd !== COACH_PWD) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: H });
+  if (req.method === "OPTIONS") return res.status(200).end();
 
-  if (req.method !== "POST") return new Response(JSON.stringify({ error: "POST only" }), { status: 405, headers: H });
+  const pwd = (req.headers["x-coach-pwd"] as string) || "";
+  if (pwd !== COACH_PWD) return res.status(401).json({ error: "Unauthorized" });
+
+  if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
 
   try {
-    const body = await req.json();
-    const { type, name, ingredients } = body;
+    const { type: tp, name, ingredients } = req.body || {};
 
     let prompt = "";
 
-    if (type === "ingredient") {
-      prompt = `Ты помощник для фитнес-приложения. Переведи название продукта питания "${name}" на 4 языка и сгенерируй ключ.
-Ответь СТРОГО JSON без пояснений, без markdown:
-{"key":"snake_case_latin_key","en":"English name","de":"Deutscher Name","uk":"Назва українською","es":"Nombre en español"}
-key — латиницей в snake_case, кратко описывает продукт.`;
-    } else if (type === "recipe") {
-      const ingText = ingredients ? `\nИнгредиенты: ${ingredients}` : "";
-      prompt = `Ты помощник для фитнес-приложения. Рецепт блюда: "${name}"${ingText}
-
-Заполни данные. Ответь СТРОГО JSON без markdown, без пояснений:
-{
-  "names":{"en":"English name","de":"Deutscher Name","ru":"Русское название","uk":"Назва українською","es":"Nombre en español"},
-  "steps":[
-    {"en":"Step 1","de":"Schritt 1","ru":"Шаг 1","uk":"Крок 1","es":"Paso 1"},
-    {"en":"Step 2","de":"Schritt 2","ru":"Шаг 2","uk":"Крок 2","es":"Paso 2"}
-  ]
-}
-names — название блюда на 5 языках.
-steps — 3-6 коротких шагов приготовления, каждый на 5 языках. Простые и понятные инструкции.`;
-    } else if (type === "ingredient_edit") {
-      prompt = `Переведи название продукта питания "${name}" на 4 языка.
-Ответь СТРОГО JSON без markdown:
-{"en":"English","de":"Deutsch","uk":"Українська","es":"Español"}`;
+    if (tp === "ingredient") {
+      prompt = `Переведи продукт "${name}" на 4 языка и сгенерируй ключ. Ответь СТРОГО JSON: {"key":"snake_case","en":"English","de":"Deutsch","uk":"Українська","es":"Español"}`;
+    } else if (tp === "recipe") {
+      prompt = `Рецепт: "${name}"${ingredients ? ". Ингредиенты: " + ingredients : ""}. Ответь СТРОГО JSON: {"names":{"en":"","de":"","ru":"","uk":"","es":""},"steps":[{"en":"","de":"","ru":"","uk":"","es":""}]} names=название 5 языков, steps=3-6 шагов на 5 языках`;
+    } else if (tp === "ingredient_edit") {
+      prompt = `Переведи продукт "${name}" на 4 языка. JSON: {"en":"","de":"","uk":"","es":""}`;
     } else {
-      return new Response(JSON.stringify({ error: "Unknown type" }), { status: 400, headers: H });
+      return res.status(400).json({ error: "Unknown type" });
     }
 
     const aiRes = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${DEEPSEEK_KEY}`
+        "Authorization": "Bearer " + DEEPSEEK_KEY
       },
       body: JSON.stringify({
         model: "deepseek-chat",
         messages: [
-          { role: "system", content: "Ты помощник-переводчик для фитнес-приложения. Отвечаешь ТОЛЬКО валидным JSON. Без markdown, без ```json, без пояснений." },
+          { role: "system", content: "Отвечай ТОЛЬКО валидным JSON. Без markdown, без ```." },
           { role: "user", content: prompt }
         ],
         temperature: 0.3,
@@ -62,33 +49,28 @@ steps — 3-6 коротких шагов приготовления, кажды
 
     if (!aiRes.ok) {
       const errText = await aiRes.text();
-      return new Response(JSON.stringify({ error: "DeepSeek API error: " + aiRes.status, details: errText }), { status: 502, headers: H });
+      return res.status(502).json({ error: "DeepSeek " + aiRes.status, details: errText.substring(0, 200) });
     }
 
-    const aiData = await aiRes.json();
-    const content = aiData.choices?.[0]?.message?.content || "";
+    const aiData: any = await aiRes.json();
+    const content: string = aiData.choices?.[0]?.message?.content || "";
 
-    // Try to extract JSON from response
-    let parsed = null;
+    let parsed: any = null;
     try {
-      // Remove possible markdown fences
       const clean = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-      const jsonMatch = clean.match(/\{[\s\S]*\}/);
-      if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
-    } catch (e) {
-      // Try direct parse
-      try { parsed = JSON.parse(content); } catch {}
+      const m = clean.match(/\{[\s\S]*\}/);
+      if (m) parsed = JSON.parse(m[0]);
+    } catch {
+      try { parsed = JSON.parse(content); } catch { /* ignore */ }
     }
 
     if (!parsed) {
-      return new Response(JSON.stringify({ error: "AI returned invalid JSON", raw: content.substring(0, 500) }), { status: 500, headers: H });
+      return res.status(500).json({ error: "Invalid AI response", raw: content.substring(0, 300) });
     }
 
-    return new Response(JSON.stringify({ ok: true, data: parsed }), { headers: H });
+    return res.status(200).json({ ok: true, data: parsed });
 
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: H });
+    return res.status(500).json({ error: e.message });
   }
 }
-
-export const config = { runtime: "edge" };
