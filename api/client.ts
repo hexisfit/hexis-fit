@@ -59,7 +59,10 @@ const PAGE = `
 <title>XNAMEX - Wellness - hexis.fit</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center}
+body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center;position:relative}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=50') center/cover no-repeat;opacity:0.04;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;top:0;left:0;right:0;height:350px;background:linear-gradient(180deg,rgba(31,42,58,0.06) 0%,rgba(107,142,107,0.03) 50%,transparent 100%);pointer-events:none;z-index:0}
+.ctr{position:relative;z-index:1}
 .ctr{max-width:900px;width:100%;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-radius:32px;box-shadow:0 20px 50px rgba(0,20,40,0.12);padding:20px 24px;border:1px solid rgba(255,255,255,0.5)}
 .hero{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#1f2a3a 0%,#2d4055 100%);color:white;padding:14px 24px;border-radius:24px;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .hero-left{display:flex;flex-direction:column;gap:4px}
