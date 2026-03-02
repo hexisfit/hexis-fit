@@ -975,41 +975,31 @@ function handlePhotoUpload(input){
     reader.readAsDataURL(file);
 }
 
-// === AI FUNCTIONS ===
-async function callAI(prompt){
+// === AI FUNCTIONS via /api/ai-translate ===
+async function callAI(type, name, ingredients){
     try{
-        const res=await fetch('https://api.anthropic.com/v1/messages',{
+        const res=await fetch('/api/ai-translate',{
             method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({
-                model:'claude-sonnet-4-20250514',
-                max_tokens:1000,
-                messages:[{role:'user',content:prompt}]
-            })
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify({type, name, ingredients})
         });
         const data=await res.json();
-        const text=data.content?.map(c=>c.text||'').join('')||'';
-        // Parse JSON from response
-        const jsonMatch=text.match(/\{[\s\S]*\}/);
-        if(jsonMatch) return JSON.parse(jsonMatch[0]);
-        return null;
+        if(!res.ok) throw new Error(data.error||'Server error');
+        return data.data||null;
     }catch(err){
         console.error('AI error:',err);
+        toast('❌ AI ошибка: '+err.message);
         return null;
     }
 }
 
-// AI for ingredient translation
+// AI for ingredient translation (new product Step 2)
 async function aiTranslateIngredient(){
     const ru=document.getElementById('newIng_ru').value.trim();
     if(!ru){toast('❌ Сначала введите название на русском');return;}
     const btn=document.getElementById('aiIngBtn');
     btn.disabled=true;btn.classList.add('loading');btn.textContent='🤖 Думаю...';
-    const result=await callAI(
-        'Переведи название продукта питания "'+ru+'" на 4 языка и сгенерируй ключ. Ответь ТОЛЬКО JSON без пояснений:\n'+
-        '{"key":"snake_case_latin","en":"English","de":"Deutsch","uk":"Українська","es":"Español"}\n'+
-        'key должен быть латиницей в snake_case, описывать продукт. Без markdown.'
-    );
+    const result=await callAI('ingredient', ru);
     btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
     if(result){
         if(result.key) document.getElementById('newIngKey').value=result.key;
@@ -1018,8 +1008,6 @@ async function aiTranslateIngredient(){
         if(result.uk) document.getElementById('newIng_uk').value=result.uk;
         if(result.es) document.getElementById('newIng_es').value=result.es;
         toast('✅ AI заполнил переводы!');
-    } else {
-        toast('❌ AI не смог ответить, попробуйте ещё раз');
     }
 }
 
@@ -1029,10 +1017,7 @@ async function aiTranslateEditIngredient(){
     if(!ru){toast('❌ Нет русского названия');return;}
     const btn=document.getElementById('aiEditIngBtn');
     btn.disabled=true;btn.classList.add('loading');btn.textContent='🤖 Думаю...';
-    const result=await callAI(
-        'Переведи название продукта питания "'+ru+'" на 4 языка. Ответь ТОЛЬКО JSON:\n'+
-        '{"en":"English","de":"Deutsch","uk":"Українська","es":"Español"}\nБез markdown.'
-    );
+    const result=await callAI('ingredient_edit', ru);
     btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
     if(result){
         if(result.en) document.getElementById('editIng_en').value=result.en;
@@ -1040,8 +1025,6 @@ async function aiTranslateEditIngredient(){
         if(result.uk) document.getElementById('editIng_uk').value=result.uk;
         if(result.es) document.getElementById('editIng_es').value=result.es;
         toast('✅ Переводы заполнены!');
-    } else {
-        toast('❌ AI ошибка');
     }
 }
 
@@ -1062,21 +1045,8 @@ async function aiTranslateRecipe(){
             ings.push(fullRecipeDB.ingredientNames[sel.value].ru||fullRecipeDB.ingredientNames[sel.value].en||sel.value);
         }
     });
-    const ingText=ings.length?'\nИнгредиенты: '+ings.join(', '):'';
 
-    const result=await callAI(
-        'Рецепт блюда: "'+name+'"'+ingText+'\n\n'+
-        'Заполни данные. Ответь ТОЛЬКО JSON без markdown:\n'+
-        '{\n'+
-        '  "names":{"en":"...","de":"...","ru":"...","uk":"...","es":"..."},\n'+
-        '  "steps":[\n'+
-        '    {"en":"Step 1 text","de":"Schritt 1","ru":"Шаг 1","uk":"Крок 1","es":"Paso 1"},\n'+
-        '    {"en":"Step 2...","de":"...","ru":"...","uk":"...","es":"..."}\n'+
-        '  ]\n'+
-        '}\n'+
-        'names — название блюда на 5 языках.\n'+
-        'steps — 3-6 шагов приготовления, каждый на 5 языках. Кратко и понятно.'
-    );
+    const result=await callAI('recipe', name, ings.join(', '));
     btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
     if(result){
         if(result.names){
@@ -1092,8 +1062,6 @@ async function aiTranslateRecipe(){
         } else {
             toast('✅ AI заполнил названия!');
         }
-    } else {
-        toast('❌ AI ошибка, попробуйте ещё');
     }
 }
 
