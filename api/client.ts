@@ -94,4 +94,5 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
   return new Response(JSON.stringify(db), { headers: H });
+  export const config = { runtime: "nodejs20.x" };
 }
