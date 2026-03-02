@@ -106,6 +106,45 @@
         .quote{text-align:center;padding:16px;color:#64748b;font-size:0.8rem;font-style:italic;position:relative;z-index:1;margin-top:20px}
         .quote span{color:#c084fc;font-weight:600}
 
+        /* Recipe Editor */
+        .re-search{display:flex;gap:8px;margin-bottom:16px}
+        .re-search input{flex:1}
+        .re-add-btn{background:linear-gradient(135deg,#22c55e,#10b981);color:white;border:none;padding:12px 20px;border-radius:12px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;white-space:nowrap;transition:0.3s}
+        .re-add-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(34,197,94,0.3)}
+        .re-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:14px;margin-bottom:6px;transition:0.3s;gap:10px}
+        .re-item:hover{background:rgba(168,85,247,0.04);border-color:rgba(168,85,247,0.12)}
+        .re-item-info{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+        .re-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+        .re-item-name{font-weight:600;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .re-item-meta{color:#64748b;font-size:0.75rem;font-family:'JetBrains Mono',monospace}
+        .re-edit-btn{background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.2);color:#c084fc;padding:7px 14px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:inherit;transition:0.2s;white-space:nowrap}
+        .re-edit-btn:hover{background:rgba(168,85,247,0.2)}
+        .re-del-btn{background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.15);color:#fb7185;padding:7px 10px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-family:inherit;transition:0.2s}
+        .re-del-btn:hover{background:rgba(251,113,133,0.2)}
+
+        /* Modal */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:1000;justify-content:center;align-items:flex-start;padding:20px;overflow-y:auto}
+        .modal-overlay.open{display:flex}
+        .modal{background:#1a1025;border:1px solid rgba(255,255,255,0.08);border-radius:24px;max-width:700px;width:100%;padding:28px;margin:40px auto;position:relative}
+        .modal-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:0.2s}
+        .modal-close:hover{background:rgba(251,113,133,0.1);color:#fb7185}
+        .modal h2{font-size:1.2rem;font-weight:700;margin-bottom:20px;background:linear-gradient(135deg,#f0abfc,#e2e8f0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:inline-block}
+        .modal .section-title{color:#c084fc;font-weight:700;font-size:0.9rem;margin:20px 0 10px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:6px}
+        .ing-row{display:grid;grid-template-columns:1fr 80px 36px;gap:8px;margin-bottom:6px;align-items:center}
+        .ing-row select,.ing-row input{padding:8px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#e2e8f0;font-size:0.85rem;font-family:inherit;outline:none}
+        .ing-row select{min-width:0}
+        .ing-del{background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.15);color:#fb7185;border-radius:8px;cursor:pointer;font-size:0.9rem;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+        .ing-add{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:#22c55e;padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:inherit;margin-top:4px}
+        .modal-save{width:100%;padding:14px;background:linear-gradient(135deg,#a855f7,#ec4899);color:white;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:20px;transition:0.3s}
+        .modal-save:hover{transform:translateY(-1px);box-shadow:0 6px 25px rgba(168,85,247,0.3)}
+        .chk-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+        .chk-row label{display:flex;align-items:center;gap:6px;color:#94a3b8;font-size:0.85rem;cursor:pointer}
+        .chk-row input[type=checkbox]{width:18px;height:18px;accent-color:#a855f7}
+        .names-grid{display:grid;grid-template-columns:40px 1fr;gap:6px 10px;align-items:center;margin-bottom:12px}
+        .names-grid span{color:#94a3b8;font-size:0.8rem;text-align:right}
+        .names-grid input{padding:8px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#e2e8f0;font-size:0.85rem;font-family:inherit;outline:none}
+        .re-count{color:#64748b;font-size:0.8rem;margin-bottom:12px}
+
         @media(max-width:600px){
             .login-card{padding:32px 20px}
             .fr{grid-template-columns:1fr}
@@ -294,25 +333,111 @@
     <!-- RECIPES -->
     <div class="panel" id="panelRecipes">
         <div class="panel-title">🍽️ База рецептов</div>
-        <div class="panel-desc">Загрузите базу рецептов из JSON. Конвертируйте Excel через Coach Panel.</div>
+        <div class="panel-desc">Поиск, редактирование и добавление рецептов</div>
 
         <div id="recipeStats" style="margin-bottom:20px"></div>
 
-        <div class="fg">
-            <label class="fl">📂 Загрузить JSON базу рецептов</label>
-            <input type="file" id="recipeFile" accept=".json" style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#e2e8f0;font-family:inherit" onchange="previewRecipeFile()">
+        <!-- Search + Add -->
+        <div class="re-search">
+            <input class="fi" type="text" id="recipeSearch" placeholder="🔍 Поиск по названию..." oninput="filterRecipeList()">
+            <button class="re-add-btn" onclick="openRecipeEditor(null)">＋ Новый</button>
         </div>
+        <div class="re-count" id="recipeCount"></div>
 
-        <div id="recipePreview" style="display:none;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.15);border-radius:16px;padding:16px;margin-bottom:16px">
-            <div style="font-weight:700;color:#c084fc;margin-bottom:8px">📊 Превью базы:</div>
-            <div id="recipePreviewContent" style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#94a3b8"></div>
+        <!-- Recipe list -->
+        <div id="recipeEditorList"></div>
+
+        <!-- Upload section (collapsed) -->
+        <details style="margin-top:24px">
+            <summary style="cursor:pointer;color:#64748b;font-size:0.85rem;padding:8px 0">📂 Загрузить JSON базу рецептов</summary>
+            <div style="margin-top:12px">
+                <div class="fg">
+                    <input type="file" id="recipeFile" accept=".json" style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#e2e8f0;font-family:inherit" onchange="previewRecipeFile()">
+                </div>
+                <div id="recipePreview" style="display:none;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.15);border-radius:16px;padding:16px;margin-bottom:16px">
+                    <div style="font-weight:700;color:#c084fc;margin-bottom:8px">📊 Превью базы:</div>
+                    <div id="recipePreviewContent" style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#94a3b8"></div>
+                </div>
+                <button class="btn-create" id="uploadRecipesBtn" onclick="uploadRecipes()" style="display:none">
+                    📤 Загрузить базу рецептов на сервер
+                </button>
+            </div>
+        </details>
+    </div>
+
+    <!-- RECIPE EDITOR MODAL -->
+    <div class="modal-overlay" id="recipeModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeRecipeModal()">✕</button>
+            <h2 id="recipeModalTitle">✏️ Редактировать рецепт</h2>
+
+            <div class="fg">
+                <label class="fl">ID рецепта</label>
+                <input class="fi" id="reId" placeholder="R041" style="font-family:'JetBrains Mono',monospace">
+                <div class="hint">Уникальный код, напр. R041. Для нового — автоматически.</div>
+            </div>
+
+            <div class="section-title">📝 Названия (5 языков)</div>
+            <div class="names-grid">
+                <span>🇬🇧</span><input class="fi" id="reName_en" placeholder="English name">
+                <span>🇩🇪</span><input class="fi" id="reName_de" placeholder="Deutscher Name">
+                <span>🇷🇺</span><input class="fi" id="reName_ru" placeholder="Название на русском">
+                <span>🇺🇦</span><input class="fi" id="reName_uk" placeholder="Назва українською">
+                <span>🇪🇸</span><input class="fi" id="reName_es" placeholder="Nombre en español">
+            </div>
+
+            <div class="section-title">⚙️ Свойства</div>
+            <div class="fr">
+                <div class="fg">
+                    <label class="fl">Приём пищи</label>
+                    <select class="fs" id="reMeal">
+                        <option value="Breakfast">🍳 Breakfast</option>
+                        <option value="Lunch">🥗 Lunch</option>
+                        <option value="Dinner">🍽️ Dinner</option>
+                        <option value="Snack">🍎 Snack</option>
+                    </select>
+                </div>
+                <div class="fg">
+                    <label class="fl">Время готовки (мин)</label>
+                    <input class="fi" id="reCookTime" type="number" value="15">
+                </div>
+            </div>
+            <div class="fr">
+                <div class="fg">
+                    <label class="fl">Скорость</label>
+                    <select class="fs" id="reCookSpeed">
+                        <option value="FAST">FAST</option>
+                        <option value="MED">MED</option>
+                        <option value="SLOW">SLOW</option>
+                    </select>
+                </div>
+                <div class="fg">
+                    <label class="fl">Авторский стиль</label>
+                    <input class="fi" id="reAuthor" placeholder="Jamie Oliver style">
+                </div>
+            </div>
+            <div class="chk-row">
+                <label><input type="checkbox" id="reVegan"> 🌱 Vegan</label>
+                <label><input type="checkbox" id="reHalal"> ☪️ Halal</label>
+                <label><input type="checkbox" id="reLF"> 🥛 Lactose-free</label>
+                <label><input type="checkbox" id="reBatch"> 📦 Batch cooking</label>
+            </div>
+
+            <div class="section-title">🔥 Нутриенты (на базовую порцию)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px">
+                <div class="fg"><label class="fl">Kcal</label><input class="fi" id="reKcal" type="number"></div>
+                <div class="fg"><label class="fl">Protein</label><input class="fi" id="reP" type="number" step="0.1"></div>
+                <div class="fg"><label class="fl">Fat</label><input class="fi" id="reF" type="number" step="0.1"></div>
+                <div class="fg"><label class="fl">Carbs</label><input class="fi" id="reC" type="number" step="0.1"></div>
+                <div class="fg"><label class="fl">Порция г</label><input class="fi" id="rePortion" type="number"></div>
+            </div>
+
+            <div class="section-title">🥕 Ингредиенты</div>
+            <div id="reIngredientsWrap"></div>
+            <button class="ing-add" onclick="addIngredientRow()">＋ Добавить ингредиент</button>
+
+            <button class="modal-save" onclick="saveRecipe()">💾 Сохранить рецепт</button>
         </div>
-
-        <button class="btn-create" id="uploadRecipesBtn" onclick="uploadRecipes()" style="display:none">
-            📤 Загрузить базу рецептов на сервер
-        </button>
-
-        <div id="recipeList" style="margin-top:24px"></div>
     </div>
 
     <div class="quote">✨ <span>Strong is the new beautiful</span> · Создавайте персональные планы за секунды</div>
@@ -377,7 +502,7 @@ let recipeData = null;
 async function loadRecipeStats(){
     const wrap=document.getElementById('recipeStats');
     try{
-        const res=await fetch('/api/recipes?action=stats',{headers:{'x-coach-pwd':coachPwd}});
+        const res=await fetch('/api/recipes/stats',{headers:{'x-coach-pwd':coachPwd}});
         const data=await res.json();
         if(!data.uploaded){
             wrap.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">📭 База рецептов ещё не загружена</div>';
@@ -457,26 +582,217 @@ async function uploadRecipes(){
     }
 }
 
+let fullRecipeDB = null; // cached DB
+let editingRecipeId = null; // null = new
+
 async function loadRecipeList(){
-    const wrap=document.getElementById('recipeList');
+    const wrap=document.getElementById('recipeEditorList');
+    wrap.innerHTML='<div class="loading">⏳ Загрузка рецептов...</div>';
     try{
         const res=await fetch('/api/recipes',{headers:{'x-coach-pwd':coachPwd}});
-        if(!res.ok)return;
-        const db=await res.json();
-        const recipes=Object.values(db.recipes);
-        const mealIcons={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack:'🍎'};
-        wrap.innerHTML='<div style="font-weight:700;margin-bottom:12px;color:#c084fc">📋 Все рецепты</div>'+
-            recipes.map(r=>`<div class="cl-item">
-                <div class="cl-info">
-                    <div class="cl-av" style="background:${r.vegan?'#22c55e':r.meal==='Breakfast'?'#f59e0b':r.meal==='Lunch'?'#3b82f6':r.meal==='Dinner'?'#8b5cf6':'#ec4899'};font-size:1.2rem">${mealIcons[r.meal]||'🍴'}</div>
-                    <div>
-                        <div class="cl-name">${esc(r.names?.en||r.id)}</div>
-                        <div class="cl-meta">🔥 ${r.baseKcal} kcal · P${r.protein} F${r.fat} C${r.carbs} · ⏱ ${r.cookTimeMin}min${r.vegan?' · 🌱':''}</div>
-                    </div>
-                </div>
-            </div>`).join('');
-    }catch(err){}
+        if(!res.ok){wrap.innerHTML='<div class="empty">📭 База пока не загружена</div>';return;}
+        fullRecipeDB=await res.json();
+        renderRecipeList();
+    }catch(err){
+        wrap.innerHTML='<div class="empty">❌ '+esc(err.message)+'</div>';
+    }
 }
+
+function renderRecipeList(){
+    if(!fullRecipeDB||!fullRecipeDB.recipes){document.getElementById('recipeEditorList').innerHTML='<div class="empty">📭 Нет рецептов</div>';return;}
+    const q=(document.getElementById('recipeSearch').value||'').toLowerCase();
+    const recipes=Object.values(fullRecipeDB.recipes).filter(r=>{
+        if(!q)return true;
+        const n=Object.values(r.names||{}).join(' ').toLowerCase();
+        return n.includes(q)||r.id.toLowerCase().includes(q);
+    });
+    const mealIcons={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack:'🍎'};
+    const mealColors={Breakfast:'#f59e0b',Lunch:'#3b82f6',Dinner:'#8b5cf6',Snack:'#ec4899'};
+    document.getElementById('recipeCount').textContent='Показано: '+recipes.length+' из '+Object.keys(fullRecipeDB.recipes).length;
+    document.getElementById('recipeEditorList').innerHTML=recipes.length?recipes.map(r=>`<div class="re-item">
+        <div class="re-item-info">
+            <div class="re-icon" style="background:${r.vegan?'#22c55e':mealColors[r.meal]||'#8b5cf6'}">${mealIcons[r.meal]||'🍴'}</div>
+            <div style="min-width:0">
+                <div class="re-item-name">${esc(r.names?.ru||r.names?.en||r.id)}</div>
+                <div class="re-item-meta">🔥${r.baseKcal} · P${r.protein} F${r.fat} C${r.carbs} · ⏱${r.cookTimeMin}m${r.vegan?' · 🌱':''}${r.halal?' · ☪️':''}${r.lactoseFree?' · 🥛':''}</div>
+            </div>
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="re-edit-btn" onclick="openRecipeEditor('${esc(r.id)}')">✏️ Ред.</button>
+            <button class="re-del-btn" onclick="deleteRecipe('${esc(r.id)}')">🗑️</button>
+        </div>
+    </div>`).join(''):'<div class="empty">🔍 Ничего не найдено</div>';
+}
+
+function filterRecipeList(){ renderRecipeList(); }
+
+function openRecipeEditor(id){
+    editingRecipeId=id;
+    const modal=document.getElementById('recipeModal');
+    const title=document.getElementById('recipeModalTitle');
+
+    if(id && fullRecipeDB && fullRecipeDB.recipes[id]){
+        // EDIT mode
+        const r=fullRecipeDB.recipes[id];
+        title.textContent='✏️ Редактировать: '+(r.names?.ru||r.names?.en||id);
+        document.getElementById('reId').value=r.id;
+        document.getElementById('reId').readOnly=true;
+        document.getElementById('reName_en').value=r.names?.en||'';
+        document.getElementById('reName_de').value=r.names?.de||'';
+        document.getElementById('reName_ru').value=r.names?.ru||'';
+        document.getElementById('reName_uk').value=r.names?.uk||'';
+        document.getElementById('reName_es').value=r.names?.es||'';
+        document.getElementById('reMeal').value=r.meal||'Breakfast';
+        document.getElementById('reCookTime').value=r.cookTimeMin||15;
+        document.getElementById('reCookSpeed').value=r.cookSpeed||'FAST';
+        document.getElementById('reAuthor').value=r.authorStyle||'';
+        document.getElementById('reVegan').checked=!!r.vegan;
+        document.getElementById('reHalal').checked=!!r.halal;
+        document.getElementById('reLF').checked=!!r.lactoseFree;
+        document.getElementById('reBatch').checked=!!r.batchCooking;
+        document.getElementById('reKcal').value=r.baseKcal||0;
+        document.getElementById('reP').value=r.protein||0;
+        document.getElementById('reF').value=r.fat||0;
+        document.getElementById('reC').value=r.carbs||0;
+        document.getElementById('rePortion').value=r.portionWeight||0;
+        renderIngredientRows(r.ingredients||[]);
+    } else {
+        // NEW mode
+        title.textContent='＋ Новый рецепт';
+        const nextId='R'+String(Object.keys(fullRecipeDB?.recipes||{}).length+1).padStart(3,'0');
+        document.getElementById('reId').value=nextId;
+        document.getElementById('reId').readOnly=false;
+        ['reName_en','reName_de','reName_ru','reName_uk','reName_es','reAuthor'].forEach(x=>document.getElementById(x).value='');
+        document.getElementById('reMeal').value='Breakfast';
+        document.getElementById('reCookTime').value=15;
+        document.getElementById('reCookSpeed').value='FAST';
+        ['reVegan','reHalal','reLF','reBatch'].forEach(x=>document.getElementById(x).checked=false);
+        ['reKcal','reP','reF','reC','rePortion'].forEach(x=>document.getElementById(x).value='');
+        renderIngredientRows([{key:'',gramsBase:100}]);
+    }
+    modal.classList.add('open');
+    document.body.style.overflow='hidden';
+}
+
+function closeRecipeModal(){
+    document.getElementById('recipeModal').classList.remove('open');
+    document.body.style.overflow='';
+}
+
+function getIngredientKeys(){
+    if(!fullRecipeDB||!fullRecipeDB.ingredientNames)return[];
+    return Object.keys(fullRecipeDB.ingredientNames).sort();
+}
+
+function renderIngredientRows(ings){
+    const wrap=document.getElementById('reIngredientsWrap');
+    const keys=getIngredientKeys();
+    const opts=keys.map(k=>'<option value="'+esc(k)+'">'+esc(fullRecipeDB.ingredientNames[k]?.ru||fullRecipeDB.ingredientNames[k]?.en||k)+'</option>').join('');
+    wrap.innerHTML=ings.map((ing,i)=>`<div class="ing-row" data-idx="${i}">
+        <select onchange="this.dataset.val=this.value">${'<option value="">-- выберите --</option>'+opts.replace('value="'+esc(ing.key)+'"','value="'+esc(ing.key)+'" selected')}</select>
+        <input type="number" value="${ing.gramsBase||0}" placeholder="г" min="0">
+        <button class="ing-del" onclick="this.parentElement.remove()">✕</button>
+    </div>`).join('');
+}
+
+function addIngredientRow(){
+    const wrap=document.getElementById('reIngredientsWrap');
+    const keys=getIngredientKeys();
+    const opts=keys.map(k=>'<option value="'+esc(k)+'">'+esc(fullRecipeDB.ingredientNames[k]?.ru||fullRecipeDB.ingredientNames[k]?.en||k)+'</option>').join('');
+    const div=document.createElement('div');
+    div.className='ing-row';
+    div.innerHTML=`<select><option value="">-- выберите --</option>${opts}</select><input type="number" value="100" placeholder="г" min="0"><button class="ing-del" onclick="this.parentElement.remove()">✕</button>`;
+    wrap.appendChild(div);
+}
+
+async function saveRecipe(){
+    const id=document.getElementById('reId').value.trim();
+    if(!id){toast('❌ Введите ID рецепта');return;}
+
+    const recipe={
+        id:id,
+        meal:document.getElementById('reMeal').value,
+        authorStyle:document.getElementById('reAuthor').value.trim(),
+        cookTimeMin:parseInt(document.getElementById('reCookTime').value)||15,
+        cookSpeed:document.getElementById('reCookSpeed').value,
+        batchCooking:document.getElementById('reBatch').checked,
+        vegan:document.getElementById('reVegan').checked,
+        halal:document.getElementById('reHalal').checked,
+        lactoseFree:document.getElementById('reLF').checked,
+        baseKcal:parseInt(document.getElementById('reKcal').value)||0,
+        protein:parseFloat(document.getElementById('reP').value)||0,
+        fat:parseFloat(document.getElementById('reF').value)||0,
+        carbs:parseFloat(document.getElementById('reC').value)||0,
+        portionWeight:parseInt(document.getElementById('rePortion').value)||0,
+        names:{
+            en:document.getElementById('reName_en').value.trim(),
+            de:document.getElementById('reName_de').value.trim(),
+            ru:document.getElementById('reName_ru').value.trim(),
+            uk:document.getElementById('reName_uk').value.trim(),
+            es:document.getElementById('reName_es').value.trim()
+        },
+        ingredients:[]
+    };
+
+    // Collect ingredients
+    document.querySelectorAll('#reIngredientsWrap .ing-row').forEach(row=>{
+        const sel=row.querySelector('select');
+        const inp=row.querySelector('input');
+        if(sel.value){
+            recipe.ingredients.push({key:sel.value,gramsBase:parseInt(inp.value)||0});
+        }
+    });
+
+    if(!recipe.names.en && !recipe.names.ru){toast('❌ Введите название хотя бы EN или RU');return;}
+
+    // Save to cached DB
+    if(!fullRecipeDB)fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
+    fullRecipeDB.recipes[id]=recipe;
+
+    // Upload full DB to server
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error);
+        toast('✅ Рецепт '+id+' сохранён!');
+        closeRecipeModal();
+        renderRecipeList();
+        loadRecipeStats();
+    }catch(err){
+        toast('❌ Ошибка сохранения: '+err.message);
+    }
+}
+
+async function deleteRecipe(id){
+    if(!confirm('Удалить рецепт '+id+'?'))return;
+    if(!fullRecipeDB||!fullRecipeDB.recipes[id]){toast('❌ Рецепт не найден');return;}
+    delete fullRecipeDB.recipes[id];
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        if(!res.ok){const d=await res.json();throw new Error(d.error);}
+        toast('🗑️ Рецепт удалён');
+        renderRecipeList();
+        loadRecipeStats();
+    }catch(err){
+        toast('❌ '+err.message);
+    }
+}
+
+// Close modal on overlay click
+document.addEventListener('click',function(e){
+    if(e.target.id==='recipeModal') closeRecipeModal();
+});
+document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') closeRecipeModal();
+});
 
 // === CREATE ===
 function updateLinkPreview(){
