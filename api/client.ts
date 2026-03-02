@@ -162,8 +162,8 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 <div class="ft">Powered by <a href="https://hexis.fit">hexis.fit</a></div>
 </div>
 <script>
-var C=JSON.parse(XCLIENTJSONX);
-var DB=XDBJSONX!=="null"?JSON.parse(XDBJSONX):null;
+var C=XCLIENTJSONX;
+var DB=XDBJSONX;
 var L="XLANGX",TZ="XTZX",WK=parseInt("XWEEKSX")||4,TD=parseInt("XDAYSX")||28;
 var cd=1,done={},wtr=0,gper="day";
 var T={water:{en:"Water",uk:"Вода",ru:"Вода",de:"Wasser",es:"Agua"},wg:{en:"Target: 2.4 L (8 x 300ml)",uk:"2.4 л (8 x 300мл)",ru:"2.4 л (8 x 300мл)",de:"Ziel: 2.4 L",es:"Meta: 2.4 L"},dn:{en:"Done",uk:"Готово",ru:"Готово",de:"Erledigt",es:"Hecho"},ing:{en:"Ingredients",uk:"Iнгредiєнти",ru:"Ингредиенты",de:"Zutaten",es:"Ingredientes"},gl:{en:"Grocery list",uk:"Список продуктiв",ru:"Список продуктов",de:"Einkaufsliste",es:"Compras"},cp:{en:"Copy all",uk:"Копiювати",ru:"Копировать",de:"Kopieren",es:"Copiar"},sn:{en:"Share",uk:"Надiслати",ru:"Отправить",de:"Teilen",es:"Compartir"},sc:{en:"Send checked",uk:"Вiдмiченi",ru:"Отмеченные",de:"Markierte",es:"Marcados"},p1:{en:"1 day",uk:"1 день",ru:"1 день",de:"1 Tag",es:"1 dia"},p7:{en:"1 week",uk:"1 тиждень",ru:"1 неделя",de:"1 Woche",es:"1 semana"},p14:{en:"2 weeks",uk:"2 тижнi",ru:"2 недели",de:"2 Wochen",es:"2 semanas"},pa:{en:"All",uk:"Весь курс",ru:"Весь курс",de:"Alles",es:"Todo"},Breakfast:{en:"Breakfast",uk:"Снiданок",ru:"Завтрак",de:"Fruehstueck",es:"Desayuno"},Lunch:{en:"Lunch",uk:"Обiд",ru:"Обед",de:"Mittagessen",es:"Almuerzo"},Dinner:{en:"Dinner",uk:"Вечеря",ru:"Ужин",de:"Abendessen",es:"Cena"},Snack1:{en:"Snack",uk:"Перекус",ru:"Перекус",de:"Snack",es:"Snack"},Snack2:{en:"Snack 2",uk:"Перекус 2",ru:"Перекус 2",de:"Snack 2",es:"Snack 2"},crs:{en:"-week course",uk:"-тижневий курс",ru:"-недельный курс",de:"-Wochen-Kurs",es:" semanas"}};
