@@ -1,7 +1,7 @@
 {
-  "rewrites": [
-    { "source": "/c/:alias", "destination": "/api/client" },
-    { "source": "/api/recipes/stats", "destination": "/api/recipes" },
-    { "source": "/api/clients/:alias", "destination": "/api/clients" }
-  ]
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs"
+    }
+  }
 }
