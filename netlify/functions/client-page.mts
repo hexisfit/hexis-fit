@@ -2,19 +2,19 @@ import { getStore } from "@netlify/blobs";
 import type { Context, Config } from "@netlify/functions";
 
 function escH(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;").split('"').join("&quot;");
 }
 
 export default async (req: Request, context: Context) => {
   const url = new URL(req.url);
-  const alias = url.pathname.replace("/c/", "").replace(/\.html$/, "").toLowerCase();
-  if (!alias) return new Response("Not found", { status: 404 });
+  const seg = url.pathname.replace("/c/", "").replace(".html", "").toLowerCase();
+  if (!seg) return new Response("Not found", { status: 404 });
 
   const clientStore = getStore({ name: "clients", consistency: "strong" });
   const recipeStore = getStore({ name: "recipes", consistency: "strong" });
-  const client: any = await clientStore.get(alias, { type: "json" });
+  const client: any = await clientStore.get(seg, { type: "json" });
   if (!client) {
-    return new Response("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>404</title><style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#f0f4fa;text-align:center}</style></head><body><div><h1>404</h1><p>Page not found</p></div></body></html>", { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
+    return new Response("<html><body><h1>404</h1></body></html>", { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
   }
 
   const db: any = await recipeStore.get("database", { type: "json" });
@@ -22,24 +22,22 @@ export default async (req: Request, context: Context) => {
   const weeks = parseInt(c.courseWeeks) || 4;
   const totalDays = weeks * 7;
 
-  // Build safe JSON strings - escape </ to prevent </script> injection
-  const cJson = JSON.stringify(c).replace(/</g, "\\u003c");
-  const dbJson = db ? JSON.stringify(db).replace(/</g, "\\u003c") : "null";
+  // Safe JSON - replace < with unicode escape to prevent </script> breaking
+  const cJson = JSON.stringify(c).split("</").join("<\\/");
+  const dbJson = db ? JSON.stringify(db).split("</").join("<\\/") : "null";
 
-  // Simple replacements first (before JSON)
   let html = PAGE;
-  html = html.replace(/XNAMEX/g, escH(c.name || "Client"));
-  html = html.replace(/XKCALX/g, escH(c.kcal || "1500-1600"));
-  html = html.replace(/XSTATSX/g, escH((c.heightMet || "165 cm") + " \u00b7 " + (c.weightMet || "60 kg")));
-  html = html.replace(/XCITYX/g, escH(c.city || ""));
-  html = html.replace(/XLANGX/g, c.lang || "en");
-  html = html.replace(/XTZX/g, c.timezone || "Europe/Berlin");
-  html = html.replace(/XWAX/g, c.whatsapp || "");
-  html = html.replace(/XWEEKSX/g, String(weeks));
-  html = html.replace(/XDAYSX/g, String(totalDays));
-  // JSON last
-  html = html.replace("XCLIENTJSONX", cJson);
-  html = html.replace("XDBJSONX", dbJson);
+  html = html.split("XNAMEX").join(escH(c.name || "Client"));
+  html = html.split("XKCALX").join(escH(c.kcal || "1600"));
+  html = html.split("XSTATSX").join(escH((c.heightMet || "170") + " \u00b7 " + (c.weightMet || "60")));
+  html = html.split("XCITYX").join(escH(c.city || ""));
+  html = html.split("XLANGX").join(c.lang || "en");
+  html = html.split("XTZX").join(c.timezone || "Europe/Berlin");
+  html = html.split("XWAX").join(c.whatsapp || "");
+  html = html.split("XWEEKSX").join(String(weeks));
+  html = html.split("XDAYSX").join(String(totalDays));
+  html = html.split("XCLIENTJSONX").join(cJson);
+  html = html.split("XDBJSONX").join(dbJson);
 
   return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
 };
