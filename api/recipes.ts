@@ -1,98 +1,64 @@
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { put, list } from "@vercel/blob";
 
 const COACH_PWD = "29051980";
-const H: Record<string, string> = {
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "*",
-  "Access-Control-Allow-Methods": "*",
-};
+
+function cors(res: VercelResponse) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.setHeader("Access-Control-Allow-Methods", "*");
+}
 
 async function blobGet(key: string): Promise<any> {
   try {
-    const r = await list({
-      prefix: key + ".json",
-      token: process.env.BLOB_READ_WRITE_TOKEN!,
-    });
+    const r = await list({ prefix: key + ".json", token: process.env.BLOB_READ_WRITE_TOKEN! });
     if (!r.blobs.length) return null;
     const resp = await fetch(r.blobs[0].url);
     return resp.ok ? await resp.json() : null;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
-export default async function handler(req: Request): Promise<Response> {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: H });
-  }
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  cors(res);
+  if (req.method === "OPTIONS") return res.status(200).end();
 
-  const pwd = req.headers.get("x-coach-pwd") || "";
-  if (pwd !== COACH_PWD) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: H,
-    });
-  }
+  const pwd = (req.headers["x-coach-pwd"] as string) || "";
+  if (pwd !== COACH_PWD) return res.status(401).json({ error: "Unauthorized" });
 
-  const url = new URL(req.url);
+  const url = new URL(req.url!, `https://${req.headers.host}`);
 
   // GET /api/recipes/stats
   if (url.pathname.endsWith("/stats")) {
     const db: any = await blobGet("recipes/database");
-    if (!db) {
-      return new Response(JSON.stringify({ uploaded: false }), { headers: H });
-    }
-    return new Response(
-      JSON.stringify({
-        uploaded: true,
-        totalRecipes: Object.keys(db.recipes).length,
-        totalIngredients: Object.keys(db.ingredientNames).length,
-        menuDays: db.meta?.menuDays || 28,
-      }),
-      { headers: H }
-    );
+    if (!db) return res.json({ uploaded: false });
+    return res.json({
+      uploaded: true,
+      totalRecipes: Object.keys(db.recipes).length,
+      totalIngredients: Object.keys(db.ingredientNames).length,
+      menuDays: db.meta?.menuDays || 28,
+    });
   }
 
-  // POST /api/recipes
+  // POST
   if (req.method === "POST") {
     try {
-      const data = await req.json();
+      const data = req.body;
       if (!data.recipes || !data.ingredientNames || !data.menu28) {
-        return new Response(
-          JSON.stringify({ error: "Invalid database format" }),
-          { status: 400, headers: H }
-        );
+        return res.status(400).json({ error: "Invalid database format" });
       }
       await put("recipes/database.json", JSON.stringify(data), {
         access: "public",
         addRandomSuffix: false,
         token: process.env.BLOB_READ_WRITE_TOKEN!,
       });
-      return new Response(
-        JSON.stringify({
-          ok: true,
-          recipes: Object.keys(data.recipes).length,
-          menu: data.menu28.length,
-        }),
-        { headers: H }
-      );
+      return res.json({ ok: true, recipes: Object.keys(data.recipes).length, menu: data.menu28.length });
     } catch (e: any) {
-      return new Response(JSON.stringify({ error: e.message }), {
-        status: 500,
-        headers: H,
-      });
+      return res.status(500).json({ error: e.message });
     }
   }
 
-  // GET /api/recipes
+  // GET
   const db = await blobGet("recipes/database");
-  if (!db) {
-    return new Response(
-      JSON.stringify({ error: "No recipe database uploaded" }),
-      { status: 404, headers: H }
-    );
-  }
-  return new Response(JSON.stringify(db), { headers: H });
+  if (!db) return res.status(404).json({ error: "No recipe database uploaded" });
+  return res.json(db);
 }
-export const config = { runtime: "nodejs" };
