@@ -194,7 +194,18 @@
         .menu-cell-kcal{font-size:0.65rem;color:#a855f7;font-family:'JetBrains Mono',monospace;margin-top:2px}
         .menu-cell-del{position:absolute;top:2px;right:2px;background:rgba(251,113,133,0.2);color:#fb7185;border:none;border-radius:4px;width:16px;height:16px;font-size:0.6rem;cursor:pointer;display:none;align-items:center;justify-content:center}
         .menu-cell:hover .menu-cell-del{display:flex}
-        .menu-day-total{font-size:0.65rem;color:#64748b;text-align:center;margin-top:2px;font-family:'JetBrains Mono',monospace}
+        .menu-day-total{background:rgba(255,255,255,0.01);padding:6px;border-radius:8px;text-align:center;font-size:0.7rem;color:#94a3b8;font-family:'JetBrains Mono',monospace}
+        .menu-day-total strong{color:#c084fc}
+
+        /* Favorite star */
+        .fav-star{cursor:pointer;font-size:1rem;transition:0.2s;background:none;border:none;padding:2px}
+        .fav-star:hover{transform:scale(1.3)}
+        .fav-star.on{filter:drop-shadow(0 0 4px rgba(250,204,21,0.5))}
+
+        /* Picker tabs */
+        .picker-tabs{display:flex;gap:4px;margin-bottom:8px}
+        .picker-tab{flex:1;padding:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#64748b;border-radius:10px;text-align:center;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:0.2s}
+        .picker-tab.active{background:rgba(168,85,247,0.12);color:#e879f9;border-color:rgba(168,85,247,0.2)}
 
         /* Recipe picker modal */
         .picker-list{max-height:400px;overflow-y:auto;margin-top:12px}
@@ -566,6 +577,10 @@
         <div class="modal" style="max-width:500px">
             <button class="modal-close" onclick="closePickerModal()">✕</button>
             <h2 id="pickerTitle">Выберите блюдо</h2>
+            <div class="picker-tabs">
+                <button class="picker-tab active" onclick="setPickerTab('all')" id="ptAll">📋 Все рецепты</button>
+                <button class="picker-tab" onclick="setPickerTab('fav')" id="ptFav">⭐ Избранное</button>
+            </div>
             <div class="fg">
                 <input class="fi" id="pickerSearch" placeholder="🔍 Поиск рецепта..." oninput="filterPicker()">
             </div>
@@ -832,6 +847,7 @@ function renderRecipeList(){
     document.getElementById('recipeCount').textContent='Показано: '+recipes.length+' из '+Object.keys(fullRecipeDB.recipes).length;
     document.getElementById('recipeEditorList').innerHTML=recipes.length?recipes.map(r=>`<div class="re-item">
         <div class="re-item-info">
+            <button class="fav-star ${r.favorite?'on':''}" onclick="event.stopPropagation();toggleFavorite('${esc(r.id)}')">${r.favorite?'⭐':'☆'}</button>
             <div class="re-icon" style="background:${r.vegan?'#22c55e':mealColors[r.meal]||'#8b5cf6'}">${mealIcons[r.meal]||'🍴'}</div>
             <div style="min-width:0">
                 <div class="re-item-name">${esc(r.names?.ru||r.names?.en||r.id)}</div>
@@ -1514,14 +1530,29 @@ async function deleteIngredient(key){
     }catch(err){toast('❌ '+err.message);}
 }
 
+// === FAVORITES ===
+function toggleFavorite(id){
+    if(!fullRecipeDB||!fullRecipeDB.recipes[id])return;
+    fullRecipeDB.recipes[id].favorite = !fullRecipeDB.recipes[id].favorite;
+    renderRecipeList();
+    // Auto-save in background
+    fetch('/api/recipes',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+        body:JSON.stringify(fullRecipeDB)
+    }).catch(()=>{});
+    toast(fullRecipeDB.recipes[id].favorite ? '⭐ Добавлено в избранное' : '☆ Убрано из избранного');
+}
+
 // === MENU PLANNER ===
 let menuCurrentWeek = 0;
 let menuData = []; // array of {day, slot, recipeId, scaledFactor, scaledKcal}
 let pickerDay = 0;
 let pickerSlot = '';
 let pickerMealFilter = '';
+let pickerTabMode = 'all'; // 'all' or 'fav'
 const MENU_SLOTS = ['Breakfast','Snack1','Lunch','Snack2','Dinner'];
-const SLOT_LABELS = {'Breakfast':'🍳 Завтрак','Snack1':'🍎 Снек 1','Lunch':'🥗 Обед','Snack2':'🍎 Снек 2','Dinner':'🍽️ Ужин'};
+const SLOT_LABELS = {'Breakfast':'🍳 Завтрак','Snack1':'🍎 Снек','Lunch':'🥗 Обед','Snack2':'🍎 Снек','Dinner':'🍽️ Ужин'};
 
 async function loadMenuPlanner(){
     if(!fullRecipeDB){
@@ -1530,7 +1561,7 @@ async function loadMenuPlanner(){
             if(res.ok){ try{fullRecipeDB=await res.json();}catch(e){} }
         }catch(e){}
     }
-    if(fullRecipeDB && fullRecipeDB.menu28){
+    if(fullRecipeDB && fullRecipeDB.menu28 && fullRecipeDB.menu28.length){
         menuData = JSON.parse(JSON.stringify(fullRecipeDB.menu28));
     } else {
         menuData = [];
@@ -1538,20 +1569,32 @@ async function loadMenuPlanner(){
     renderMenuGrid();
 }
 
-function getTotalDays(){
-    if(!menuData.length) return 28;
-    return Math.max(...menuData.map(s=>s.day), 28);
+function getMenuEntry(day, slot){
+    return menuData.find(m => m.day === day && m.slot === slot);
 }
 
-function getTotalWeeks(){
-    return Math.ceil(getTotalDays()/7);
+function getTotalDays(){
+    if(!menuData.length) return 28;
+    const maxDay = Math.max(...menuData.filter(m=>m.recipeId).map(s=>s.day||0), 0);
+    return Math.max(maxDay, 28);
+}
+
+function getTotalWeeks(){ return Math.ceil(getTotalDays()/7); }
+
+function getDayKcal(day){
+    let total = 0;
+    menuData.filter(m=>m.day===day && m.recipeId).forEach(m=>{
+        total += m.scaledKcal || (fullRecipeDB?.recipes?.[m.recipeId]?.baseKcal||0);
+    });
+    return total;
 }
 
 function renderMenuGrid(){
     const totalDays = getTotalDays();
     const totalWeeks = getTotalWeeks();
-    document.getElementById('menuWeekLabel').textContent = 'Неделя '+(menuCurrentWeek+1)+' из '+totalWeeks;
-    document.getElementById('menuDaysInfo').textContent = totalDays+' дней · '+menuData.length+' назначений';
+    document.getElementById('menuWeekLabel').textContent = 'Неделя '+(menuCurrentWeek+1)+' / '+totalWeeks;
+    const filled = menuData.filter(m=>m.recipeId).length;
+    document.getElementById('menuDaysInfo').textContent = totalDays+' дн · '+filled+' блюд';
 
     const startDay = menuCurrentWeek * 7 + 1;
     const endDay = Math.min(startDay + 6, totalDays);
@@ -1559,24 +1602,20 @@ function renderMenuGrid(){
     let h = '<div class="menu-grid">';
     // Header row
     h += '<div class="menu-header">День</div>';
-    MENU_SLOTS.forEach(s => {
-        h += '<div class="menu-header">'+SLOT_LABELS[s]+'</div>';
-    });
+    MENU_SLOTS.forEach(s => { h += '<div class="menu-header">'+SLOT_LABELS[s]+'</div>'; });
 
-    // Day rows
     for(let d = startDay; d <= endDay; d++){
-        h += '<div class="menu-day-label">День '+d+'</div>';
-        let dayKcal = 0;
+        h += '<div class="menu-day-label"><div>'+d+'<div class="menu-day-total"><strong>'+getDayKcal(d)+'</strong> kcal</div></div></div>';
         MENU_SLOTS.forEach(slot => {
-            const entry = menuData.find(m => m.day === d && m.slot === slot);
+            const entry = getMenuEntry(d, slot);
             if(entry && entry.recipeId && fullRecipeDB?.recipes?.[entry.recipeId]){
                 const r = fullRecipeDB.recipes[entry.recipeId];
                 const name = r.names?.ru || r.names?.en || entry.recipeId;
                 const kcal = entry.scaledKcal || r.baseKcal || 0;
-                dayKcal += kcal;
-                h += '<div class="menu-cell" onclick="openPicker('+d+',\''+slot+'\')">';
+                const factor = entry.scaledFactor ? (' x'+entry.scaledFactor.toFixed(1)) : '';
+                h += '<div class="menu-cell" onclick="openPicker('+d+',\''+slot+'\')" title="'+esc(name)+'">';
                 h += '<div class="menu-cell-name">'+esc(name)+'</div>';
-                h += '<div class="menu-cell-kcal">'+kcal+' kcal</div>';
+                h += '<div class="menu-cell-kcal">'+kcal+factor+'</div>';
                 h += '<button class="menu-cell-del" onclick="event.stopPropagation();removeMenuSlot('+d+',\''+slot+'\')">✕</button>';
                 h += '</div>';
             } else {
@@ -1585,34 +1624,19 @@ function renderMenuGrid(){
         });
     }
     h += '</div>';
-
-    // Day totals row
-    h += '<div style="display:grid;grid-template-columns:80px repeat(5,1fr);gap:4px;margin-top:2px">';
-    h += '<div></div>';
-    // Weekly kcal summary would go here but skip for simplicity
-    h += '</div>';
-
     document.getElementById('menuGrid').innerHTML = h;
 }
 
-function menuPrevWeek(){
-    if(menuCurrentWeek > 0){ menuCurrentWeek--; renderMenuGrid(); }
-}
-function menuNextWeek(){
-    if(menuCurrentWeek < getTotalWeeks()-1){ menuCurrentWeek++; renderMenuGrid(); }
-}
+function menuPrevWeek(){ if(menuCurrentWeek>0){menuCurrentWeek--;renderMenuGrid();} }
+function menuNextWeek(){ if(menuCurrentWeek<getTotalWeeks()-1){menuCurrentWeek++;renderMenuGrid();} }
 
 function addMenuWeek(){
     const totalDays = getTotalDays();
     const newDays = totalDays + 7;
-    // Just increase — empty slots will show as "+"
-    // We need at least one entry to track total days, add a placeholder
-    toast('✅ Добавлена неделя. Всего дней: '+newDays);
-    // Ensure menuData has proper max day tracking
-    if(!menuData.find(m => m.day === newDays)){
-        // Add empty placeholder so getTotalDays sees it
-        menuData.push({day: newDays, slot:'_placeholder', recipeId:null, scaledFactor:0, scaledKcal:0});
+    if(!menuData.find(m=>m.day===newDays)){
+        menuData.push({day:newDays,slot:'_placeholder',recipeId:null,scaledFactor:0,scaledKcal:0});
     }
+    toast('✅ Неделя добавлена. Дней: '+newDays);
     renderMenuGrid();
 }
 
@@ -1621,12 +1645,14 @@ function openPicker(day, slot){
     pickerDay = day;
     pickerSlot = slot;
     pickerMealFilter = '';
+    pickerTabMode = 'all';
     document.getElementById('pickerTitle').textContent = 'День '+day+' · '+SLOT_LABELS[slot];
     document.getElementById('pickerSearch').value = '';
     document.getElementById('pickerModal').classList.add('open');
     document.body.style.overflow = 'hidden';
-    // Reset filter buttons
-    document.querySelectorAll('#pickerFilters .menu-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.meal === ''));
+    document.querySelectorAll('#pickerFilters .menu-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.meal===''));
+    document.getElementById('ptAll').classList.add('active');
+    document.getElementById('ptFav').classList.remove('active');
     renderPickerList();
 }
 
@@ -1635,94 +1661,102 @@ function closePickerModal(){
     document.body.style.overflow = '';
 }
 
+function setPickerTab(mode){
+    pickerTabMode = mode;
+    document.getElementById('ptAll').classList.toggle('active',mode==='all');
+    document.getElementById('ptFav').classList.toggle('active',mode==='fav');
+    renderPickerList();
+}
+
 function filterPicker(){ renderPickerList(); }
 
 function filterPickerMeal(meal){
     pickerMealFilter = meal;
-    document.querySelectorAll('#pickerFilters .menu-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.meal === meal));
+    document.querySelectorAll('#pickerFilters .menu-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.meal===meal));
     renderPickerList();
 }
 
 function renderPickerList(){
-    if(!fullRecipeDB || !fullRecipeDB.recipes){
-        document.getElementById('pickerList').innerHTML = '<div class="empty">📭 Нет рецептов</div>';
+    if(!fullRecipeDB||!fullRecipeDB.recipes){
+        document.getElementById('pickerList').innerHTML='<div class="empty">📭 Нет рецептов</div>';
         return;
     }
-    const q = (document.getElementById('pickerSearch').value||'').toLowerCase();
-    const mealIcons = {Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack:'🍎'};
-    const mealColors = {Breakfast:'#f59e0b',Lunch:'#3b82f6',Dinner:'#8b5cf6',Snack:'#ec4899'};
+    const q=(document.getElementById('pickerSearch').value||'').toLowerCase();
+    const mealIcons={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack:'🍎'};
+    const mealColors={Breakfast:'#f59e0b',Lunch:'#3b82f6',Dinner:'#8b5cf6',Snack:'#ec4899'};
 
-    let recipes = Object.values(fullRecipeDB.recipes);
+    let recipes=Object.values(fullRecipeDB.recipes);
+
+    // Favorites filter
+    if(pickerTabMode==='fav'){
+        recipes=recipes.filter(r=>r.favorite);
+    }
     if(pickerMealFilter){
-        recipes = recipes.filter(r => r.meal === pickerMealFilter);
+        recipes=recipes.filter(r=>r.meal===pickerMealFilter);
     }
     if(q){
-        recipes = recipes.filter(r => {
-            const names = Object.values(r.names||{}).join(' ').toLowerCase();
-            return names.includes(q) || r.id.toLowerCase().includes(q);
+        recipes=recipes.filter(r=>{
+            const names=Object.values(r.names||{}).join(' ').toLowerCase();
+            return names.includes(q)||r.id.toLowerCase().includes(q);
         });
     }
 
-    document.getElementById('pickerList').innerHTML = recipes.length ? recipes.map(r =>
+    // Sort: favorites first
+    recipes.sort((a,b)=>(b.favorite?1:0)-(a.favorite?1:0));
+
+    const favCount=Object.values(fullRecipeDB.recipes).filter(r=>r.favorite).length;
+    document.getElementById('ptFav').textContent='⭐ Избранное ('+favCount+')';
+
+    document.getElementById('pickerList').innerHTML=recipes.length?recipes.map(r=>
         '<div class="picker-item" onclick="pickRecipe(\''+esc(r.id)+'\')">'+
         '<div class="picker-item-icon" style="background:'+(r.vegan?'#22c55e':mealColors[r.meal]||'#8b5cf6')+'">'+
         (mealIcons[r.meal]||'🍴')+'</div>'+
         '<div class="picker-item-info">'+
-        '<div class="picker-item-name">'+esc(r.names?.ru||r.names?.en||r.id)+'</div>'+
+        '<div class="picker-item-name">'+(r.favorite?'⭐ ':'')+esc(r.names?.ru||r.names?.en||r.id)+'</div>'+
         '<div class="picker-item-meta">🔥'+r.baseKcal+' · P'+r.protein+' F'+r.fat+' C'+r.carbs+' · ⏱'+r.cookTimeMin+'m'+(r.vegan?' 🌱':'')+'</div>'+
         '</div></div>'
-    ).join('') : '<div class="empty">🔍 Ничего не найдено</div>';
+    ).join(''):'<div class="empty">'+(pickerTabMode==='fav'?'⭐ Нет избранных рецептов. Отметьте звёздочкой во вкладке Рецепты.':'🔍 Ничего не найдено')+'</div>';
 }
 
 function pickRecipe(recipeId){
-    // Remove existing entry for this day+slot
-    menuData = menuData.filter(m => !(m.day === pickerDay && m.slot === pickerSlot));
-
+    menuData=menuData.filter(m=>!(m.day===pickerDay && m.slot===pickerSlot));
     if(recipeId && fullRecipeDB?.recipes?.[recipeId]){
-        const r = fullRecipeDB.recipes[recipeId];
+        const r=fullRecipeDB.recipes[recipeId];
         menuData.push({
-            day: pickerDay,
-            slot: pickerSlot,
-            recipeId: recipeId,
-            scaledFactor: 1,
-            scaledKcal: r.baseKcal || 0
+            day:pickerDay,
+            slot:pickerSlot,
+            recipeId:recipeId,
+            scaledFactor:1,
+            scaledKcal:r.baseKcal||0
         });
     }
-
-    // Clean placeholders if real entries exist
-    menuData = menuData.filter(m => m.recipeId || m.slot === '_placeholder');
-
+    menuData=menuData.filter(m=>m.recipeId||m.slot==='_placeholder');
     closePickerModal();
     renderMenuGrid();
-    toast(recipeId ? '✅ Блюдо назначено!' : '🗑️ Ячейка очищена');
+    toast(recipeId?'✅ Назначено!':'🗑️ Очищено');
 }
 
-function removeMenuSlot(day, slot){
-    menuData = menuData.filter(m => !(m.day === day && m.slot === slot));
+function removeMenuSlot(day,slot){
+    menuData=menuData.filter(m=>!(m.day===day&&m.slot===slot));
     renderMenuGrid();
 }
 
 async function saveMenu(){
-    if(!fullRecipeDB) fullRecipeDB = {recipes:{},ingredientNames:{},menu28:[],meta:{}};
-    // Clean placeholders before saving
-    fullRecipeDB.menu28 = menuData.filter(m => m.recipeId);
+    if(!fullRecipeDB) fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
+    fullRecipeDB.menu28=menuData.filter(m=>m.recipeId);
     try{
-        const res = await fetch('/api/recipes',{
+        const res=await fetch('/api/recipes',{
             method:'POST',
             headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
             body:JSON.stringify(fullRecipeDB)
         });
-        if(!res.ok){ let d; try{d=await res.json();}catch(e){d={error:'Server error'};} throw new Error(d.error); }
+        if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
         toast('✅ Меню сохранено!');
-    }catch(err){
-        toast('❌ '+err.message);
-    }
+    }catch(err){toast('❌ '+err.message);}
 }
 
-// Close picker modal
-document.addEventListener('click',function(e){
-    if(e.target.id==='pickerModal') closePickerModal();
-});
+// Close picker on overlay
+document.addEventListener('click',function(e){ if(e.target.id==='pickerModal') closePickerModal(); });
 
 // Close modal on overlay click
 document.addEventListener('click',function(e){
