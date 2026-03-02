@@ -6,12 +6,23 @@ function escH(s: string): string {
 
 async function blobGet(key: string): Promise<any> {
   try {
-    const result = await list({ prefix: key + ".json", token: process.env.BLOB_READ_WRITE_TOKEN });
+    const result = await list({ 
+      prefix: key + ".json", 
+      token: process.env.BLOB_READ_WRITE_TOKEN!   // ! — это говорит TypeScript, что токен точно есть
+    });
+    
     if (!result.blobs.length) return null;
-    const resp = await fetch(result.blobs[0].url);
+    
+    const blob = result.blobs[0];
+    if (!blob) return null;  // дополнительная защита
+    
+    const resp = await fetch(blob.url);
     if (!resp.ok) return null;
+    
     return await resp.json();
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 export default async function handler(req: Request) {
@@ -273,7 +284,7 @@ function clk(){
   try{
     document.getElementById('fd').textContent=n.toLocaleDateString(L==='uk'?'uk-UA':L==='ru'?'ru-RU':L==='de'?'de-DE':'en-US',{timeZone:TZ,year:'numeric',month:'long',day:'numeric'});
     document.getElementById('ck').textContent=n.toLocaleTimeString('en-US',{timeZone:TZ,hour12:false,hour:'2-digit',minute:'2-digit'});
-    var dnames={en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],uk:['Недiля','Понедiлок','Вiвторок','Середа','Четвер','П\'ятниця','Субота'],ru:['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятниця','Субота'],de:['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag']};
+    var dnames={en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],uk:['Недiля','Понедiлок','Вiвторок','Середа','Четвер','П\'ятниця','Субота'],ru:['Воскресенье','Понедельник','Вторник','Среда','Четверг','П\'ятниця','Субота'],de:['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag']};
     var dn=dnames[L]||dnames.en;
     var ln=new Date(n.toLocaleString('en-US',{timeZone:TZ}));
     document.getElementById('tb').textContent=dn[ln.getDay()];
