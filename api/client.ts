@@ -16,7 +16,8 @@ async function blobGet(key: string): Promise<any> {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const alias = (req.url || "").replace("/c/", "").replace(".html", "").toLowerCase();
+  const p = req.query.path;
+  const alias = (Array.isArray(p) ? p[0] : p || "").toLowerCase().replace(".html", "");
   if (!alias) return res.status(404).send("Not found");
 
   const client: any = await blobGet("clients/" + alias);
