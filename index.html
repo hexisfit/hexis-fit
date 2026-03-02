@@ -377,7 +377,7 @@ let recipeData = null;
 async function loadRecipeStats(){
     const wrap=document.getElementById('recipeStats');
     try{
-        const res=await fetch('/api/recipes/stats',{headers:{'x-coach-pwd':coachPwd}});
+        const res=await fetch('/api/recipes?action=stats',{headers:{'x-coach-pwd':coachPwd}});
         const data=await res.json();
         if(!data.uploaded){
             wrap.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">📭 База рецептов ещё не загружена</div>';
