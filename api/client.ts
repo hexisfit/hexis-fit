@@ -6,23 +6,12 @@ function escH(s: string): string {
 
 async function blobGet(key: string): Promise<any> {
   try {
-    const result = await list({ 
-      prefix: key + ".json", 
-      token: process.env.BLOB_READ_WRITE_TOKEN!   // ! — это говорит TypeScript, что токен точно есть
-    });
-    
+    const result = await list({ prefix: key + ".json", token: process.env.BLOB_READ_WRITE_TOKEN });
     if (!result.blobs.length) return null;
-    
-    const blob = result.blobs[0];
-    if (!blob) return null;  // дополнительная защита
-    
-    const resp = await fetch(blob.url);
+    const resp = await fetch(result.blobs[0].url);
     if (!resp.ok) return null;
-    
     return await resp.json();
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 export default async function handler(req: Request) {
@@ -46,7 +35,7 @@ export default async function handler(req: Request) {
   let html = PAGE;
   html = html.split("XNAMEX").join(escH(c.name || "Client"));
   html = html.split("XKCALX").join(escH(c.kcal || "1600"));
-  html = html.split("XSTATSX").join(escH((c.heightMet || "170") + " · " + (c.weightMet || "60")));
+  html = html.split("XSTATSX").join(escH((c.heightMet || "170") + " \u00b7 " + (c.weightMet || "60")));
   html = html.split("XCITYX").join(escH(c.city || ""));
   html = html.split("XLANGX").join(c.lang || "en");
   html = html.split("XTZX").join(c.timezone || "Europe/Berlin");
@@ -59,9 +48,10 @@ export default async function handler(req: Request) {
   return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
 }
 
-export const runtime = "nodejs";
+export const config = { runtime: "edge" };
 
-const PAGE = `<!DOCTYPE html>
+const PAGE = `
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -103,118 +93,106 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0}
 .mc{background:white;border-radius:24px;padding:18px;box-shadow:0 6px 16px rgba(0,0,0,0.02);border:1px solid #eef3f9;display:flex;flex-direction:column}
 .mt{font-size:0.8rem;font-weight:700;text-transform:uppercase;color:#5f748b;margin-bottom:4px}
-.mn{font-size:1.1rem;font-weight:700;color:#1f2a3a;margin-bottom:4px}
-.mb{font-size:0.9rem;color:#64748b}
-.mtags{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-.mtag{padding:2px 10px;border-radius:30px;font-size:0.75rem;font-weight:600}
-.tv{background:#d1fae5;color:#065f46}
-.th{background:#fef3c7;color:#92400e}
-.tl{background:#dbeafe;color:#1e40af}
-.db{width:100%;margin-top:12px;padding:10px;border:none;border-radius:50px;background:#1f2a3a;color:white;font-weight:700;cursor:pointer;transition:0.2s}
-.db.on{background:#10b981}
-.gs{margin-top:20px;padding:16px;background:white;border-radius:24px;box-shadow:0 4px 12px rgba(0,0,0,0.05)}
-.gs-t{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:700;color:#1f2a3a}
-.gp{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.gpb{padding:6px 12px;border-radius:30px;border:2px solid #d0dae8;background:white;cursor:pointer;transition:0.2s}
-.gpb.on{background:#1f2a3a;color:white;border-color:#1f2a3a}
-.gg{display:flex;flex-direction:column;gap:8px}
-.gi{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0}
-.gi.chk{background:#e0f2fe;border-color:#3b82f6}
-.gn{font-weight:600;color:#1f2a3a}
-.ig{color:#64748b}
-.gshr{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
-.gcb,.gsh,.gck{padding:10px 16px;border-radius:50px;font-weight:700;cursor:pointer}
-.gcb{background:#1f2a3a;color:white}
-.gsh{background:#10b981;color:white}
-.gck{background:#f59e0b;color:white}
+.mn{font-size:1.15rem;font-weight:700;color:#1f2a3a;margin-bottom:6px}
+.mb{background:#edf2f9;padding:6px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;display:inline-block;margin-bottom:8px}
+.mtags{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.mtag{font-size:0.7rem;padding:2px 8px;border-radius:12px;font-weight:600}
+.tv{background:#dcfce7;color:#166534}.th{background:#e0e7ff;color:#3730a3}.tl{background:#fef3c7;color:#92400e}
+.mi{background:#f8fafc;border-radius:14px;padding:10px 14px;margin-bottom:10px;flex-grow:1}
+.mi h4{font-size:0.75rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.ir{display:flex;justify-content:space-between;padding:2px 0;font-size:0.85rem}
+.ig{font-weight:600;color:#2563eb;font-family:monospace;font-size:0.82rem}
+.db{padding:10px;border:2px solid #d0dae8;border-radius:16px;font-weight:700;font-size:0.85rem;cursor:pointer;transition:0.2s;background:white;font-family:inherit;color:#1f2a3a;text-align:center;width:100%;margin-top:auto}
+.db:hover{border-color:#22c55e;background:#f0fdf4}
+.db.on{background:#22c55e;color:white;border-color:#22c55e}
+.dtot{background:#e3eaf3;padding:14px 22px;border-radius:40px;display:flex;justify-content:space-between;font-weight:700;margin:12px 0;flex-wrap:wrap}
+.tdone{color:#22c55e;font-size:1.2rem}
+.gs{background:#f0f7e8;border-radius:20px;padding:14px 20px;margin:12px 0;border-left:5px solid #6b8e6b}
+.gs-t{font-size:1rem;font-weight:700;color:#2d4a2d;margin-bottom:10px;display:flex;justify-content:space-between}
+.gp{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.gpb{background:white;border:1px solid #c5d5c5;padding:5px 12px;border-radius:30px;font-weight:600;cursor:pointer;color:#2d4a2d;font-size:0.8rem;transition:0.2s;font-family:inherit}
+.gpb.on{background:#2d4a2d;color:white}
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.gi{display:flex;align-items:center;gap:8px;background:white;padding:6px 12px;border-radius:12px;font-size:0.85rem;cursor:pointer;transition:0.15s}
+.gi.chk{opacity:0.5;text-decoration:line-through}
+.gi input{width:18px;height:18px;accent-color:#6b8e6b;cursor:pointer;flex-shrink:0}
+.gi .gn{flex:1}
+.gshr{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.gshr button{padding:8px 16px;border-radius:30px;font-weight:600;font-size:0.85rem;cursor:pointer;border:none;font-family:inherit;transition:0.2s}
+.gcb{background:#2d4a2d;color:white}.gsh{background:#25D366;color:white}.gck{background:#1565c0;color:white}
+.abar{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.ab{background:white;border:1px solid #cbd5e2;padding:10px 18px;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:8px;color:#1f2a3a;text-decoration:none;transition:0.2s;font-family:inherit}
+.ab:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.ab.wa{background:#25D366;color:white;border:none}
+.ft{text-align:center;margin-top:20px;color:#5f748b;font-size:0.8rem}
+.ft a{color:#2563eb;text-decoration:none}
+.fbadges{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.fb{padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600}
+@media(max-width:600px){.hero-name{font-size:1.4rem}.hero-kcal{font-size:1.1rem;padding:8px 16px}.ctr{padding:14px;border-radius:20px}.hero{padding:12px 16px}}
 </style>
 </head>
 <body>
 <div class="ctr">
-  <div class="hero">
-    <div class="hero-left">
-      <div class="hero-name">XNAMEX</div>
-      <div class="hero-sub">Wellness Program</div>
-    </div>
-    <div class="hero-stats">
-      <div>XKCALX kcal</div>
-      <div>XSTATSX</div>
-    </div>
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-name">XNAMEX</div>
+    <div class="hero-sub" id="csub"></div>
+    <div class="hero-stats"><span>XSTATSX</span><span>XCITYX</span></div>
+    <div class="fbadges" id="fb"></div>
   </div>
-
-  <div class="cbar">
-    <div class="lsw">
-      <button class="lb active">Week 1</button>
-    </div>
-    <div class="today-badge">Today</div>
-  </div>
-
-  <div class="ibar">
-    <div class="clk" id="ck">00:00</div>
-    <div id="fd">Loading date...</div>
-    <div id="tb">Monday</div>
-  </div>
-
-  <div class="wt">
-    <div class="wt-title">Water Intake</div>
-    <div class="wt-goal">Goal: 2.5L</div>
-    <div class="wt-btns">
-      <button class="wb"><span class="wv">+250</span>ml</button>
-    </div>
-    <div class="wt-cnt">0 / 2500 ml</div>
-  </div>
-
-  <div class="dtabs" id="dts"></div>
-
-  <div class="mg" id="ms"></div>
-
-  <div id="gr"></div>
+  <div class="hero-kcal">XKCALX kcal</div>
 </div>
-
+<div class="cbar"><div class="lsw">
+  <button class="lb" data-l="en" onclick="sl('en')">EN</button>
+  <button class="lb" data-l="uk" onclick="sl('uk')">UA</button>
+  <button class="lb" data-l="ru" onclick="sl('ru')">RU</button>
+  <button class="lb" data-l="de" onclick="sl('de')">DE</button>
+  <button class="lb" data-l="es" onclick="sl('es')">ES</button>
+</div></div>
+<div class="ibar"><span id="fd"></span><span class="today-badge" id="tb"></span><span class="clk" id="ck"></span></div>
+<div class="wt">
+  <div><div class="wt-title" id="wl"></div><div class="wt-goal" id="wg"></div></div>
+  <div class="wt-btns" id="wbs"></div>
+  <div class="wt-cnt" id="wc">0 / 2.4 L</div>
+</div>
+<div class="dtabs" id="dts"></div>
+<div class="mg" id="ms"></div>
+<div class="dtot" id="tot"></div>
+<div id="gr"></div>
+<div class="abar" id="acts"></div>
+<div class="ft">Powered by <a href="https://hexis.fit">hexis.fit</a></div>
+</div>
 <script>
-let cd = new Date().getDate();
-let TD = XDAYSX;
-let L = XLANGX;
-let TZ = XTZX;
-let C = XCLIENTJSONX ? JSON.parse(XCLIENTJSONX) : {};
-let DB = XDBJSONX ? JSON.parse(XDBJSONX) : null;
-let done = {};
-let gper = 'day';
-
-const IC = { breakfast: '🍳', lunch: '🍲', dinner: '🍽️', snack: '🍎' };
-
-function t(key) {
-  const dict = {
-    en: { breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack:'Snack', ing:'Ingredients', dn:'Done', gl:'Grocery List', p1:'Day', p7:'Week', p14:'2 Weeks', pa:'All', cp:'Copy', sn:'Share', sc:'Share Checked' },
-    ru: { breakfast:'Завтрак', lunch:'Обед', dinner:'Ужин', snack:'Перекус', ing:'Ингредиенты', dn:'Готово', gl:'Список покупок', p1:'День', p7:'Неделя', p14:'2 Недели', pa:'Всё', cp:'Копировать', sn:'Поделиться', sc:'Поделиться отмеченным' }
-  };
-  return dict[L]?.[key] || dict.en[key] || key;
+var C=XCLIENTJSONX;
+var DB=XDBJSONX;
+var L='XLANGX',TZ='XTZX',WK=parseInt('XWEEKSX')||4,TD=parseInt('XDAYSX')||28;
+var cd=1,done={},wtr=0,gper='day';
+var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
+var IC={Breakfast:'B',Lunch:'L',Dinner:'D',Snack1:'S',Snack2:'S'};
+var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sa','Do']};
+function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
+function sdate(){var d=C.courseStart?new Date(C.courseStart):new Date();if(!C.courseStart){var w=d.getDay();d.setDate(d.getDate()-(w===0?6:w-1))}d.setHours(0,0,0,0);return d}
+function ddate(n){var s=new Date(sdate().getTime());s.setDate(s.getDate()+n-1);return s}
+function tdn(){var n=new Date(),s=sdate(),d=Math.floor((n-s)/86400000)+1;return d>=1&&d<=TD?d:1}
+function sl(l){L=l;document.querySelectorAll('.lb').forEach(function(b){b.classList.toggle('active',b.dataset.l===l)});document.getElementById('wl').textContent=t('water');document.getElementById('wg').textContent=t('wg');document.getElementById('csub').textContent=WK+t('crs')+' - '+TD+' days';rdts();ren();clk()}
+function init(){
+  try{
+    if(!DB||!DB.menu28||!DB.recipes){document.getElementById('ms').innerHTML='<p style="padding:40px;color:#e55;text-align:center;grid-column:1/-1">DB: '+(DB?'keys='+Object.keys(DB).join(','):'null')+'</p>';return}
+    cd=tdn();
+    var fb='';
+    if(C.filterVegan)fb+='<span class="fb" style="background:#dcfce7;color:#166534">Vegan</span>';
+    if(C.filterHalal)fb+='<span class="fb" style="background:#e0e7ff;color:#3730a3">Halal</span>';
+    if(C.filterLF)fb+='<span class="fb" style="background:#fef3c7;color:#92400e">LF</span>';
+    document.getElementById('fb').innerHTML=fb;
+    sl(L);iw();rdts();ren();clk();
+    document.getElementById('acts').innerHTML='<a class="ab wa" href="https://wa.me/XWAX" target="_blank">WhatsApp</a><button class="ab" onclick="shr()">Share</button>';
+  }catch(e){document.getElementById('ms').innerHTML='<p style="padding:40px;color:red;text-align:center;grid-column:1/-1">ERR: '+e.message+'</p>'}
 }
-
-function init() { rdts(); ren(); clk(); rg(); }
-
-function rdts() {
-  let h = '';
-  let td = new Date().getDate();
-  for (let d = 1; d <= TD; d++) {
-    let dd = d < 10 ? '0'+d : d;
-    let c = 'dt';
-    if (d === cd) c += ' act';
-    if (d === td) c += ' now';
-    h += '<button class="'+c+'" onclick="sd('+d+')">'+dd+'</button>';
-  }
-  document.getElementById('dts').innerHTML = h;
-}
-
-function sd(d){cd=d;rdts();ren();}
-
-function gm(d){
-  if(!DB||!DB.menu28)return[];
-  var r=DB.menu28.filter(function(m){return m.day===d});
-  if(!r.length)r=DB.menu28.filter(function(m){return m.day===((d-1)%28)+1});
-  return r.filter(function(s){var rc=DB.recipes[s.recipeId];if(!rc)return false;if(C.filterVegan&&!rc.vegan)return false;if(C.filterHalal&&!rc.halal)return false;if(C.filterLF&&!rc.lactoseFree)return false;if(C.filterSpeed&&rc.cookSpeed!==C.filterSpeed)return false;return true})
-}
-
+function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')"><span>'+i+'</span><span class="wv">'+(i*300)+'ml</span></button>';document.getElementById('wbs').innerHTML=h}
+function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll('.wb').forEach(function(b,i){b.classList.toggle('on',i<wtr)});document.getElementById('wc').textContent=(wtr*0.3).toFixed(1)+' / 2.4 L'}
+function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[(d-1)%7]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
+function sd(d){cd=d;rdts();ren()}
+function gm(d){if(!DB||!DB.menu28)return[];var r=DB.menu28.filter(function(m){return m.day===d});if(!r.length)r=DB.menu28.filter(function(m){return m.day===((d-1)%28)+1});return r.filter(function(s){var rc=DB.recipes[s.recipeId];if(!rc)return false;if(C.filterVegan&&!rc.vegan)return false;if(C.filterHalal&&!rc.halal)return false;if(C.filterLF&&!rc.lactoseFree)return false;if(C.filterSpeed&&rc.cookSpeed!==C.filterSpeed)return false;return true})}
 function ren(){
   var ms=gm(cd),h='';
   ms.forEach(function(s){
@@ -234,11 +212,8 @@ function ren(){
   document.getElementById('ms').innerHTML=h||'<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">No meals</p>';
   ut();rg();
 }
-
 function td(b){var k=b.dataset.k;done[k]=!done[k];b.classList.toggle('on');ut()}
-
 function ut(){var m=gm(cd),d=0,p=0;m.forEach(function(s){p+=s.scaledKcal;if(done[cd+'-'+s.slot])d+=s.scaledKcal});document.getElementById('tot').innerHTML='<span>Day '+cd+'</span><span><span class="tdone">'+d+'</span> / '+p+' kcal</span>'}
-
 function rg(){
   var df=cd,dt=cd;
   if(gper==='week'){df=cd;dt=Math.min(cd+6,TD)}
@@ -284,7 +259,7 @@ function clk(){
   try{
     document.getElementById('fd').textContent=n.toLocaleDateString(L==='uk'?'uk-UA':L==='ru'?'ru-RU':L==='de'?'de-DE':'en-US',{timeZone:TZ,year:'numeric',month:'long',day:'numeric'});
     document.getElementById('ck').textContent=n.toLocaleTimeString('en-US',{timeZone:TZ,hour12:false,hour:'2-digit',minute:'2-digit'});
-    var dnames={en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],uk:['Недiля','Понедiлок','Вiвторок','Середа','Четвер','П\'ятниця','Субота'],ru:['Воскресенье','Понедельник','Вторник','Среда','Четверг','П\'ятниця','Субота'],de:['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag']};
+    var dnames={en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],uk:['Недiля','Понедiлок','Вiвторок','Середа','Четвер','Пятниця','Субота'],ru:['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],de:['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag']};
     var dn=dnames[L]||dnames.en;
     var ln=new Date(n.toLocaleString('en-US',{timeZone:TZ}));
     document.getElementById('tb').textContent=dn[ln.getDay()];
