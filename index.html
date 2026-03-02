@@ -472,14 +472,19 @@
             <div class="new-ing-inline" id="quickIngForm">
                 <div style="font-weight:700;color:#06b6d4;margin-bottom:8px;font-size:0.85rem">Быстрое добавление продукта в справочник</div>
                 <div class="fg">
-                    <input class="fi" id="qIngKey" placeholder="ключ: chicken_thigh" style="font-family:'JetBrains Mono',monospace;font-size:0.8rem">
+                    <input class="fi" id="qIng_ru" placeholder="Название на русском" oninput="quickCheckIngredient()" style="font-size:0.85rem">
+                    <div id="qIngCheckResult" style="font-size:0.8rem;margin-top:4px"></div>
                 </div>
-                <div class="names-grid" style="font-size:0.8rem">
-                    <span>🇬🇧</span><input class="fi" id="qIng_en" placeholder="EN" style="font-size:0.8rem">
-                    <span>🇷🇺</span><input class="fi" id="qIng_ru" placeholder="RU" style="font-size:0.8rem">
+                <div id="qIngDetails" style="display:none">
+                    <div class="fg">
+                        <input class="fi" id="qIngKey" placeholder="ключ: chicken_thigh" style="font-family:'JetBrains Mono',monospace;font-size:0.8rem">
+                    </div>
+                    <div class="fg">
+                        <input class="fi" id="qIng_en" placeholder="English name" style="font-size:0.8rem">
+                    </div>
                 </div>
                 <div style="display:flex;gap:6px;margin-top:6px">
-                    <button class="ing-add" style="font-size:0.75rem" onclick="quickSaveIngredient()">💾 Добавить</button>
+                    <button class="ing-add" style="font-size:0.75rem;opacity:0.4;pointer-events:none" id="qIngSaveBtn" onclick="quickSaveIngredient()">💾 Добавить в справочник</button>
                     <button class="ing-add" style="font-size:0.75rem;background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:#94a3b8" onclick="document.getElementById('quickIngForm').classList.remove('open')">Отмена</button>
                 </div>
             </div>
@@ -495,32 +500,61 @@
     <!-- INGREDIENTS CATALOG -->
     <div class="panel" id="panelIngredients">
         <div class="panel-title">📦 Справочник продуктов</div>
-        <div class="panel-desc">Единая база ингредиентов. Добавляйте новые продукты здесь — они будут доступны при создании рецептов.</div>
+        <div class="panel-desc">Единая база ингредиентов. Сначала проверяем — потом создаём.</div>
 
         <div class="re-search">
             <input class="fi" type="text" id="ingSearch" placeholder="🔍 Поиск продукта..." oninput="filterIngList()">
-            <button class="re-add-btn" onclick="openNewIngredient()">＋ Новый</button>
+            <button class="re-add-btn" onclick="startNewIngredient()">＋ Новый продукт</button>
         </div>
         <div class="re-count" id="ingCount"></div>
 
-        <!-- New ingredient form (inline) -->
-        <div class="new-ing-inline" id="newIngForm">
-            <div style="font-weight:700;color:#22c55e;margin-bottom:10px">＋ Новый продукт</div>
+        <!-- Step 1: Check name -->
+        <div class="new-ing-inline" id="ingStep1">
+            <div style="font-weight:700;color:#22c55e;margin-bottom:10px">Шаг 1: Проверка — введите название на русском</div>
+            <div class="fg">
+                <input class="fi" id="ingCheckName" placeholder="Например: Куриное бедро" oninput="checkIngredientExists()">
+            </div>
+            <div id="ingCheckResult" style="margin-top:8px;font-size:0.85rem"></div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="modal-save" style="flex:1;margin-top:0;opacity:0.4;pointer-events:none" id="ingStep1Btn" onclick="showIngStep2()">✅ Продукт не найден — создать карточку</button>
+                <button style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:12px 20px;border-radius:14px;cursor:pointer;font-family:inherit" onclick="cancelNewIngredient()">Отмена</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Full card -->
+        <div class="new-ing-inline" id="ingStep2">
+            <div style="font-weight:700;color:#22c55e;margin-bottom:10px">Шаг 2: Заполните карточку продукта</div>
             <div class="fg">
                 <label class="fl">Ключ (латиницей, snake_case)</label>
                 <input class="fi" id="newIngKey" placeholder="chicken_thigh" style="font-family:'JetBrains Mono',monospace">
-                <div class="hint">Уникальный ID: только буквы, цифры и _</div>
+                <div class="hint">Уникальный ID: только латиница, цифры и _ (автоматически из русского названия)</div>
             </div>
             <div class="names-grid">
+                <span>🇷🇺</span><input class="fi" id="newIng_ru" placeholder="Куриное бедро" readonly style="background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.2)">
                 <span>🇬🇧</span><input class="fi" id="newIng_en" placeholder="Chicken thigh">
                 <span>🇩🇪</span><input class="fi" id="newIng_de" placeholder="Hähnchenschenkel">
-                <span>🇷🇺</span><input class="fi" id="newIng_ru" placeholder="Куриное бедро">
                 <span>🇺🇦</span><input class="fi" id="newIng_uk" placeholder="Куряче стегно">
                 <span>🇪🇸</span><input class="fi" id="newIng_es" placeholder="Muslo de pollo">
             </div>
             <div style="display:flex;gap:8px;margin-top:12px">
                 <button class="modal-save" style="flex:1;margin-top:0" onclick="saveNewIngredient()">💾 Сохранить продукт</button>
-                <button style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:12px 20px;border-radius:14px;cursor:pointer;font-family:inherit" onclick="document.getElementById('newIngForm').classList.remove('open')">Отмена</button>
+                <button style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:12px 20px;border-radius:14px;cursor:pointer;font-family:inherit" onclick="cancelNewIngredient()">Отмена</button>
+            </div>
+        </div>
+
+        <!-- Edit ingredient card -->
+        <div class="new-ing-inline" id="ingEditForm">
+            <div style="font-weight:700;color:#c084fc;margin-bottom:10px">✏️ Редактировать продукт: <span id="ingEditKey" style="font-family:'JetBrains Mono',monospace"></span></div>
+            <div class="names-grid">
+                <span>🇷🇺</span><input class="fi" id="editIng_ru" placeholder="Название RU">
+                <span>🇬🇧</span><input class="fi" id="editIng_en" placeholder="Name EN">
+                <span>🇩🇪</span><input class="fi" id="editIng_de" placeholder="Name DE">
+                <span>🇺🇦</span><input class="fi" id="editIng_uk" placeholder="Назва UK">
+                <span>🇪🇸</span><input class="fi" id="editIng_es" placeholder="Nombre ES">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="modal-save" style="flex:1;margin-top:0" onclick="saveEditIngredient()">💾 Сохранить</button>
+                <button style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:12px 20px;border-radius:14px;cursor:pointer;font-family:inherit" onclick="document.getElementById('ingEditForm').classList.remove('open')">Отмена</button>
             </div>
         </div>
 
@@ -969,26 +1003,59 @@ function collectSteps(){
 function openQuickAddIngredient(){
     const f=document.getElementById('quickIngForm');
     f.classList.add('open');
-    document.getElementById('qIngKey').value='';
-    document.getElementById('qIng_en').value='';
     document.getElementById('qIng_ru').value='';
-    document.getElementById('qIngKey').focus();
+    document.getElementById('qIng_en').value='';
+    document.getElementById('qIngKey').value='';
+    document.getElementById('qIngCheckResult').innerHTML='';
+    document.getElementById('qIngDetails').style.display='none';
+    document.getElementById('qIngSaveBtn').style.opacity='0.4';
+    document.getElementById('qIngSaveBtn').style.pointerEvents='none';
+    document.getElementById('qIng_ru').focus();
+}
+
+function quickCheckIngredient(){
+    const name=document.getElementById('qIng_ru').value.trim().toLowerCase();
+    const result=document.getElementById('qIngCheckResult');
+    const btn=document.getElementById('qIngSaveBtn');
+    const details=document.getElementById('qIngDetails');
+
+    if(!name||name.length<2){
+        result.innerHTML='';
+        btn.style.opacity='0.4';btn.style.pointerEvents='none';
+        details.style.display='none';
+        return;
+    }
+    if(!fullRecipeDB||!fullRecipeDB.ingredientNames){
+        result.innerHTML='<span style="color:#fbbf24">⚠️ База не загружена</span>';
+        return;
+    }
+    // Check for exact match
+    for(const [k,v] of Object.entries(fullRecipeDB.ingredientNames)){
+        if((v.ru||'').toLowerCase()===name||(v.en||'').toLowerCase()===name){
+            result.innerHTML='<span style="color:#fb7185">❌ Уже есть: <strong>'+esc(v.ru||v.en)+'</strong> ('+esc(k)+')</span>';
+            btn.style.opacity='0.4';btn.style.pointerEvents='none';
+            details.style.display='none';
+            return;
+        }
+    }
+    // OK — show details
+    result.innerHTML='<span style="color:#22c55e">✅ Можно создавать</span>';
+    details.style.display='block';
+    document.getElementById('qIngKey').value=transliterate(document.getElementById('qIng_ru').value.trim());
+    btn.style.opacity='1';btn.style.pointerEvents='auto';
 }
 
 function quickSaveIngredient(){
+    const ru=document.getElementById('qIng_ru').value.trim();
     const key=document.getElementById('qIngKey').value.trim().replace(/\s+/g,'_').toLowerCase();
     const en=document.getElementById('qIng_en').value.trim();
-    const ru=document.getElementById('qIng_ru').value.trim();
-    if(!key){toast('❌ Введите ключ');return;}
-    if(!en&&!ru){toast('❌ Введите название EN или RU');return;}
+    if(!key||!ru){toast('❌ Заполните название и ключ');return;}
     if(!fullRecipeDB) fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
-    if(fullRecipeDB.ingredientNames[key]){toast('⚠️ Продукт '+key+' уже существует');return;}
+    if(fullRecipeDB.ingredientNames[key]){toast('❌ Ключ '+key+' уже занят');return;}
     fullRecipeDB.ingredientNames[key]={en:en,de:'',ru:ru,uk:'',es:''};
     document.getElementById('quickIngForm').classList.remove('open');
-    toast('✅ Продукт '+key+' добавлен');
-    // Refresh ingredient dropdowns
+    toast('✅ Продукт "'+ru+'" добавлен');
     refreshIngredientDropdowns();
-    // Add a row with this ingredient pre-selected
     addIngredientRowWithKey(key);
 }
 
@@ -1013,14 +1080,13 @@ function addIngredientRowWithKey(preKey){
 }
 
 // === INGREDIENTS CATALOG ===
+let editingIngKey = null;
+
 async function loadIngCatalog(){
     if(!fullRecipeDB){
-        // Try to load from server
         try{
             const res=await fetch('/api/recipes',{headers:{'x-coach-pwd':coachPwd}});
-            if(res.ok){
-                try{fullRecipeDB=await res.json();}catch(e){}
-            }
+            if(res.ok){ try{fullRecipeDB=await res.json();}catch(e){} }
         }catch(e){}
     }
     renderIngCatalog();
@@ -1052,33 +1118,120 @@ function renderIngCatalog(){
 
 function filterIngList(){ renderIngCatalog(); }
 
-function openNewIngredient(){
-    document.getElementById('newIngForm').classList.add('open');
-    ['newIngKey','newIng_en','newIng_de','newIng_ru','newIng_uk','newIng_es'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('newIngKey').focus();
+// --- STEP 1: Start new ingredient ---
+function startNewIngredient(){
+    cancelNewIngredient();
+    document.getElementById('ingStep1').classList.add('open');
+    document.getElementById('ingCheckName').value='';
+    document.getElementById('ingCheckResult').innerHTML='';
+    document.getElementById('ingStep1Btn').style.opacity='0.4';
+    document.getElementById('ingStep1Btn').style.pointerEvents='none';
+    document.getElementById('ingCheckName').focus();
 }
 
-function editIngredient(key){
-    const v=fullRecipeDB.ingredientNames[key];
-    if(!v)return;
-    document.getElementById('newIngForm').classList.add('open');
+function cancelNewIngredient(){
+    ['ingStep1','ingStep2','ingEditForm'].forEach(id=>document.getElementById(id).classList.remove('open'));
+}
+
+function checkIngredientExists(){
+    const name=document.getElementById('ingCheckName').value.trim().toLowerCase();
+    const result=document.getElementById('ingCheckResult');
+    const btn=document.getElementById('ingStep1Btn');
+
+    if(!name||name.length<2){
+        result.innerHTML='';
+        btn.style.opacity='0.4';
+        btn.style.pointerEvents='none';
+        return;
+    }
+
+    if(!fullRecipeDB||!fullRecipeDB.ingredientNames){
+        result.innerHTML='<span style="color:#fbbf24">⚠️ База не загружена</span>';
+        btn.style.opacity='0.4';
+        btn.style.pointerEvents='none';
+        return;
+    }
+
+    // Search through all RU names for exact or close match
+    const matches=[];
+    for(const [k,v] of Object.entries(fullRecipeDB.ingredientNames)){
+        const ru=(v.ru||'').toLowerCase();
+        const en=(v.en||'').toLowerCase();
+        const uk=(v.uk||'').toLowerCase();
+        if(ru===name||en===name||uk===name){
+            matches.push({key:k,exact:true,name:v.ru||v.en});
+        } else if(ru.includes(name)||en.includes(name)||name.includes(ru)){
+            matches.push({key:k,exact:false,name:v.ru||v.en});
+        }
+    }
+
+    const exactMatch=matches.find(m=>m.exact);
+    if(exactMatch){
+        result.innerHTML='<span style="color:#fb7185">❌ Продукт уже есть: <strong>'+esc(exactMatch.name)+'</strong> (ключ: '+esc(exactMatch.key)+')</span>';
+        btn.style.opacity='0.4';
+        btn.style.pointerEvents='none';
+        btn.innerHTML='❌ Продукт уже существует';
+        return;
+    }
+
+    if(matches.length>0){
+        result.innerHTML='<span style="color:#fbbf24">⚠️ Похожие продукты найдены:</span><br>'+
+            matches.map(m=>'  · <strong>'+esc(m.name)+'</strong> <span style="color:#64748b">('+esc(m.key)+')</span>').join('<br>')+
+            '<br><span style="color:#94a3b8;font-size:0.8rem">Если это не то — нажмите кнопку ниже для создания нового</span>';
+    } else {
+        result.innerHTML='<span style="color:#22c55e">✅ Такого продукта нет в базе — можно создавать!</span>';
+    }
+
+    btn.style.opacity='1';
+    btn.style.pointerEvents='auto';
+    btn.innerHTML='✅ Создать карточку продукта →';
+}
+
+// --- STEP 2: Show full card ---
+function showIngStep2(){
+    const ruName=document.getElementById('ingCheckName').value.trim();
+    if(!ruName){toast('❌ Введите название');return;}
+
+    document.getElementById('ingStep1').classList.remove('open');
+    document.getElementById('ingStep2').classList.add('open');
+
+    // Auto-fill RU name (read-only)
+    document.getElementById('newIng_ru').value=ruName;
+
+    // Auto-generate key from RU name using transliteration
+    const key=transliterate(ruName);
     document.getElementById('newIngKey').value=key;
-    document.getElementById('newIngKey').readOnly=true;
-    document.getElementById('newIng_en').value=v.en||'';
-    document.getElementById('newIng_de').value=v.de||'';
-    document.getElementById('newIng_ru').value=v.ru||'';
-    document.getElementById('newIng_uk').value=v.uk||'';
-    document.getElementById('newIng_es').value=v.es||'';
+
+    // Focus EN name
+    document.getElementById('newIng_en').value='';
+    document.getElementById('newIng_de').value='';
+    document.getElementById('newIng_uk').value='';
+    document.getElementById('newIng_es').value='';
+    document.getElementById('newIng_en').focus();
+}
+
+function transliterate(str){
+    const map={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya','і':'i','ї':'yi','є':'ye','ґ':'g'};
+    return str.toLowerCase().split('').map(c=>map[c]!==undefined?map[c]:(c===' '?'_':(/[a-z0-9_]/.test(c)?c:''))).join('').replace(/_+/g,'_').replace(/^_|_$/g,'');
 }
 
 async function saveNewIngredient(){
     const key=document.getElementById('newIngKey').value.trim().replace(/\s+/g,'_').toLowerCase();
     if(!key){toast('❌ Введите ключ');return;}
     if(!/^[a-z0-9_]+$/.test(key)){toast('❌ Ключ: только латиница, цифры, _');return;}
-    const en=document.getElementById('newIng_en').value.trim();
+
     const ru=document.getElementById('newIng_ru').value.trim();
-    if(!en&&!ru){toast('❌ Введите название EN или RU');return;}
+    const en=document.getElementById('newIng_en').value.trim();
+    if(!ru){toast('❌ Нет русского названия');return;}
+
     if(!fullRecipeDB) fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
+
+    // Final duplicate check by key
+    if(fullRecipeDB.ingredientNames[key]){
+        toast('❌ Ключ '+key+' уже занят! Измените ключ.');
+        return;
+    }
+
     fullRecipeDB.ingredientNames[key]={
         en:en,
         de:document.getElementById('newIng_de').value.trim(),
@@ -1086,25 +1239,78 @@ async function saveNewIngredient(){
         uk:document.getElementById('newIng_uk').value.trim(),
         es:document.getElementById('newIng_es').value.trim()
     };
-    // Save to server
+
     try{
         const res=await fetch('/api/recipes',{
             method:'POST',
             headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
             body:JSON.stringify(fullRecipeDB)
         });
-        if(!res.ok){const d=await res.json();throw new Error(d.error);}
-        toast('✅ Продукт '+key+' сохранён!');
-        document.getElementById('newIngForm').classList.remove('open');
-        document.getElementById('newIngKey').readOnly=false;
+        if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
+        toast('✅ Продукт "'+ru+'" добавлен в справочник!');
+        cancelNewIngredient();
         renderIngCatalog();
     }catch(err){
         toast('❌ '+err.message);
     }
 }
 
+// --- EDIT existing ingredient ---
+function editIngredient(key){
+    cancelNewIngredient();
+    const v=fullRecipeDB.ingredientNames[key];
+    if(!v)return;
+    editingIngKey=key;
+    document.getElementById('ingEditForm').classList.add('open');
+    document.getElementById('ingEditKey').textContent=key;
+    document.getElementById('editIng_ru').value=v.ru||'';
+    document.getElementById('editIng_en').value=v.en||'';
+    document.getElementById('editIng_de').value=v.de||'';
+    document.getElementById('editIng_uk').value=v.uk||'';
+    document.getElementById('editIng_es').value=v.es||'';
+}
+
+async function saveEditIngredient(){
+    if(!editingIngKey)return;
+    const ru=document.getElementById('editIng_ru').value.trim();
+    const en=document.getElementById('editIng_en').value.trim();
+    if(!ru&&!en){toast('❌ Введите название RU или EN');return;}
+
+    fullRecipeDB.ingredientNames[editingIngKey]={
+        en:en,
+        de:document.getElementById('editIng_de').value.trim(),
+        ru:ru,
+        uk:document.getElementById('editIng_uk').value.trim(),
+        es:document.getElementById('editIng_es').value.trim()
+    };
+
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
+        toast('✅ Продукт обновлён!');
+        document.getElementById('ingEditForm').classList.remove('open');
+        editingIngKey=null;
+        renderIngCatalog();
+    }catch(err){toast('❌ '+err.message);}
+}
+
 async function deleteIngredient(key){
-    if(!confirm('Удалить продукт '+key+'?\nОн может использоваться в рецептах!'))return;
+    // Count how many recipes use this ingredient
+    let usedIn=0;
+    if(fullRecipeDB&&fullRecipeDB.recipes){
+        for(const r of Object.values(fullRecipeDB.recipes)){
+            if((r.ingredients||[]).some(i=>i.key===key)) usedIn++;
+        }
+    }
+    const msg=usedIn>0
+        ? 'Продукт "'+key+'" используется в '+usedIn+' рецептах!\nВсё равно удалить?'
+        : 'Удалить продукт "'+key+'"?';
+    if(!confirm(msg))return;
+
     delete fullRecipeDB.ingredientNames[key];
     try{
         const res=await fetch('/api/recipes',{
@@ -1112,7 +1318,7 @@ async function deleteIngredient(key){
             headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
             body:JSON.stringify(fullRecipeDB)
         });
-        if(!res.ok){const d=await res.json();throw new Error(d.error);}
+        if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
         toast('🗑️ Продукт удалён');
         renderIngCatalog();
     }catch(err){toast('❌ '+err.message);}
