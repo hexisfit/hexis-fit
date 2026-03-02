@@ -29,7 +29,8 @@
 
         /* ADMIN */
         .admin{display:none;padding:20px;max-width:900px;margin:0 auto;position:relative}
-        .admin::before{content:'';position:fixed;top:0;left:0;right:0;height:300px;background:linear-gradient(180deg,rgba(168,85,247,0.08) 0%,rgba(236,72,153,0.04) 50%,transparent 100%);pointer-events:none;z-index:0}
+        .admin::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=60') center/cover no-repeat;opacity:0.06;filter:saturate(0.5);pointer-events:none;z-index:0}
+        .admin::after{content:'';position:fixed;top:0;left:0;right:0;height:400px;background:linear-gradient(180deg,rgba(168,85,247,0.08) 0%,rgba(236,72,153,0.04) 50%,transparent 100%);pointer-events:none;z-index:0}
         .admin-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
         .brand{display:flex;align-items:center;gap:12px}
         .brand-icon{width:48px;height:48px;background:linear-gradient(135deg,#a855f7,#ec4899);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 4px 20px rgba(168,85,247,0.3)}
@@ -555,20 +556,29 @@
     <!-- MENU PLANNER -->
     <div class="panel" id="panelMenu">
         <div class="panel-title">📅 Карта меню</div>
-        <div class="panel-desc">Назначайте блюда на каждый день. Кликните на ячейку чтобы выбрать рецепт.</div>
+        <div class="panel-desc">Назначайте блюда на каждый день для конкретного клиента.</div>
 
-        <div class="menu-nav">
-            <button class="menu-nav-btn" onclick="menuPrevWeek()">◀</button>
-            <div class="menu-week-label" id="menuWeekLabel">Неделя 1</div>
-            <button class="menu-nav-btn" onclick="menuNextWeek()">▶</button>
-            <span style="color:#64748b;font-size:0.8rem;margin-left:auto" id="menuDaysInfo"></span>
+        <div class="fg" style="margin-bottom:16px">
+            <label class="fl">👤 Клиент</label>
+            <select class="fs" id="menuClientSelect" onchange="onMenuClientChange()">
+                <option value="">-- Выберите клиента --</option>
+            </select>
         </div>
 
-        <div id="menuGrid"></div>
+        <div id="menuContent" style="display:none">
+            <div class="menu-nav">
+                <button class="menu-nav-btn" onclick="menuPrevWeek()">◀</button>
+                <div class="menu-week-label" id="menuWeekLabel">Неделя 1</div>
+                <button class="menu-nav-btn" onclick="menuNextWeek()">▶</button>
+                <span style="color:#64748b;font-size:0.8rem;margin-left:auto" id="menuDaysInfo"></span>
+            </div>
 
-        <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
-            <button class="modal-save" style="flex:1;margin-top:0" onclick="saveMenu()">💾 Сохранить меню</button>
-            <button class="menu-nav-btn" onclick="addMenuWeek()">＋ Добавить неделю</button>
+            <div id="menuGrid"></div>
+
+            <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+                <button class="modal-save" style="flex:1;margin-top:0" onclick="saveMenu()">💾 Сохранить меню клиента</button>
+                <button class="menu-nav-btn" onclick="addMenuWeek()">＋ Неделя</button>
+            </div>
         </div>
     </div>
 
@@ -582,7 +592,7 @@
                 <button class="picker-tab" onclick="setPickerTab('fav')" id="ptFav">⭐ Избранное</button>
             </div>
             <div class="fg">
-                <input class="fi" id="pickerSearch" placeholder="🔍 Поиск рецепта..." oninput="filterPicker()">
+                <input class="fi" id="pickerSearch" placeholder="🔍 Поиск по названию или ингредиенту..." oninput="filterPicker()">
             </div>
             <div style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap" id="pickerFilters">
                 <button class="menu-nav-btn active" onclick="filterPickerMeal('')" data-meal="">Все</button>
@@ -1535,36 +1545,74 @@ function toggleFavorite(id){
     if(!fullRecipeDB||!fullRecipeDB.recipes[id])return;
     fullRecipeDB.recipes[id].favorite = !fullRecipeDB.recipes[id].favorite;
     renderRecipeList();
-    // Auto-save in background
     fetch('/api/recipes',{
         method:'POST',
         headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
         body:JSON.stringify(fullRecipeDB)
     }).catch(()=>{});
-    toast(fullRecipeDB.recipes[id].favorite ? '⭐ Добавлено в избранное' : '☆ Убрано из избранного');
+    toast(fullRecipeDB.recipes[id].favorite ? '⭐ В избранном' : '☆ Убрано');
 }
 
 // === MENU PLANNER ===
 let menuCurrentWeek = 0;
-let menuData = []; // array of {day, slot, recipeId, scaledFactor, scaledKcal}
+let menuData = [];
+let menuClientAlias = '';
 let pickerDay = 0;
 let pickerSlot = '';
 let pickerMealFilter = '';
-let pickerTabMode = 'all'; // 'all' or 'fav'
+let pickerTabMode = 'all';
 const MENU_SLOTS = ['Breakfast','Snack1','Lunch','Snack2','Dinner'];
-const SLOT_LABELS = {'Breakfast':'🍳 Завтрак','Snack1':'🍎 Снек','Lunch':'🥗 Обед','Snack2':'🍎 Снек','Dinner':'🍽️ Ужин'};
+const SLOT_LABELS = {'Breakfast':'🍳 Завтр.','Snack1':'🍎 Снек','Lunch':'🥗 Обед','Snack2':'🍎 Снек','Dinner':'🍽️ Ужин'};
 
 async function loadMenuPlanner(){
+    // Load recipe DB
     if(!fullRecipeDB){
         try{
             const res=await fetch('/api/recipes',{headers:{'x-coach-pwd':coachPwd}});
             if(res.ok){ try{fullRecipeDB=await res.json();}catch(e){} }
         }catch(e){}
     }
+    // Load clients into selector
+    const sel=document.getElementById('menuClientSelect');
+    try{
+        const res=await fetch('/api/clients',{headers:{'x-coach-pwd':coachPwd}});
+        const data=await res.json();
+        const clients=data.clients||[];
+        sel.innerHTML='<option value="">-- Выберите клиента --</option>'+
+            clients.map(c=>'<option value="'+esc(c.alias)+'"'+(c.alias===menuClientAlias?' selected':'')+'>'+esc(c.name)+' ('+esc(c.alias)+')</option>').join('');
+    }catch(e){
+        sel.innerHTML='<option value="">❌ Ошибка загрузки</option>';
+    }
+    if(menuClientAlias) onMenuClientChange();
+}
+
+async function onMenuClientChange(){
+    const alias=document.getElementById('menuClientSelect').value;
+    menuClientAlias=alias;
+    const content=document.getElementById('menuContent');
+    if(!alias){content.style.display='none';return;}
+    content.style.display='block';
+    menuCurrentWeek=0;
+
+    // Try to load client-specific menu
+    try{
+        const res=await fetch('/api/clients/'+alias+'/menu',{headers:{'x-coach-pwd':coachPwd}});
+        if(res.ok){
+            let data;
+            try{data=await res.json();}catch(e){data=null;}
+            if(data && data.menu && data.menu.length){
+                menuData=JSON.parse(JSON.stringify(data.menu));
+                renderMenuGrid();
+                return;
+            }
+        }
+    }catch(e){}
+
+    // Fallback to global menu28
     if(fullRecipeDB && fullRecipeDB.menu28 && fullRecipeDB.menu28.length){
-        menuData = JSON.parse(JSON.stringify(fullRecipeDB.menu28));
+        menuData=JSON.parse(JSON.stringify(fullRecipeDB.menu28));
     } else {
-        menuData = [];
+        menuData=[];
     }
     renderMenuGrid();
 }
@@ -1697,7 +1745,18 @@ function renderPickerList(){
     if(q){
         recipes=recipes.filter(r=>{
             const names=Object.values(r.names||{}).join(' ').toLowerCase();
-            return names.includes(q)||r.id.toLowerCase().includes(q);
+            if(names.includes(q)||r.id.toLowerCase().includes(q)) return true;
+            // Search by ingredient names
+            if(r.ingredients && fullRecipeDB.ingredientNames){
+                for(const ing of r.ingredients){
+                    const ingNames=fullRecipeDB.ingredientNames[ing.key];
+                    if(ingNames){
+                        const allIngNames=Object.values(ingNames).join(' ').toLowerCase();
+                        if(allIngNames.includes(q)||ing.key.toLowerCase().includes(q)) return true;
+                    }
+                }
+            }
+            return false;
         });
     }
 
@@ -1742,8 +1801,25 @@ function removeMenuSlot(day,slot){
 }
 
 async function saveMenu(){
+    if(!menuClientAlias){toast('❌ Выберите клиента');return;}
+    const cleanMenu=menuData.filter(m=>m.recipeId);
+
+    // Save to client-specific endpoint
+    try{
+        const res=await fetch('/api/clients/'+menuClientAlias+'/menu',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify({menu:cleanMenu})
+        });
+        if(res.ok){
+            toast('✅ Меню сохранено для '+menuClientAlias+'!');
+            return;
+        }
+    }catch(e){}
+
+    // Fallback: save to global menu28
     if(!fullRecipeDB) fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
-    fullRecipeDB.menu28=menuData.filter(m=>m.recipeId);
+    fullRecipeDB.menu28=cleanMenu;
     try{
         const res=await fetch('/api/recipes',{
             method:'POST',
@@ -1751,7 +1827,7 @@ async function saveMenu(){
             body:JSON.stringify(fullRecipeDB)
         });
         if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
-        toast('✅ Меню сохранено!');
+        toast('✅ Меню сохранено (глобально)');
     }catch(err){toast('❌ '+err.message);}
 }
 
