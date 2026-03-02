@@ -267,6 +267,6 @@ function clk(){
 }
 function shr(){if(navigator.share)navigator.share({title:'Wellness',url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert('Link copied')}}
 window.onload=init;
-<\\/script>
+<\/script>
 </body>
 </html>`;
