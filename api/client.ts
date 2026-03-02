@@ -1,3 +1,4 @@
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { list } from "@vercel/blob";
 
 function escH(s: string): string {
@@ -14,14 +15,13 @@ async function blobGet(key: string): Promise<any> {
   } catch { return null; }
 }
 
-export default async function handler(req: Request) {
-  const url = new URL(req.url);
-  const alias = url.pathname.replace("/c/", "").replace(".html", "").toLowerCase();
-  if (!alias) return new Response("Not found", { status: 404 });
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const alias = (req.url || "").replace(/^\/c\//, "").replace(".html", "").toLowerCase().split("?")[0];
+  if (!alias) return res.status(404).send("Not found");
 
   const client: any = await blobGet("clients/" + alias);
   if (!client) {
-    return new Response("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>", { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
+    return res.status(404).setHeader("Content-Type", "text/html; charset=utf-8").send("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>");
   }
 
   const db: any = await blobGet("recipes/database");
@@ -45,10 +45,8 @@ export default async function handler(req: Request) {
   html = html.split("XCLIENTJSONX").join(cJson);
   html = html.split("XDBJSONX").join(dbJson);
 
-  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  return res.setHeader("Content-Type", "text/html; charset=utf-8").send(html);
 }
-
-export const config = { runtime: "edge" };
 
 const PAGE = `
 <!DOCTYPE html>
