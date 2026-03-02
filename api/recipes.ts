@@ -27,17 +27,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const url = new URL(req.url!, `https://${req.headers.host}`);
 
-  // GET /api/recipes/stats
- if (url.searchParams.get("action") === "stats") {
+  if (url.searchParams.get("action") === "stats") {
     const db: any = await blobGet("recipes/database");
     if (!db) return res.json({ uploaded: false });
+    
+    const meals: any = { breakfast: 0, lunch: 0, dinner: 0, snack: 0 };
+    for (const r of Object.values(db.recipes) as any[]) {
+      const m = (r.meal || "").toLowerCase();
+      if (m === "breakfast") meals.breakfast++;
+      else if (m === "lunch") meals.lunch++;
+      else if (m === "dinner") meals.dinner++;
+      else if (m.startsWith("snack")) meals.snack++;
+    }
+    
     return res.json({
       uploaded: true,
       totalRecipes: Object.keys(db.recipes).length,
       totalIngredients: Object.keys(db.ingredientNames).length,
       menuDays: db.meta?.menuDays || 28,
+      meals,
     });
-  }
+}
 
   // POST
   if (req.method === "POST") {
