@@ -861,7 +861,7 @@ function renderRecipeList(){
             <div class="re-icon" style="background:${r.vegan?'#22c55e':mealColors[r.meal]||'#8b5cf6'}">${mealIcons[r.meal]||'🍴'}</div>
             <div style="min-width:0">
                 <div class="re-item-name">${esc(r.names?.ru||r.names?.en||r.id)}</div>
-                <div class="re-item-meta">🔥${r.baseKcal} · P${r.protein} F${r.fat} C${r.carbs} · ⏱${r.cookTimeMin}m${r.vegan?' · 🌱':''}${r.halal?' · ☪️':''}${r.lactoseFree?' · 🥛':''}</div>
+                <div class="re-item-meta">🔥${r.baseKcal} · P${r.protein} F${r.fat} C${r.carbs} · ⏱${r.cookTimeMin}m${r.photo?' · 📷':''}${r.vegan?' · 🌱':''}${r.halal?' · ☪️':''}${r.lactoseFree?' · 🥛':''}</div>
             </div>
         </div>
         <div style="display:flex;gap:4px;flex-shrink:0">
@@ -1772,7 +1772,7 @@ function renderPickerList(){
         (mealIcons[r.meal]||'🍴')+'</div>'+
         '<div class="picker-item-info">'+
         '<div class="picker-item-name">'+(r.favorite?'⭐ ':'')+esc(r.names?.ru||r.names?.en||r.id)+'</div>'+
-        '<div class="picker-item-meta">🔥'+r.baseKcal+' · P'+r.protein+' F'+r.fat+' C'+r.carbs+' · ⏱'+r.cookTimeMin+'m'+(r.vegan?' 🌱':'')+'</div>'+
+        '<div class="picker-item-meta">🔥'+r.baseKcal+' · P'+r.protein+' F'+r.fat+' C'+r.carbs+' · ⏱'+r.cookTimeMin+'m'+(r.photo?' 📷':'')+(r.vegan?' 🌱':'')+'</div>'+
         '</div></div>'
     ).join(''):'<div class="empty">'+(pickerTabMode==='fav'?'⭐ Нет избранных рецептов. Отметьте звёздочкой во вкладке Рецепты.':'🔍 Ничего не найдено')+'</div>';
 }
