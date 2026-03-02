@@ -156,6 +156,17 @@
 
         /* Photo preview */
         .photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-top:8px;display:none}
+        .photo-upload-area{display:flex;gap:8px;align-items:start}
+        .photo-upload-area input[type=file]{display:none}
+        .photo-upload-btn{background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);color:#c084fc;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:inherit;white-space:nowrap;transition:0.2s}
+        .photo-upload-btn:hover{background:rgba(168,85,247,0.2)}
+
+        /* AI button */
+        .ai-btn{background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:white;border:none;padding:10px 18px;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.8rem;white-space:nowrap;transition:0.3s;display:inline-flex;align-items:center;gap:6px}
+        .ai-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(139,92,246,0.3)}
+        .ai-btn:disabled{opacity:0.5;cursor:wait;transform:none}
+        .ai-btn.loading::after{content:'';width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:aispin 0.6s linear infinite;margin-left:4px}
+        @keyframes aispin{to{transform:rotate(360deg)}}
 
         /* Ingredient catalog */
         .cat-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:12px;margin-bottom:4px;transition:0.2s;gap:8px}
@@ -399,7 +410,7 @@
                 <div class="hint">Уникальный код, напр. R041. Для нового — автоматически.</div>
             </div>
 
-            <div class="section-title">📝 Названия (5 языков)</div>
+            <div class="section-title">📝 Названия (5 языков) <button class="ai-btn" onclick="aiTranslateRecipe()" id="aiRecipeBtn">🤖 AI заполнить</button></div>
             <div class="names-grid">
                 <span>🇬🇧</span><input class="fi" id="reName_en" placeholder="English name">
                 <span>🇩🇪</span><input class="fi" id="reName_de" placeholder="Deutscher Name">
@@ -456,8 +467,12 @@
 
             <div class="section-title">📸 Фото блюда</div>
             <div class="fg">
-                <input class="fi" id="rePhoto" placeholder="https://example.com/photo.jpg" oninput="previewPhoto()">
-                <div class="hint">URL фотографии блюда</div>
+                <div class="photo-upload-area">
+                    <input class="fi" id="rePhoto" placeholder="URL фото или загрузите файл ↓" oninput="previewPhoto()" style="flex:1">
+                    <label class="photo-upload-btn" onclick="document.getElementById('rePhotoFile').click()">📁 Файл</label>
+                    <input type="file" id="rePhotoFile" accept="image/*" onchange="handlePhotoUpload(this)">
+                </div>
+                <div class="hint">Вставьте URL или загрузите фото (сохранится как base64 в JSON)</div>
                 <img class="photo-preview" id="rePhotoPreview">
             </div>
 
@@ -523,7 +538,7 @@
 
         <!-- Step 2: Full card -->
         <div class="new-ing-inline" id="ingStep2">
-            <div style="font-weight:700;color:#22c55e;margin-bottom:10px">Шаг 2: Заполните карточку продукта</div>
+            <div style="font-weight:700;color:#22c55e;margin-bottom:10px">Шаг 2: Заполните карточку продукта <button class="ai-btn" onclick="aiTranslateIngredient()" id="aiIngBtn">🤖 AI заполнить</button></div>
             <div class="fg">
                 <label class="fl">Ключ (латиницей, snake_case)</label>
                 <input class="fi" id="newIngKey" placeholder="chicken_thigh" style="font-family:'JetBrains Mono',monospace">
@@ -544,7 +559,7 @@
 
         <!-- Edit ingredient card -->
         <div class="new-ing-inline" id="ingEditForm">
-            <div style="font-weight:700;color:#c084fc;margin-bottom:10px">✏️ Редактировать продукт: <span id="ingEditKey" style="font-family:'JetBrains Mono',monospace"></span></div>
+            <div style="font-weight:700;color:#c084fc;margin-bottom:10px">✏️ Редактировать продукт: <span id="ingEditKey" style="font-family:'JetBrains Mono',monospace"></span> <button class="ai-btn" onclick="aiTranslateEditIngredient()" id="aiEditIngBtn">🤖 AI заполнить</button></div>
             <div class="names-grid">
                 <span>🇷🇺</span><input class="fi" id="editIng_ru" placeholder="Название RU">
                 <span>🇬🇧</span><input class="fi" id="editIng_en" placeholder="Name EN">
@@ -932,7 +947,7 @@ async function deleteRecipe(id){
     }
 }
 
-// === PHOTO PREVIEW ===
+// === PHOTO UPLOAD ===
 function previewPhoto(){
     const url=document.getElementById('rePhoto').value.trim();
     const img=document.getElementById('rePhotoPreview');
@@ -942,6 +957,143 @@ function previewPhoto(){
         img.onerror=function(){img.style.display='none';};
     } else {
         img.style.display='none';
+    }
+}
+
+function handlePhotoUpload(input){
+    const file=input.files[0];
+    if(!file)return;
+    if(file.size>2*1024*1024){toast('❌ Файл слишком большой (макс 2MB)');return;}
+    const reader=new FileReader();
+    reader.onload=function(e){
+        const base64=e.target.result;
+        document.getElementById('rePhoto').value=base64;
+        document.getElementById('rePhotoPreview').src=base64;
+        document.getElementById('rePhotoPreview').style.display='block';
+        toast('✅ Фото загружено');
+    };
+    reader.readAsDataURL(file);
+}
+
+// === AI FUNCTIONS ===
+async function callAI(prompt){
+    try{
+        const res=await fetch('https://api.anthropic.com/v1/messages',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                model:'claude-sonnet-4-20250514',
+                max_tokens:1000,
+                messages:[{role:'user',content:prompt}]
+            })
+        });
+        const data=await res.json();
+        const text=data.content?.map(c=>c.text||'').join('')||'';
+        // Parse JSON from response
+        const jsonMatch=text.match(/\{[\s\S]*\}/);
+        if(jsonMatch) return JSON.parse(jsonMatch[0]);
+        return null;
+    }catch(err){
+        console.error('AI error:',err);
+        return null;
+    }
+}
+
+// AI for ingredient translation
+async function aiTranslateIngredient(){
+    const ru=document.getElementById('newIng_ru').value.trim();
+    if(!ru){toast('❌ Сначала введите название на русском');return;}
+    const btn=document.getElementById('aiIngBtn');
+    btn.disabled=true;btn.classList.add('loading');btn.textContent='🤖 Думаю...';
+    const result=await callAI(
+        'Переведи название продукта питания "'+ru+'" на 4 языка и сгенерируй ключ. Ответь ТОЛЬКО JSON без пояснений:\n'+
+        '{"key":"snake_case_latin","en":"English","de":"Deutsch","uk":"Українська","es":"Español"}\n'+
+        'key должен быть латиницей в snake_case, описывать продукт. Без markdown.'
+    );
+    btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
+    if(result){
+        if(result.key) document.getElementById('newIngKey').value=result.key;
+        if(result.en) document.getElementById('newIng_en').value=result.en;
+        if(result.de) document.getElementById('newIng_de').value=result.de;
+        if(result.uk) document.getElementById('newIng_uk').value=result.uk;
+        if(result.es) document.getElementById('newIng_es').value=result.es;
+        toast('✅ AI заполнил переводы!');
+    } else {
+        toast('❌ AI не смог ответить, попробуйте ещё раз');
+    }
+}
+
+// AI for edit ingredient
+async function aiTranslateEditIngredient(){
+    const ru=document.getElementById('editIng_ru').value.trim();
+    if(!ru){toast('❌ Нет русского названия');return;}
+    const btn=document.getElementById('aiEditIngBtn');
+    btn.disabled=true;btn.classList.add('loading');btn.textContent='🤖 Думаю...';
+    const result=await callAI(
+        'Переведи название продукта питания "'+ru+'" на 4 языка. Ответь ТОЛЬКО JSON:\n'+
+        '{"en":"English","de":"Deutsch","uk":"Українська","es":"Español"}\nБез markdown.'
+    );
+    btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
+    if(result){
+        if(result.en) document.getElementById('editIng_en').value=result.en;
+        if(result.de) document.getElementById('editIng_de').value=result.de;
+        if(result.uk) document.getElementById('editIng_uk').value=result.uk;
+        if(result.es) document.getElementById('editIng_es').value=result.es;
+        toast('✅ Переводы заполнены!');
+    } else {
+        toast('❌ AI ошибка');
+    }
+}
+
+// AI for recipe — translations + steps
+async function aiTranslateRecipe(){
+    const ru=document.getElementById('reName_ru').value.trim();
+    const en=document.getElementById('reName_en').value.trim();
+    const name=ru||en;
+    if(!name){toast('❌ Введите название рецепта (RU или EN)');return;}
+    const btn=document.getElementById('aiRecipeBtn');
+    btn.disabled=true;btn.classList.add('loading');btn.textContent='🤖 Думаю...';
+
+    // Collect current ingredients for context
+    const ings=[];
+    document.querySelectorAll('#reIngredientsWrap .ing-row').forEach(row=>{
+        const sel=row.querySelector('select');
+        if(sel.value && fullRecipeDB?.ingredientNames?.[sel.value]){
+            ings.push(fullRecipeDB.ingredientNames[sel.value].ru||fullRecipeDB.ingredientNames[sel.value].en||sel.value);
+        }
+    });
+    const ingText=ings.length?'\nИнгредиенты: '+ings.join(', '):'';
+
+    const result=await callAI(
+        'Рецепт блюда: "'+name+'"'+ingText+'\n\n'+
+        'Заполни данные. Ответь ТОЛЬКО JSON без markdown:\n'+
+        '{\n'+
+        '  "names":{"en":"...","de":"...","ru":"...","uk":"...","es":"..."},\n'+
+        '  "steps":[\n'+
+        '    {"en":"Step 1 text","de":"Schritt 1","ru":"Шаг 1","uk":"Крок 1","es":"Paso 1"},\n'+
+        '    {"en":"Step 2...","de":"...","ru":"...","uk":"...","es":"..."}\n'+
+        '  ]\n'+
+        '}\n'+
+        'names — название блюда на 5 языках.\n'+
+        'steps — 3-6 шагов приготовления, каждый на 5 языках. Кратко и понятно.'
+    );
+    btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
+    if(result){
+        if(result.names){
+            if(result.names.en) document.getElementById('reName_en').value=result.names.en;
+            if(result.names.de) document.getElementById('reName_de').value=result.names.de;
+            if(result.names.ru) document.getElementById('reName_ru').value=result.names.ru;
+            if(result.names.uk) document.getElementById('reName_uk').value=result.names.uk;
+            if(result.names.es) document.getElementById('reName_es').value=result.names.es;
+        }
+        if(result.steps && result.steps.length){
+            renderStepRows(result.steps);
+            toast('✅ AI заполнил названия и '+result.steps.length+' шагов!');
+        } else {
+            toast('✅ AI заполнил названия!');
+        }
+    } else {
+        toast('❌ AI ошибка, попробуйте ещё');
     }
 }
 
