@@ -30,8 +30,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const weeks = parseInt(c.courseWeeks) || 4;
   const totalDays = weeks * 7;
 
-  const cJson = JSON.stringify(JSON.stringify(c)).split("</").join("<\\/");
-  const dbJson = db ? JSON.stringify(JSON.stringify(db)).split("</").join("<\\/") : "null";
+  const cJson = JSON.stringify(c);
+const dbJson = db ? JSON.stringify(db) : "null";
 
   let html = PAGE;
   html = html.split("XNAMEX").join(escH(c.name || "Client"));
