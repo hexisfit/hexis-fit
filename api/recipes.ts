@@ -28,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const url = new URL(req.url!, `https://${req.headers.host}`);
 
   // GET /api/recipes/stats
-  if (url.pathname.endsWith("/stats")) {
+ if (url.searchParams.get("action") === "stats") {
     const db: any = await blobGet("recipes/database");
     if (!db) return res.json({ uploaded: false });
     return res.json({
