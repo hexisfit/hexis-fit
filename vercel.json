@@ -1,12 +1,29 @@
 {
   "functions": {
-    "api/api.ts": { "runtime": "nodejs20.x" }
+    "api/api.ts": {
+      "runtime": "@vercel/node"
+    }
   },
   "rewrites": [
-    { "source": "/c/:alias", "destination": "/api/client" },
-    { "source": "/api/recipes/:path*", "destination": "/api/api" },
-    { "source": "/api/clients/:path*", "destination": "/api/api" },
-    { "source": "/api/clients", "destination": "/api/api" },
-    { "source": "/api/recipes", "destination": "/api/api" }
+    {
+      "source": "/c/:alias",
+      "destination": "/api/client"
+    },
+    {
+      "source": "/api/recipes/:path*",
+      "destination": "/api/api"
+    },
+    {
+      "source": "/api/clients/:path*",
+      "destination": "/api/api"
+    },
+    {
+      "source": "/api/clients",
+      "destination": "/api/api"
+    },
+    {
+      "source": "/api/recipes",
+      "destination": "/api/api"
+    }
   ]
 }
