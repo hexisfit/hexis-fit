@@ -221,7 +221,7 @@ function init(){
     document.getElementById('acts').innerHTML='<a class="ab wa" href="https://wa.me/XWAX" target="_blank">WhatsApp</a><button class="ab" onclick="shr()">Share</button>';
   }catch(e){document.getElementById('ms').innerHTML='<p style="padding:40px;color:red;text-align:center;grid-column:1/-1">ERR: '+e.message+'</p>'}
 }
-function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')"><span>'+i+'</span><span class="wv">'+(i*300)+'ml</span></button>';document.getElementById('wbs').innerHTML=h}
+function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')">'+i+'</button>';document.getElementById('wbs').innerHTML=h}
 function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll('.wb').forEach(function(b,i){b.classList.toggle('on',i<wtr)});document.getElementById('wc').textContent=(wtr*0.3).toFixed(1)+' / 2.4 L'}
 function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[(d-1)%7]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
 function sd(d){cd=d;rdts();ren()}
