@@ -18,7 +18,7 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           mkdir -p backups
           
-          HTTP_CODE=$(curl -s -o backups/hexis-backup-${DATE}.json -w "%{http_code}" \
+          HTTP_CODE=$(curl -sL -o backups/hexis-backup-${DATE}.json -w "%{http_code}" \
             -H "x-backup-secret: ${{ secrets.BACKUP_SECRET }}" \
             "https://hexis.fit/api/backup")
           
