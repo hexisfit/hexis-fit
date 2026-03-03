@@ -7,23 +7,22 @@ function escH(s: string): string {
 
 async function blobGet(key: string): Promise<any> {
   try {
-    const r = await list({ prefix: key + ".json", token: process.env.BLOB_READ_WRITE_TOKEN! });
-    if (!r.blobs.length) return null;
-    const resp = await fetch(r.blobs[0].url);
-    return resp.ok ? await resp.json() : null;
+    const result = await list({ prefix: key + ".json", token: process.env.BLOB_READ_WRITE_TOKEN });
+    if (!result.blobs.length) return null;
+    const resp = await fetch(result.blobs[0].url);
+    if (!resp.ok) return null;
+    return await resp.json();
   } catch { return null; }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Vercel rewrite: /c/anna -> /api/client?path=anna
   const pathParam = Array.isArray(req.query.path) ? req.query.path[0] : (req.query.path || "");
   const alias = pathParam.replace(/\.html$/, "").toLowerCase();
   if (!alias) return res.status(404).send("Not found");
 
   const client: any = await blobGet("clients/" + alias);
   if (!client) {
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    return res.status(404).send("<html><body style='font-family:sans-serif;text-align:center;padding:80px'><h1>404</h1></body></html>");
+    return res.setHeader("Content-Type", "text/html; charset=utf-8").status(404).send("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>");
   }
 
   const db: any = await blobGet("recipes/database");
@@ -48,9 +47,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   html = html.split("XDBJSONX").join(dbJson);
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.status(200);
-  return res.end(html);
+  return res.status(200).end(html);
 }
+
+export const config = { maxDuration: 15 };
 
 const PAGE = `
 <!DOCTYPE html>
@@ -63,8 +63,7 @@ const PAGE = `
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
 body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center;position:relative}
 body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=50') center/cover no-repeat;opacity:0.04;pointer-events:none;z-index:0}
-.ctr{position:relative;z-index:1}
-.ctr{max-width:900px;width:100%;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-radius:32px;box-shadow:0 20px 50px rgba(0,20,40,0.12);padding:20px 24px;border:1px solid rgba(255,255,255,0.5)}
+.ctr{max-width:900px;width:100%;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-radius:32px;box-shadow:0 20px 50px rgba(0,20,40,0.12);padding:20px 24px;border:1px solid rgba(255,255,255,0.5);position:relative;z-index:1}
 .hero{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#1f2a3a 0%,#2d4055 100%);color:white;padding:14px 24px;border-radius:24px;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .hero-left{display:flex;flex-direction:column;gap:4px}
 .hero-name{font-size:1.8rem;font-weight:700}
@@ -192,13 +191,13 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="abar" id="acts"></div>
 <div class="ft">Powered by <a href="https://hexis.fit">hexis.fit</a></div>
 </div>
-<div class="rpop" id="rpop" onclick="crp(event)"><div class="rcard"><button class="rclose" onclick="crp()">x</button><div id="rpopC"></div></div></div>
+<div class="rpop" id="rpop"><div class="rcard"><button class="rclose" id="rcl">x</button><div id="rpopC"></div></div></div>
 <script>
 var C=XCLIENTJSONX;
 var DB=XDBJSONX;
 var L='XLANGX',TZ='XTZX',WK=parseInt('XWEEKSX')||4,TD=parseInt('XDAYSX')||28;
 var cd=1,done={},wtr=0,gper='day';
-var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'},detail:{en:'Details',uk:'Детальніше',ru:'Подробнее',de:'Details',es:'Detalles'},stps:{en:'How to cook',uk:'Як готувати',ru:'Как готовить',de:'Zubereitung',es:'Preparacion'}};
+var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'},detail:{en:'Details',uk:'Details',ru:'Details',de:'Details',es:'Detalles'},stps:{en:'How to cook',uk:'How to cook',ru:'How to cook',de:'Zubereitung',es:'Preparacion'}};
 var IC={Breakfast:'B',Lunch:'L',Dinner:'D',Snack1:'S',Snack2:'S'};
 var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sa','Do']};
 function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
@@ -238,7 +237,7 @@ function ren(){
     h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+(r.photo?' &#128247;':'')+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
     if(tg)h+='<div class="mtags">'+tg+'</div>';
     h+=ig;
-    h+='<div class="mc-btns"><button class="dbtn" onclick="orp(\''+s.recipeId+'\','+f+')">&#128214; '+t('detail')+'</button><button class="dbtn dn'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div></div>';
+    h+='<div class="mc-btns"><button class="dbtn" onclick="orp(&#39;'+s.recipeId+'&#39;,'+f+')">&#128214; '+t('detail')+'</button><button class="dbtn dn'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div></div>';
   });
   document.getElementById('ms').innerHTML=h||'<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">No meals</p>';
   ut();rg();
@@ -259,10 +258,10 @@ function rg(){
   if(!arr.length){document.getElementById('gr').innerHTML='';return}
   var h='<div class="gs"><div class="gs-t"><span>'+t('gl')+'</span><span style="font-size:0.8rem;color:#5f748b">'+arr.length+'</span></div>';
   h+='<div class="gp">';
-  h+='<button class="gpb'+(gper==='day'?' on':'')+'" onclick="sgp(\'day\')">'+t('p1')+'</button>';
-  h+='<button class="gpb'+(gper==='week'?' on':'')+'" onclick="sgp(\'week\')">'+t('p7')+'</button>';
-  h+='<button class="gpb'+(gper==='2week'?' on':'')+'" onclick="sgp(\'2week\')">'+t('p14')+'</button>';
-  h+='<button class="gpb'+(gper==='all'?' on':'')+'" onclick="sgp(\'all\')">'+t('pa')+'</button>';
+  h+='<button class="gpb'+(gper==='day'?' on':'')+'" onclick="sgp(&#39;day&#39;)">'+t('p1')+'</button>';
+  h+='<button class="gpb'+(gper==='week'?' on':'')+'" onclick="sgp(&#39;week&#39;)">'+t('p7')+'</button>';
+  h+='<button class="gpb'+(gper==='2week'?' on':'')+'" onclick="sgp(&#39;2week&#39;)">'+t('p14')+'</button>';
+  h+='<button class="gpb'+(gper==='all'?' on':'')+'" onclick="sgp(&#39;all&#39;)">'+t('pa')+'</button>';
   h+='</div><div class="gg">';
   arr.forEach(function(i){h+='<label class="gi"><input type="checkbox" onchange="gc(this)"><span class="gn">'+i.n+'</span><span class="ig">'+i.g+' g</span></label>'});
   h+='</div><div class="gshr">';
@@ -298,9 +297,10 @@ function clk(){
   setTimeout(clk,30000);
 }
 function shr(){if(navigator.share)navigator.share({title:'Wellness',url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert('Link copied')}}
-function orp(rid,factor){var r=DB.recipes[rid];if(!r)return;var f=factor||1;var nm=r.names?(r.names[L]||r.names.en):'?';var kc=Math.round((r.baseKcal||0)*f);var pr=Math.round((r.protein||0)*f),fa=Math.round((r.fat||0)*f),ca=Math.round((r.carbs||0)*f);var h='';if(r.photo)h+='<img class="rphoto" src="'+r.photo+'" onerror="this.style.display=\'none\'">';h+='<div class="rbody"><div class="rtitle">'+nm+'</div>';if(r.cookTimeMin)h+='<div class="rtime">&#9201; '+r.cookTimeMin+' min</div>';h+='<div class="rmacros"><div class="rpill rk">&#128293; '+kc+' kcal</div><div class="rpill">P '+pr+'g</div><div class="rpill">F '+fa+'g</div><div class="rpill">C '+ca+'g</div></div>';var tg=[];if(r.vegan)tg.push('&#127793; Vegan');if(r.halal)tg.push('&#9770; Halal');if(r.lactoseFree)tg.push('&#129371; LF');if(tg.length)h+='<div class="rtags">'+tg.map(function(x){return'<span class="mtag tv">'+x+'</span>'}).join('')+'</div>';if(r.ingredients&&r.ingredients.length){h+='<div class="rsec"><h3>&#128722; '+t('ing')+'</h3><ul class="ring">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li><span>'+n+'</span><span class="rg">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}if(r.steps&&r.steps.length){h+='<div class="rsec"><h3>&#128104;&#8205;&#127859; '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div class="rstep"><div class="rsnum">'+(i+1)+'</div><div class="rstxt">'+txt+'</div></div>'});h+='</div>'}h+='</div>';document.getElementById('rpopC').innerHTML=h;document.getElementById('rpop').classList.add('open');document.body.style.overflow='hidden'}
-function crp(e){if(!e||e.target.classList.contains('rpop')){document.getElementById('rpop').classList.remove('open');document.body.style.overflow=''}}
-window.onload=init;
+
+function orp(rid,factor){var r=DB.recipes[rid];if(!r)return;var f=factor||1;var nm=r.names?(r.names[L]||r.names.en):'?';var kc=Math.round((r.baseKcal||0)*f);var pr=Math.round((r.protein||0)*f),fa=Math.round((r.fat||0)*f),ca=Math.round((r.carbs||0)*f);var h='';if(r.photo)h+='<img class="rphoto" src="'+r.photo+'">';h+='<div class="rbody"><div class="rtitle">'+nm+'</div>';if(r.cookTimeMin)h+='<div class="rtime">&#9201; '+r.cookTimeMin+' min</div>';h+='<div class="rmacros"><div class="rpill rk">&#128293; '+kc+' kcal</div><div class="rpill">P '+pr+'g</div><div class="rpill">F '+fa+'g</div><div class="rpill">C '+ca+'g</div></div>';if(r.ingredients&&r.ingredients.length){h+='<div class="rsec"><h3>&#128722; '+t('ing')+'</h3><ul class="ring">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li><span>'+n+'</span><span class="rg">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}if(r.steps&&r.steps.length){h+='<div class="rsec"><h3>&#128104;&#8205;&#127859; '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div class="rstep"><div class="rsnum">'+(i+1)+'</div><div class="rstxt">'+txt+'</div></div>'});h+='</div>'}h+='</div>';document.getElementById('rpopC').innerHTML=h;document.getElementById('rpop').classList.add('open');document.body.style.overflow='hidden'}
+function crp(){document.getElementById('rpop').classList.remove('open');document.body.style.overflow=''}
+window.onload=function(){document.getElementById('rpop').onclick=function(e){if(e.target===this)crp()};document.getElementById('rcl').onclick=crp;init()};
 </script>
 </body>
 </html>`;
