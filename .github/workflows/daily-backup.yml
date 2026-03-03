@@ -1,0 +1,45 @@
+name: Daily Backup hexis.fit
+
+on:
+  schedule:
+    # Every day at 03:00 UTC (04:00 Berlin time winter, 05:00 summer)
+    - cron: '0 3 * * *'
+  workflow_dispatch: # Manual trigger from GitHub UI
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download backup from hexis.fit
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          mkdir -p backups
+          
+          HTTP_CODE=$(curl -s -o backups/hexis-backup-${DATE}.json -w "%{http_code}" \
+            -H "x-backup-secret: ${{ secrets.BACKUP_SECRET }}" \
+            "https://hexis.fit/api/backup")
+          
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Backup failed with HTTP $HTTP_CODE"
+            cat backups/hexis-backup-${DATE}.json
+            exit 1
+          fi
+          
+          # Validate JSON
+          python3 -c "import json; d=json.load(open('backups/hexis-backup-${DATE}.json')); print(f'✅ Backup OK: {d[\"stats\"][\"recipeCount\"]} recipes, {d[\"stats\"][\"clientCount\"]} clients, {d[\"stats\"][\"menuEntries\"]} menu entries')"
+
+      - name: Keep only last 30 backups
+        run: |
+          cd backups
+          ls -t hexis-backup-*.json | tail -n +31 | xargs -r rm
+          echo "📁 Backups in storage: $(ls hexis-backup-*.json | wc -l)"
+
+      - name: Commit and push backup
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add backups/
+          git diff --staged --quiet || (git commit -m "🗄️ Daily backup $(date +%Y-%m-%d)" && git push)
