@@ -143,6 +143,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:
 </style>
 </head>
 <body>
+<div id="mainWrap">
 <div class="ctr">
 <div class="hero">
   <div class="hero-left">
@@ -173,6 +174,8 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="abar" id="acts"></div>
 <div class="ft">Powered by <a href="https://hexis.fit">hexis.fit</a></div>
 </div>
+</div>
+<div id="recipeView" style="display:none;padding:16px 12px;max-width:900px;width:100%;margin:0 auto"></div>
 <script>
 var C=XCLIENTJSONX;
 var DB=XDBJSONX;
@@ -182,7 +185,14 @@ var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{
 var IC={Breakfast:'B',Lunch:'L',Dinner:'D',Snack1:'S',Snack2:'S'};
 var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sa','Do']};
 function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
-function sdate(){var d=C.courseStart?new Date(C.courseStart):new Date();if(!C.courseStart){var w=d.getDay();d.setDate(d.getDate()-(w===0?6:w-1))}d.setHours(0,0,0,0);return d}
+function sdate(){
+  if(C.courseStart){var d=new Date(C.courseStart);d.setHours(0,0,0,0);return d}
+  var now=new Date();
+  var parts=now.toLocaleDateString('en-CA',{timeZone:TZ}).split('-');
+  var d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  d.setHours(0,0,0,0);
+  return d
+}
 function ddate(n){var s=new Date(sdate().getTime());s.setDate(s.getDate()+n-1);return s}
 function tdn(){
   var now=new Date();
@@ -210,7 +220,7 @@ function init(){
 }
 function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')">'+i+'</button>';document.getElementById('wbs').innerHTML=h}
 function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll('.wb').forEach(function(b,i){b.classList.toggle('on',i<wtr)});document.getElementById('wc').textContent=(wtr*0.3).toFixed(1)+' / 2.4 L'}
-function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[(d-1)%7]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
+function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var wd=dt.getDay();var wdi=wd===0?6:wd-1;var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[wdi]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
 function sd(d){cd=d;rdts();ren()}
 function gm(d){if(!DB||!DB.menu28)return[];var r=DB.menu28.filter(function(m){return m.day===d});if(!r.length)r=DB.menu28.filter(function(m){return m.day===((d-1)%28)+1});return r.filter(function(s){var rc=DB.recipes[s.recipeId];if(!rc)return false;if(C.filterVegan&&!rc.vegan)return false;if(C.filterHalal&&!rc.halal)return false;if(C.filterLF&&!rc.lactoseFree)return false;if(C.filterSpeed&&rc.cookSpeed!==C.filterSpeed)return false;return true})}
 function ren(){
@@ -292,49 +302,32 @@ function orp(rid,factor){
   var nm=r.names?(r.names[L]||r.names.en):'?';
   var kc=Math.round((r.baseKcal||0)*f);
   var pr=Math.round((r.protein||0)*f),fa=Math.round((r.fat||0)*f),ca=Math.round((r.carbs||0)*f);
-  var h='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+nm+' - hexis.fit</title>';
-  h+='<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#127793;</text></svg>">';
-  h+='<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,-apple-system,sans-serif}';
-  h+='body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center}';
-  h+='.ctr{max-width:600px;width:100%;background:white;border-radius:28px;box-shadow:0 20px 50px rgba(0,20,40,0.12);overflow:hidden}';
-  h+='.rphoto{width:100%;max-height:260px;object-fit:cover}';
-  h+='.rbody{padding:22px}';
-  h+='.back{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer;background:white;border:1px solid #cbd5e2;color:#1f2a3a;text-decoration:none;margin-bottom:12px;transition:0.2s}';
-  h+='.back:hover{background:#f0f4fa}';
-  h+='.rtitle{font-size:1.6rem;font-weight:800;color:#1f2a3a;margin-bottom:8px}';
-  h+='.rmacros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}';
-  h+='.rpill{background:#f0f4f9;padding:8px 14px;border-radius:16px;font-weight:700;font-size:0.85rem;color:#2c3e50}';
-  h+='.rpill.rk{background:#fef3c7;color:#92400e}';
-  h+='.rtime{color:#6b7b90;font-size:0.9rem;margin-bottom:14px}';
-  h+='.rsec{margin:18px 0}';
-  h+='.rsec h3{font-size:1.1rem;font-weight:700;color:#2c3e50;margin-bottom:10px}';
-  h+='.ring{list-style:none;padding:0;margin:0}';
-  h+='.ring li{padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:0.9rem;color:#3b4d64;display:flex;justify-content:space-between}';
-  h+='.ring li:last-child{border-bottom:none}';
-  h+='.rg{color:#6b7b90;font-weight:600}';
-  h+='.rstep{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}';
-  h+='.rsnum{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-weight:700;font-size:0.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}';
-  h+='.rstxt{font-size:0.92rem;color:#3b4d64;line-height:1.6;flex:1}';
-  h+='.rtags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}';
-  h+='.mtag{font-size:0.75rem;padding:3px 10px;border-radius:12px;font-weight:600}';
-  h+='.tv{background:#dcfce7;color:#166534}.th{background:#e0e7ff;color:#3730a3}.tl{background:#fef3c7;color:#92400e}';
-  h+='.ft{text-align:center;margin-top:16px;padding:12px;color:#94a3b8;font-size:0.8rem}';
-  h+='</style></head><body>';
-  h+='<div class="ctr">';
-  if(r.photo)h+='<img class="rphoto" src="'+r.photo+'">';
-  h+='<div class="rbody">';
-  h+='<a class="back" href="javascript:history.back()">&#8592; '+({ru:'Назад',uk:'Назад',en:'Back',de:'Zurueck',es:'Volver'}[L]||'Back')+'</a>';
-  h+='<div class="rtitle">'+nm+'</div>';
-  if(r.cookTimeMin)h+='<div class="rtime">&#9201; '+r.cookTimeMin+' min</div>';
-  h+='<div class="rmacros"><div class="rpill rk">&#128293; '+kc+' kcal</div><div class="rpill">P '+pr+'g</div><div class="rpill">F '+fa+'g</div><div class="rpill">C '+ca+'g</div></div>';
-  var tg=[];if(r.vegan)tg.push('<span class="mtag tv">&#127793; Vegan</span>');if(r.halal)tg.push('<span class="mtag th">&#9770; Halal</span>');if(r.lactoseFree)tg.push('<span class="mtag tl">&#129371; LF</span>');
-  if(tg.length)h+='<div class="rtags">'+tg.join('')+'</div>';
-  if(r.ingredients&&r.ingredients.length){h+='<div class="rsec"><h3>&#128722; '+t('ing')+'</h3><ul class="ring">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li><span>'+n+'</span><span class="rg">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}
-  if(r.steps&&r.steps.length){h+='<div class="rsec"><h3>&#128104;&#8205;&#127859; '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div class="rstep"><div class="rsnum">'+(i+1)+'</div><div class="rstxt">'+txt+'</div></div>'});h+='</div>'}
-  h+='</div></div>';
-  h+='<div class="ft">Powered by <a href="https://hexis.fit" style="color:#6366f1">hexis.fit</a></div>';
-  h+='</body></html>';
-  document.open();document.write(h);document.close()
+  var backText={ru:'Назад',uk:'Назад',en:'Back',de:'Zurueck',es:'Volver'}[L]||'Back';
+  document.getElementById('mainWrap').style.display='none';
+  var rv=document.getElementById('recipeView');
+  var h='<div style="max-width:600px;width:100%;margin:0 auto">';
+  h+='<button class="backBtn" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer;background:white;border:1px solid #cbd5e2;color:#1f2a3a;margin-bottom:12px;font-family:inherit">&#8592; '+backText+'</button>';
+  h+='<div style="background:white;border-radius:28px;box-shadow:0 20px 50px rgba(0,20,40,0.12);overflow:hidden">';
+  if(r.photo)h+='<img style="width:100%;max-height:260px;object-fit:cover" src="'+r.photo+'">';
+  h+='<div style="padding:22px">';
+  h+='<div style="font-size:1.6rem;font-weight:800;color:#1f2a3a;margin-bottom:8px">'+nm+'</div>';
+  if(r.cookTimeMin)h+='<div style="color:#6b7b90;font-size:0.9rem;margin-bottom:14px">&#9201; '+r.cookTimeMin+' min</div>';
+  h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px"><div style="background:#fef3c7;color:#92400e;padding:8px 14px;border-radius:16px;font-weight:700;font-size:0.85rem">&#128293; '+kc+' kcal</div><div style="background:#f0f4f9;padding:8px 14px;border-radius:16px;font-weight:700;font-size:0.85rem;color:#2c3e50">P '+pr+'g</div><div style="background:#f0f4f9;padding:8px 14px;border-radius:16px;font-weight:700;font-size:0.85rem;color:#2c3e50">F '+fa+'g</div><div style="background:#f0f4f9;padding:8px 14px;border-radius:16px;font-weight:700;font-size:0.85rem;color:#2c3e50">C '+ca+'g</div></div>';
+  var tg=[];if(r.vegan)tg.push('<span style="background:#dcfce7;color:#166534;font-size:0.75rem;padding:3px 10px;border-radius:12px;font-weight:600">&#127793; Vegan</span>');if(r.halal)tg.push('<span style="background:#e0e7ff;color:#3730a3;font-size:0.75rem;padding:3px 10px;border-radius:12px;font-weight:600">&#9770; Halal</span>');if(r.lactoseFree)tg.push('<span style="background:#fef3c7;color:#92400e;font-size:0.75rem;padding:3px 10px;border-radius:12px;font-weight:600">&#129371; LF</span>');
+  if(tg.length)h+='<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">'+tg.join('')+'</div>';
+  if(r.ingredients&&r.ingredients.length){h+='<div style="margin:18px 0"><h3 style="font-size:1.1rem;font-weight:700;color:#2c3e50;margin-bottom:10px">&#128722; '+t('ing')+'</h3><ul style="list-style:none;padding:0;margin:0">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li style="padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:0.9rem;color:#3b4d64;display:flex;justify-content:space-between"><span>'+n+'</span><span style="color:#6b7b90;font-weight:600">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}
+  if(r.steps&&r.steps.length){h+='<div style="margin:18px 0"><h3 style="font-size:1.1rem;font-weight:700;color:#2c3e50;margin-bottom:10px">&#128104;&#8205;&#127859; '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start"><div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-weight:700;font-size:0.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div><div style="font-size:0.92rem;color:#3b4d64;line-height:1.6;flex:1">'+txt+'</div></div>'});h+='</div>'}
+  h+='</div></div></div>';
+  rv.innerHTML=h;
+  rv.style.display='block';
+  var bb=rv.querySelector('.backBtn');
+  if(bb)bb.addEventListener('click',crb);
+  window.scrollTo(0,0);
+}
+function crb(){
+  document.getElementById('recipeView').style.display='none';
+  document.getElementById('recipeView').innerHTML='';
+  document.getElementById('mainWrap').style.display='block';
 }
 window.onload=init;
 </script>
