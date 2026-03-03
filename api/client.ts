@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const client: any = await blobGet("clients/" + alias);
   if (!client) {
-    return res.setHeader("Content-Type", "text/html; charset=utf-8").status(404).send("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>");
+    return res.setHeader("Content-Type","text/html; charset=utf-8").status(404).send("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>");
   }
 
   const db: any = await blobGet("recipes/database");
@@ -61,9 +61,8 @@ const PAGE = `
 <title>XNAMEX - Wellness - hexis.fit</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center;position:relative}
-body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=50') center/cover no-repeat;opacity:0.04;pointer-events:none;z-index:0}
-.ctr{max-width:900px;width:100%;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-radius:32px;box-shadow:0 20px 50px rgba(0,20,40,0.12);padding:20px 24px;border:1px solid rgba(255,255,255,0.5);position:relative;z-index:1}
+body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center}
+.ctr{max-width:900px;width:100%;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-radius:32px;box-shadow:0 20px 50px rgba(0,20,40,0.12);padding:20px 24px;border:1px solid rgba(255,255,255,0.5)}
 .hero{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#1f2a3a 0%,#2d4055 100%);color:white;padding:14px 24px;border-radius:24px;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .hero-left{display:flex;flex-direction:column;gap:4px}
 .hero-name{font-size:1.8rem;font-weight:700}
@@ -108,32 +107,6 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:
 .db{padding:10px;border:2px solid #d0dae8;border-radius:16px;font-weight:700;font-size:0.85rem;cursor:pointer;transition:0.2s;background:white;font-family:inherit;color:#1f2a3a;text-align:center;width:100%;margin-top:auto}
 .db:hover{border-color:#22c55e;background:#f0fdf4}
 .db.on{background:#22c55e;color:white;border-color:#22c55e}
-.mc-btns{display:flex;gap:6px;margin-top:auto}
-.dbtn{flex:1;padding:10px;border:2px solid #d0dae8;border-radius:16px;font-weight:700;font-size:0.82rem;cursor:pointer;transition:0.2s;background:white;font-family:inherit;color:#1f2a3a;text-align:center}
-.dbtn:hover{border-color:#6366f1;background:#eef2ff}
-.dbtn.dn:hover{border-color:#22c55e;background:#f0fdf4}
-.dbtn.dn.on{background:#22c55e;color:white;border-color:#22c55e}
-.rpop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);justify-content:center;align-items:center;z-index:1000;padding:12px}
-.rpop.open{display:flex}
-.rcard{background:white;max-width:580px;width:100%;border-radius:28px;box-shadow:0 30px 60px rgba(0,0,0,0.3);position:relative;max-height:90vh;overflow-y:auto}
-.rclose{position:absolute;top:10px;right:12px;font-size:1.6rem;cursor:pointer;color:#7f8b9f;background:rgba(255,255,255,0.9);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;z-index:2}
-.rphoto{width:100%;height:200px;object-fit:cover;border-radius:28px 28px 0 0}
-.rbody{padding:22px}
-.rtitle{font-size:1.4rem;font-weight:800;color:#1f2a3a;margin-bottom:4px}
-.rtime{color:#6b7b90;font-size:0.85rem;margin-bottom:12px}
-.rmacros{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
-.rpill{background:#f0f4f9;padding:6px 12px;border-radius:16px;font-weight:700;font-size:0.8rem;color:#2c3e50}
-.rpill.rk{background:#fef3c7;color:#92400e}
-.rsec{margin:14px 0}
-.rsec h3{font-size:1rem;font-weight:700;color:#2c3e50;margin-bottom:8px}
-.ring{list-style:none;padding:0;margin:0}
-.ring li{padding:7px 10px;border-bottom:1px solid #f0f2f5;font-size:0.88rem;color:#3b4d64;display:flex;justify-content:space-between}
-.ring li:last-child{border-bottom:none}
-.ring .rg{color:#6b7b90;font-weight:600;font-size:0.82rem}
-.rstep{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start}
-.rsnum{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-weight:700;font-size:0.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.rstxt{font-size:0.9rem;color:#3b4d64;line-height:1.5;flex:1}
-.rtags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
 .dtot{background:#e3eaf3;padding:14px 22px;border-radius:40px;display:flex;justify-content:space-between;font-weight:700;margin:12px 0;flex-wrap:wrap}
 .tdone{color:#22c55e;font-size:1.2rem}
 .gs{background:#f0f7e8;border-radius:20px;padding:14px 20px;margin:12px 0;border-left:5px solid #6b8e6b}
@@ -191,13 +164,12 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:
 <div class="abar" id="acts"></div>
 <div class="ft">Powered by <a href="https://hexis.fit">hexis.fit</a></div>
 </div>
-<div class="rpop" id="rpop"><div class="rcard"><button class="rclose" id="rcl">x</button><div id="rpopC"></div></div></div>
 <script>
 var C=XCLIENTJSONX;
 var DB=XDBJSONX;
 var L='XLANGX',TZ='XTZX',WK=parseInt('XWEEKSX')||4,TD=parseInt('XDAYSX')||28;
 var cd=1,done={},wtr=0,gper='day';
-var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'},detail:{en:'Details',uk:'Details',ru:'Details',de:'Details',es:'Detalles'},stps:{en:'How to cook',uk:'How to cook',ru:'How to cook',de:'Zubereitung',es:'Preparacion'}};
+var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
 var IC={Breakfast:'B',Lunch:'L',Dinner:'D',Snack1:'S',Snack2:'S'};
 var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sa','Do']};
 function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
@@ -234,10 +206,10 @@ function ren(){
     var tg='';if(r.vegan)tg+='<span class="mtag tv">Vegan</span>';if(r.halal)tg+='<span class="mtag th">Halal</span>';if(r.lactoseFree)tg+='<span class="mtag tl">LF</span>';
     var ig='';
     if(r.ingredients){ig='<div class="mi"><h4>'+t('ing')+'</h4>';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;ig+='<div class="ir"><span>'+n+'</span><span class="ig">'+Math.round(i.gramsBase*f)+' g</span></div>'});ig+='</div>'}
-    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+(r.photo?' &#128247;':'')+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
+    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
     if(tg)h+='<div class="mtags">'+tg+'</div>';
     h+=ig;
-    h+='<div class="mc-btns"><button class="dbtn" onclick="orp(&#39;'+s.recipeId+'&#39;,'+f+')">&#128214; '+t('detail')+'</button><button class="dbtn dn'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div></div>';
+    h+='<button class="db'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div>';
   });
   document.getElementById('ms').innerHTML=h||'<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">No meals</p>';
   ut();rg();
@@ -297,10 +269,7 @@ function clk(){
   setTimeout(clk,30000);
 }
 function shr(){if(navigator.share)navigator.share({title:'Wellness',url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert('Link copied')}}
-
-function orp(rid,factor){var r=DB.recipes[rid];if(!r)return;var f=factor||1;var nm=r.names?(r.names[L]||r.names.en):'?';var kc=Math.round((r.baseKcal||0)*f);var pr=Math.round((r.protein||0)*f),fa=Math.round((r.fat||0)*f),ca=Math.round((r.carbs||0)*f);var h='';if(r.photo)h+='<img class="rphoto" src="'+r.photo+'">';h+='<div class="rbody"><div class="rtitle">'+nm+'</div>';if(r.cookTimeMin)h+='<div class="rtime">&#9201; '+r.cookTimeMin+' min</div>';h+='<div class="rmacros"><div class="rpill rk">&#128293; '+kc+' kcal</div><div class="rpill">P '+pr+'g</div><div class="rpill">F '+fa+'g</div><div class="rpill">C '+ca+'g</div></div>';if(r.ingredients&&r.ingredients.length){h+='<div class="rsec"><h3>&#128722; '+t('ing')+'</h3><ul class="ring">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li><span>'+n+'</span><span class="rg">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}if(r.steps&&r.steps.length){h+='<div class="rsec"><h3>&#128104;&#8205;&#127859; '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div class="rstep"><div class="rsnum">'+(i+1)+'</div><div class="rstxt">'+txt+'</div></div>'});h+='</div>'}h+='</div>';document.getElementById('rpopC').innerHTML=h;document.getElementById('rpop').classList.add('open');document.body.style.overflow='hidden'}
-function crp(){document.getElementById('rpop').classList.remove('open');document.body.style.overflow=''}
-window.onload=function(){document.getElementById('rpop').onclick=function(e){if(e.target===this)crp()};document.getElementById('rcl').onclick=crp;init()};
+window.onload=init;
 </script>
 </body>
 </html>`;
