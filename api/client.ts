@@ -59,9 +59,12 @@ const PAGE = `
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XNAMEX - Wellness - hexis.fit</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#127793;</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center}
+body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center;position:relative}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=50') center/cover no-repeat;opacity:0.04;pointer-events:none;z-index:0}
+.ctr{position:relative;z-index:1}
 .ctr{max-width:900px;width:100%;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-radius:32px;box-shadow:0 20px 50px rgba(0,20,40,0.12);padding:20px 24px;border:1px solid rgba(255,255,255,0.5)}
 .hero{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#1f2a3a 0%,#2d4055 100%);color:white;padding:14px 24px;border-radius:24px;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .hero-left{display:flex;flex-direction:column;gap:4px}
@@ -107,6 +110,12 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .db{padding:10px;border:2px solid #d0dae8;border-radius:16px;font-weight:700;font-size:0.85rem;cursor:pointer;transition:0.2s;background:white;font-family:inherit;color:#1f2a3a;text-align:center;width:100%;margin-top:auto}
 .db:hover{border-color:#22c55e;background:#f0fdf4}
 .db.on{background:#22c55e;color:white;border-color:#22c55e}
+.mc-btns{display:flex;gap:6px;margin-top:auto}
+.dbtn{flex:1;padding:10px;border:2px solid #d0dae8;border-radius:16px;font-weight:700;font-size:0.82rem;cursor:pointer;transition:0.2s;background:white;font-family:inherit;color:#1f2a3a;text-align:center}
+.dbtn:hover{border-color:#6366f1;background:#eef2ff}
+.dbtn.dn{border-color:#d0dae8}
+.dbtn.dn:hover{border-color:#22c55e;background:#f0fdf4}
+.dbtn.dn.on{background:#22c55e;color:white;border-color:#22c55e}
 .dtot{background:#e3eaf3;padding:14px 22px;border-radius:40px;display:flex;justify-content:space-between;font-weight:700;margin:12px 0;flex-wrap:wrap}
 .tdone{color:#22c55e;font-size:1.2rem}
 .gs{background:#f0f7e8;border-radius:20px;padding:14px 20px;margin:12px 0;border-left:5px solid #6b8e6b}
@@ -169,7 +178,7 @@ var C=XCLIENTJSONX;
 var DB=XDBJSONX;
 var L='XLANGX',TZ='XTZX',WK=parseInt('XWEEKSX')||4,TD=parseInt('XDAYSX')||28;
 var cd=1,done={},wtr=0,gper='day';
-var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
+var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'},detail:{en:'Details',uk:'Details',ru:'Details',de:'Details',es:'Detalles'},stps:{en:'How to cook',uk:'How to cook',ru:'How to cook',de:'Zubereitung',es:'Preparacion'}};
 var IC={Breakfast:'B',Lunch:'L',Dinner:'D',Snack1:'S',Snack2:'S'};
 var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sa','Do']};
 function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
@@ -190,7 +199,7 @@ function init(){
     document.getElementById('acts').innerHTML='<a class="ab wa" href="https://wa.me/XWAX" target="_blank">WhatsApp</a><button class="ab" onclick="shr()">Share</button>';
   }catch(e){document.getElementById('ms').innerHTML='<p style="padding:40px;color:red;text-align:center;grid-column:1/-1">ERR: '+e.message+'</p>'}
 }
-function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')"><span>'+i+'</span><span class="wv">'+(i*300)+'ml</span></button>';document.getElementById('wbs').innerHTML=h}
+function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')"></button>';document.getElementById('wbs').innerHTML=h}
 function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll('.wb').forEach(function(b,i){b.classList.toggle('on',i<wtr)});document.getElementById('wc').textContent=(wtr*0.3).toFixed(1)+' / 2.4 L'}
 function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[(d-1)%7]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
 function sd(d){cd=d;rdts();ren()}
@@ -206,10 +215,10 @@ function ren(){
     var tg='';if(r.vegan)tg+='<span class="mtag tv">Vegan</span>';if(r.halal)tg+='<span class="mtag th">Halal</span>';if(r.lactoseFree)tg+='<span class="mtag tl">LF</span>';
     var ig='';
     if(r.ingredients){ig='<div class="mi"><h4>'+t('ing')+'</h4>';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;ig+='<div class="ir"><span>'+n+'</span><span class="ig">'+Math.round(i.gramsBase*f)+' g</span></div>'});ig+='</div>'}
-    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
+    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+(r.photo?' &#128247;':'')+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
     if(tg)h+='<div class="mtags">'+tg+'</div>';
     h+=ig;
-    h+='<button class="db'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div>';
+    h+='<div class="mc-btns"><button class="dbtn" onclick="orp(&#39;'+s.recipeId+'&#39;,'+f+')">&#128214; '+t('detail')+'</button><button class="dbtn dn'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div></div>';
   });
   document.getElementById('ms').innerHTML=h||'<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">No meals</p>';
   ut();rg();
@@ -269,6 +278,55 @@ function clk(){
   setTimeout(clk,30000);
 }
 function shr(){if(navigator.share)navigator.share({title:'Wellness',url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert('Link copied')}}
+function orp(rid,factor){
+  var r=DB.recipes[rid];if(!r)return;var f=factor||1;
+  var nm=r.names?(r.names[L]||r.names.en):'?';
+  var kc=Math.round((r.baseKcal||0)*f);
+  var pr=Math.round((r.protein||0)*f),fa=Math.round((r.fat||0)*f),ca=Math.round((r.carbs||0)*f);
+  var h='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+nm+' - hexis.fit</title>';
+  h+='<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#127793;</text></svg>">';
+  h+='<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,-apple-system,sans-serif}';
+  h+='body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center}';
+  h+='.ctr{max-width:600px;width:100%;background:white;border-radius:28px;box-shadow:0 20px 50px rgba(0,20,40,0.12);overflow:hidden}';
+  h+='.rphoto{width:100%;max-height:260px;object-fit:cover}';
+  h+='.rbody{padding:22px}';
+  h+='.back{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer;background:white;border:1px solid #cbd5e2;color:#1f2a3a;text-decoration:none;margin-bottom:12px;transition:0.2s}';
+  h+='.back:hover{background:#f0f4fa}';
+  h+='.rtitle{font-size:1.6rem;font-weight:800;color:#1f2a3a;margin-bottom:8px}';
+  h+='.rmacros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}';
+  h+='.rpill{background:#f0f4f9;padding:8px 14px;border-radius:16px;font-weight:700;font-size:0.85rem;color:#2c3e50}';
+  h+='.rpill.rk{background:#fef3c7;color:#92400e}';
+  h+='.rtime{color:#6b7b90;font-size:0.9rem;margin-bottom:14px}';
+  h+='.rsec{margin:18px 0}';
+  h+='.rsec h3{font-size:1.1rem;font-weight:700;color:#2c3e50;margin-bottom:10px}';
+  h+='.ring{list-style:none;padding:0;margin:0}';
+  h+='.ring li{padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:0.9rem;color:#3b4d64;display:flex;justify-content:space-between}';
+  h+='.ring li:last-child{border-bottom:none}';
+  h+='.rg{color:#6b7b90;font-weight:600}';
+  h+='.rstep{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}';
+  h+='.rsnum{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-weight:700;font-size:0.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}';
+  h+='.rstxt{font-size:0.92rem;color:#3b4d64;line-height:1.6;flex:1}';
+  h+='.rtags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}';
+  h+='.mtag{font-size:0.75rem;padding:3px 10px;border-radius:12px;font-weight:600}';
+  h+='.tv{background:#dcfce7;color:#166534}.th{background:#e0e7ff;color:#3730a3}.tl{background:#fef3c7;color:#92400e}';
+  h+='.ft{text-align:center;margin-top:16px;padding:12px;color:#94a3b8;font-size:0.8rem}';
+  h+='</style></head><body>';
+  h+='<div class="ctr">';
+  if(r.photo)h+='<img class="rphoto" src="'+r.photo+'">';
+  h+='<div class="rbody">';
+  h+='<a class="back" href="javascript:history.back()">&#8592; '+t('dn')+'</a>';
+  h+='<div class="rtitle">'+nm+'</div>';
+  if(r.cookTimeMin)h+='<div class="rtime">&#9201; '+r.cookTimeMin+' min</div>';
+  h+='<div class="rmacros"><div class="rpill rk">&#128293; '+kc+' kcal</div><div class="rpill">P '+pr+'g</div><div class="rpill">F '+fa+'g</div><div class="rpill">C '+ca+'g</div></div>';
+  var tg=[];if(r.vegan)tg.push('<span class="mtag tv">&#127793; Vegan</span>');if(r.halal)tg.push('<span class="mtag th">&#9770; Halal</span>');if(r.lactoseFree)tg.push('<span class="mtag tl">&#129371; LF</span>');
+  if(tg.length)h+='<div class="rtags">'+tg.join('')+'</div>';
+  if(r.ingredients&&r.ingredients.length){h+='<div class="rsec"><h3>&#128722; '+t('ing')+'</h3><ul class="ring">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li><span>'+n+'</span><span class="rg">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}
+  if(r.steps&&r.steps.length){h+='<div class="rsec"><h3>&#128104;&#8205;&#127859; '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div class="rstep"><div class="rsnum">'+(i+1)+'</div><div class="rstxt">'+txt+'</div></div>'});h+='</div>'}
+  h+='</div></div>';
+  h+='<div class="ft">Powered by <a href="https://hexis.fit" style="color:#6366f1">hexis.fit</a></div>';
+  h+='</body></html>';
+  var w=window.open('','_blank');if(w){w.document.write(h);w.document.close()}else{document.open();document.write(h);document.close()}
+}
 window.onload=init;
 </script>
 </body>
