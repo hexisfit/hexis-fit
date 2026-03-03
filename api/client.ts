@@ -184,7 +184,16 @@ var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср'
 function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
 function sdate(){var d=C.courseStart?new Date(C.courseStart):new Date();if(!C.courseStart){var w=d.getDay();d.setDate(d.getDate()-(w===0?6:w-1))}d.setHours(0,0,0,0);return d}
 function ddate(n){var s=new Date(sdate().getTime());s.setDate(s.getDate()+n-1);return s}
-function tdn(){var n=new Date(),s=sdate(),d=Math.floor((n-s)/86400000)+1;return d>=1&&d<=TD?d:1}
+function tdn(){
+  var now=new Date();
+  var opts={timeZone:TZ};
+  var parts=now.toLocaleDateString('en-CA',opts).split('-');
+  var today=new Date(parts[0],parts[1]-1,parts[2]);
+  today.setHours(0,0,0,0);
+  var s=sdate();
+  var d=Math.floor((today-s)/86400000)+1;
+  return d>=1&&d<=TD?d:1
+}
 function sl(l){L=l;document.querySelectorAll('.lb').forEach(function(b){b.classList.toggle('active',b.dataset.l===l)});document.getElementById('wl').textContent=t('water');document.getElementById('wg').textContent=t('wg');document.getElementById('csub').textContent=WK+t('crs')+' - '+TD+' days';rdts();ren();clk()}
 function init(){
   try{
@@ -199,7 +208,7 @@ function init(){
     document.getElementById('acts').innerHTML='<a class="ab wa" href="https://wa.me/XWAX" target="_blank">WhatsApp</a><button class="ab" onclick="shr()">Share</button>';
   }catch(e){document.getElementById('ms').innerHTML='<p style="padding:40px;color:red;text-align:center;grid-column:1/-1">ERR: '+e.message+'</p>'}
 }
-function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')"></button>';document.getElementById('wbs').innerHTML=h}
+function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')">'+i+'</button>';document.getElementById('wbs').innerHTML=h}
 function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll('.wb').forEach(function(b,i){b.classList.toggle('on',i<wtr)});document.getElementById('wc').textContent=(wtr*0.3).toFixed(1)+' / 2.4 L'}
 function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[(d-1)%7]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
 function sd(d){cd=d;rdts();ren()}
@@ -314,7 +323,7 @@ function orp(rid,factor){
   h+='<div class="ctr">';
   if(r.photo)h+='<img class="rphoto" src="'+r.photo+'">';
   h+='<div class="rbody">';
-  h+='<a class="back" href="javascript:history.back()">&#8592; '+t('dn')+'</a>';
+  h+='<a class="back" href="javascript:history.back()">&#8592; '+({ru:'Назад',uk:'Назад',en:'Back',de:'Zurueck',es:'Volver'}[L]||'Back')+'</a>';
   h+='<div class="rtitle">'+nm+'</div>';
   if(r.cookTimeMin)h+='<div class="rtime">&#9201; '+r.cookTimeMin+' min</div>';
   h+='<div class="rmacros"><div class="rpill rk">&#128293; '+kc+' kcal</div><div class="rpill">P '+pr+'g</div><div class="rpill">F '+fa+'g</div><div class="rpill">C '+ca+'g</div></div>';
@@ -325,7 +334,7 @@ function orp(rid,factor){
   h+='</div></div>';
   h+='<div class="ft">Powered by <a href="https://hexis.fit" style="color:#6366f1">hexis.fit</a></div>';
   h+='</body></html>';
-  var w=window.open('','_blank');if(w){w.document.write(h);w.document.close()}else{document.open();document.write(h);document.close()}
+  document.open();document.write(h);document.close()
 }
 window.onload=init;
 </script>
