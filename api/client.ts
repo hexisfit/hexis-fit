@@ -252,7 +252,7 @@ function gtxt(only){
     if(only&&!cb.checked)return;
     lines.push((cb.checked?'[x] ':'[ ] ')+el.querySelector('.gn').textContent+' - '+el.querySelector('.ig').textContent);
   });
-  return t('gl')+' (Day '+cd+')\n'+lines.join('\n');
+  return t('gl')+' (Day '+cd+')\\n'+lines.join('\\n');
 }
 function gcp(only){navigator.clipboard.writeText(gtxt(only)).then(function(){alert('OK')}).catch(function(){})}
 function gss(only){var tx=gtxt(only);if(navigator.share)navigator.share({title:t('gl'),text:tx}).catch(function(){gcp(only)});else gcp(only)}
