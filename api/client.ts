@@ -31,8 +31,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const weeks = parseInt(c.courseWeeks) || 4;
   const totalDays = weeks * 7;
 
-  const cJson = JSON.stringify(c).split("<").join("\\u003c");
-  const dbJson = db ? JSON.stringify(db).split("<").join("\\u003c") : "null";
+  const cJson = JSON.stringify(c).split("</").join("<\\/");
+  const dbJson = db ? JSON.stringify(db).split("</").join("<\\/") : "null";
 
   let html = PAGE;
   html = html.split("XNAMEX").join(escH(c.name || "Client"));
@@ -48,7 +48,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   html = html.split("XDBJSONX").join(dbJson);
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
-  return res.send(html);
+  res.status(200);
+  return res.end(html);
 }
 
 const PAGE = `
@@ -234,10 +235,10 @@ function ren(){
     var tg='';if(r.vegan)tg+='<span class="mtag tv">Vegan</span>';if(r.halal)tg+='<span class="mtag th">Halal</span>';if(r.lactoseFree)tg+='<span class="mtag tl">LF</span>';
     var ig='';
     if(r.ingredients){ig='<div class="mi"><h4>'+t('ing')+'</h4>';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;ig+='<div class="ir"><span>'+n+'</span><span class="ig">'+Math.round(i.gramsBase*f)+' g</span></div>'});ig+='</div>'}
-    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+(r.photo?' \ud83d\udcf7':'')+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
+    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+(r.photo?' &#128247;':'')+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
     if(tg)h+='<div class="mtags">'+tg+'</div>';
     h+=ig;
-    h+='<div class="mc-btns"><button class="dbtn" onclick="orp(\''+s.recipeId+'\','+f+')">\ud83d\udcd6 '+t('detail')+'</button><button class="dbtn dn'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div></div>';
+    h+='<div class="mc-btns"><button class="dbtn" onclick="orp(\''+s.recipeId+'\','+f+')">&#128214; '+t('detail')+'</button><button class="dbtn dn'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div></div>';
   });
   document.getElementById('ms').innerHTML=h||'<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">No meals</p>';
   ut();rg();
@@ -297,7 +298,7 @@ function clk(){
   setTimeout(clk,30000);
 }
 function shr(){if(navigator.share)navigator.share({title:'Wellness',url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert('Link copied')}}
-function orp(rid,factor){var r=DB.recipes[rid];if(!r)return;var f=factor||1;var nm=r.names?(r.names[L]||r.names.en):'?';var kc=Math.round((r.baseKcal||0)*f);var pr=Math.round((r.protein||0)*f),fa=Math.round((r.fat||0)*f),ca=Math.round((r.carbs||0)*f);var h='';if(r.photo)h+='<img class="rphoto" src="'+r.photo+'" onerror="this.style.display=\'none\'">';h+='<div class="rbody"><div class="rtitle">'+nm+'</div>';if(r.cookTimeMin)h+='<div class="rtime">\u23f1 '+r.cookTimeMin+' min</div>';h+='<div class="rmacros"><div class="rpill rk">\ud83d\udd25 '+kc+' kcal</div><div class="rpill">P '+pr+'g</div><div class="rpill">F '+fa+'g</div><div class="rpill">C '+ca+'g</div></div>';var tg=[];if(r.vegan)tg.push('\ud83c\udf31 Vegan');if(r.halal)tg.push('\u262a\ufe0f Halal');if(r.lactoseFree)tg.push('\ud83e\udd5b LF');if(tg.length)h+='<div class="rtags">'+tg.map(function(x){return'<span class="mtag tv">'+x+'</span>'}).join('')+'</div>';if(r.ingredients&&r.ingredients.length){h+='<div class="rsec"><h3>\ud83d\uded2 '+t('ing')+'</h3><ul class="ring">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li><span>'+n+'</span><span class="rg">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}if(r.steps&&r.steps.length){h+='<div class="rsec"><h3>\ud83d\udc68\u200d\ud83c\udf73 '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div class="rstep"><div class="rsnum">'+(i+1)+'</div><div class="rstxt">'+txt+'</div></div>'});h+='</div>'}h+='</div>';document.getElementById('rpopC').innerHTML=h;document.getElementById('rpop').classList.add('open');document.body.style.overflow='hidden'}
+function orp(rid,factor){var r=DB.recipes[rid];if(!r)return;var f=factor||1;var nm=r.names?(r.names[L]||r.names.en):'?';var kc=Math.round((r.baseKcal||0)*f);var pr=Math.round((r.protein||0)*f),fa=Math.round((r.fat||0)*f),ca=Math.round((r.carbs||0)*f);var h='';if(r.photo)h+='<img class="rphoto" src="'+r.photo+'" onerror="this.style.display=\'none\'">';h+='<div class="rbody"><div class="rtitle">'+nm+'</div>';if(r.cookTimeMin)h+='<div class="rtime">&#9201; '+r.cookTimeMin+' min</div>';h+='<div class="rmacros"><div class="rpill rk">&#128293; '+kc+' kcal</div><div class="rpill">P '+pr+'g</div><div class="rpill">F '+fa+'g</div><div class="rpill">C '+ca+'g</div></div>';var tg=[];if(r.vegan)tg.push('&#127793; Vegan');if(r.halal)tg.push('&#9770; Halal');if(r.lactoseFree)tg.push('&#129371; LF');if(tg.length)h+='<div class="rtags">'+tg.map(function(x){return'<span class="mtag tv">'+x+'</span>'}).join('')+'</div>';if(r.ingredients&&r.ingredients.length){h+='<div class="rsec"><h3>&#128722; '+t('ing')+'</h3><ul class="ring">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li><span>'+n+'</span><span class="rg">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}if(r.steps&&r.steps.length){h+='<div class="rsec"><h3>&#128104;&#8205;&#127859; '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div class="rstep"><div class="rsnum">'+(i+1)+'</div><div class="rstxt">'+txt+'</div></div>'});h+='</div>'}h+='</div>';document.getElementById('rpopC').innerHTML=h;document.getElementById('rpop').classList.add('open');document.body.style.overflow='hidden'}
 function crp(e){if(!e||e.target.classList.contains('rpop')){document.getElementById('rpop').classList.remove('open');document.body.style.overflow=''}}
 window.onload=init;
 </script>
