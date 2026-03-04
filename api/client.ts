@@ -204,7 +204,7 @@ var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{
 var IC={Breakfast:'B',Lunch:'L',Dinner:'D',Snack1:'S',Snack2:'S'};
 var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sa','Do']};
 function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
-function tzToday(){var p=new Date().toLocaleDateString('en-CA',{timeZone:TZ}).split('-');return new Date(+p[0],p[1]-1,+p[2])}
+function tzToday(){try{var f=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'});var s=f.format(new Date());var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}catch(e){var d=new Date();d.setHours(0,0,0,0);return d}}
 function sdate(){if(C.courseStart){var d=new Date(C.courseStart);d.setHours(0,0,0,0);return d}var d=tzToday();var w=d.getDay();d.setDate(d.getDate()-(w===0?6:w-1));d.setHours(0,0,0,0);return d}
 function ddate(n){var s=new Date(sdate().getTime());s.setDate(s.getDate()+n-1);return s}
 function tdn(){var t=tzToday(),s=sdate(),d=Math.floor((t-s)/86400000)+1;return d>=1&&d<=TD?d:1}
