@@ -102,7 +102,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .mtags{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap;justify-content:center}
 .mtag{font-size:0.7rem;padding:2px 8px;border-radius:12px;font-weight:600}
 .tv{background:#dcfce7;color:#166534}.th{background:#e0e7ff;color:#3730a3}.tl{background:#fef3c7;color:#92400e}
-.mi{background:#f8fafc;border-radius:14px;padding:10px 14px;margin-bottom:10px;flex-grow:1}
+.mi{background:#f8fafc;border-radius:14px;padding:10px 14px;margin-bottom:10px;flex-grow:1;width:100%;text-align:left}
 .mi h4{font-size:0.75rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
 .ir{display:flex;justify-content:space-between;padding:2px 0;font-size:0.85rem}
 .ig{font-weight:600;color:#2563eb;font-family:monospace;font-size:0.82rem}
