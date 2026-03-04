@@ -1,4 +1,3 @@
-Content is user-generated and unverified.
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { list } from "@vercel/blob";
 
@@ -96,11 +95,11 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .dt.now{border-color:#ff4d4d;background:#fff5f5}
 .dt.act.now{background:#1f2a3a;color:white;border-color:#ff4d4d}
 .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0}
-.mc{background:white;border-radius:24px;padding:18px;box-shadow:0 6px 16px rgba(0,0,0,0.02);border:1px solid #eef3f9;display:flex;flex-direction:column;align-items:center;text-align:center}
+.mc{background:white;border-radius:24px;padding:18px;box-shadow:0 6px 16px rgba(0,0,0,0.02);border:1px solid #eef3f9;display:flex;flex-direction:column}
 .mt{font-size:0.8rem;font-weight:700;text-transform:uppercase;color:#5f748b;margin-bottom:4px}
 .mn{font-size:1.15rem;font-weight:700;color:#1f2a3a;margin-bottom:6px}
 .mb{background:#edf2f9;padding:6px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;display:inline-block;margin-bottom:8px}
-.mtags{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap;justify-content:center}
+.mtags{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
 .mtag{font-size:0.7rem;padding:2px 8px;border-radius:12px;font-weight:600}
 .tv{background:#dcfce7;color:#166534}.th{background:#e0e7ff;color:#3730a3}.tl{background:#fef3c7;color:#92400e}
 .mi{background:#f8fafc;border-radius:14px;padding:10px 14px;margin-bottom:10px;flex-grow:1}
@@ -225,7 +224,7 @@ function init(){
 }
 function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')">'+i+'</button>';document.getElementById('wbs').innerHTML=h}
 function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll('.wb').forEach(function(b,i){b.classList.toggle('on',i<wtr)});document.getElementById('wc').textContent=(wtr*0.3).toFixed(1)+' / 2.4 L'}
-function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var wd=dt.getDay();var wi=wd===0?6:wd-1;var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[wi]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
+function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[(d-1)%7]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
 function sd(d){cd=d;rdts();ren()}
 function gm(d){if(!DB||!DB.menu28)return[];var r=DB.menu28.filter(function(m){return m.day===d});if(!r.length)r=DB.menu28.filter(function(m){return m.day===((d-1)%28)+1});return r.filter(function(s){var rc=DB.recipes[s.recipeId];if(!rc)return false;if(C.filterVegan&&!rc.vegan)return false;if(C.filterHalal&&!rc.halal)return false;if(C.filterLF&&!rc.lactoseFree)return false;if(C.filterSpeed&&rc.cookSpeed!==C.filterSpeed)return false;return true})}
 function ren(){
