@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { put, list, del } from "@vercel/blob";
 
-const COACH_PWD = "29051980";
+const COACH_PWD = process.env.COACH_PWD || "";
 
 function cors(res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -56,14 +56,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       const clientData = {
         name: data.name, alias,
-        heightMet: data.heightMet || "165 cm",
-        weightMet: data.weightMet || "60 kg",
-        heightImp: data.heightImp || "5'5\"",
-        weightImp: data.weightImp || "132 lbs",
-        kcal: data.kcal || "1500-1600",
-        city: data.city || "Kleve, Germany",
+        heightMet: data.heightMet || "",
+        weightMet: data.weightMet || "",
+        heightImp: data.heightImp || "",
+        weightImp: data.weightImp || "",
+        kcal: data.kcal || "",
+        city: data.city || "",
         timezone: data.timezone || "Europe/Berlin",
-        whatsapp: data.whatsapp || "380505827191",
+        whatsapp: data.whatsapp || "",
         lang: data.lang || "en",
         courseWeeks: data.courseWeeks || "4",
         courseStart: data.courseStart || "",
