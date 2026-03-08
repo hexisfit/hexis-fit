@@ -48,7 +48,6 @@ export default async function handler(req: Request) {
   return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
 }
 
-export const config = { runtime: "edge" };
 
 const PAGE = `
 <!DOCTYPE html>
