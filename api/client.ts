@@ -16,13 +16,13 @@ async function blobGet(key: string): Promise<any> {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const alias = ((req.query.path as string) || "").replace(".html", "").toLowerCase();
+  const pathParam = Array.isArray(req.query.path) ? req.query.path[0] : (req.query.path || "");
+  const alias = pathParam.replace(".html", "").toLowerCase();
   if (!alias) return res.status(404).send("Not found");
 
   const client: any = await blobGet("clients/" + alias);
   if (!client) {
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    return res.status(404).end("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>");
+    return res.setHeader("Content-Type","text/html; charset=utf-8").status(404).send("<html><body style='font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh'><h1>404 - Not found</h1></body></html>");
   }
 
   const db: any = await blobGet("recipes/database");
@@ -50,6 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   return res.status(200).end(html);
 }
 
+export const config = { maxDuration: 15 };
 
 const PAGE = `
 <!DOCTYPE html>
@@ -58,6 +59,7 @@ const PAGE = `
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XNAMEX - Wellness - hexis.fit</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#127793;</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
 body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;align-items:center}
@@ -72,13 +74,14 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .lsw{display:flex;gap:4px;flex-wrap:wrap}
 .lb{background:white;border:1px solid #ccd7e6;padding:5px 12px;border-radius:30px;font-weight:600;cursor:pointer;color:#1f2a3a;font-size:0.85rem;transition:0.2s;font-family:inherit}
 .lb.active{background:#1f2a3a;color:white;border-color:#1f2a3a}
-.ibar{background:white;border-radius:50px;padding:8px 18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px;box-shadow:0 3px 8px rgba(0,0,0,0.02);border:1px solid #e2eaf3;gap:8px;font-size:0.9rem}
+.ibar{background:white;border-radius:50px;padding:8px 18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 3px 8px rgba(0,0,0,0.02);border:1px solid #e2eaf3;gap:8px;font-size:0.9rem}
 .today-badge{background:#fff5f5;padding:4px 12px;border-radius:50px;font-weight:700;color:#1f2a3a;border:2px solid #ff6b6b}
 .clk{font-family:monospace;font-size:1rem;font-weight:600;color:#1f2a3a;background:#f0f5fc;padding:3px 10px;border-radius:30px}
-.wt{background:#e3f2fd;border-radius:24px;padding:12px 18px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.wth{font-size:0.9rem;font-weight:600;color:#1f2a3a;background:#e8f5e9;padding:3px 10px;border-radius:30px}
+.wt{background:#e3f2fd;border-radius:24px;padding:12px 18px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;text-align:center}
 .wt-title{font-weight:700;color:#0277bd;font-size:0.9rem}
 .wt-goal{font-size:0.85rem;color:#01579b}
-.wt-btns{display:flex;gap:6px;flex-wrap:wrap}
+.wt-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .wb{width:38px;height:38px;border-radius:50%;border:2px solid #90caf9;background:white;color:#1565c0;font-weight:700;font-size:0.75rem;cursor:pointer;transition:0.2s;font-family:inherit;display:flex;align-items:center;justify-content:center;flex-direction:column;line-height:1}
 .wb .wv{font-size:0.55rem;color:#64b5f6}
 .wb.on{background:#0288d1;color:white;border-color:#0288d1}
@@ -92,20 +95,46 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .dt.now{border-color:#ff4d4d;background:#fff5f5}
 .dt.act.now{background:#1f2a3a;color:white;border-color:#ff4d4d}
 .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0}
-.mc{background:white;border-radius:24px;padding:18px;box-shadow:0 6px 16px rgba(0,0,0,0.02);border:1px solid #eef3f9;display:flex;flex-direction:column}
+.mc{background:white;border-radius:24px;padding:18px;box-shadow:0 6px 16px rgba(0,0,0,0.02);border:1px solid #eef3f9;display:flex;flex-direction:column;align-items:center;text-align:center}
 .mt{font-size:0.8rem;font-weight:700;text-transform:uppercase;color:#5f748b;margin-bottom:4px}
 .mn{font-size:1.15rem;font-weight:700;color:#1f2a3a;margin-bottom:6px}
 .mb{background:#edf2f9;padding:6px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;display:inline-block;margin-bottom:8px}
-.mtags{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.mtags{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap;justify-content:center}
 .mtag{font-size:0.7rem;padding:2px 8px;border-radius:12px;font-weight:600}
 .tv{background:#dcfce7;color:#166534}.th{background:#e0e7ff;color:#3730a3}.tl{background:#fef3c7;color:#92400e}
-.mi{background:#f8fafc;border-radius:14px;padding:10px 14px;margin-bottom:10px;flex-grow:1}
+.mi{background:#f8fafc;border-radius:14px;padding:10px 14px;margin-bottom:10px;flex-grow:1;width:100%;text-align:left}
 .mi h4{font-size:0.75rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
 .ir{display:flex;justify-content:space-between;padding:2px 0;font-size:0.85rem}
 .ig{font-weight:600;color:#2563eb;font-family:monospace;font-size:0.82rem}
 .db{padding:10px;border:2px solid #d0dae8;border-radius:16px;font-weight:700;font-size:0.85rem;cursor:pointer;transition:0.2s;background:white;font-family:inherit;color:#1f2a3a;text-align:center;width:100%;margin-top:auto}
 .db:hover{border-color:#22c55e;background:#f0fdf4}
 .db.on{background:#22c55e;color:white;border-color:#22c55e}
+.mc-btns{display:flex;gap:6px;margin-top:auto}
+.dbtn{flex:1;padding:10px;border:2px solid #d0dae8;border-radius:16px;font-weight:700;font-size:0.82rem;cursor:pointer;transition:0.2s;background:white;font-family:inherit;color:#1f2a3a;text-align:center}
+.dbtn:hover{border-color:#6366f1;background:#eef2ff}
+.dbtn.dn{border-color:#d0dae8}
+.dbtn.dn:hover{border-color:#22c55e;background:#f0fdf4}
+.dbtn.dn.on{background:#22c55e;color:white;border-color:#22c55e}
+#recipeView{display:none;padding:16px 12px;max-width:600px;width:100%;margin:0 auto}
+.rv-back{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:50px;font-weight:600;font-size:0.9rem;cursor:pointer;background:white;border:1px solid #cbd5e2;color:#1f2a3a;margin-bottom:12px;font-family:inherit;transition:0.2s}
+.rv-back:hover{background:#f0f4fa}
+.rv-card{background:white;border-radius:28px;box-shadow:0 20px 50px rgba(0,20,40,0.12);overflow:hidden}
+.rv-photo{width:calc(100% - 24px);max-height:300px;object-fit:cover;object-position:center;border-radius:20px;display:block;margin:12px auto}
+.rv-body{padding:22px}
+.rv-title{font-size:1.6rem;font-weight:800;color:#1f2a3a;margin-bottom:8px}
+.rv-macros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.rv-pill{background:#f0f4f9;padding:8px 14px;border-radius:16px;font-weight:700;font-size:0.85rem;color:#2c3e50}
+.rv-pill.rk{background:#fef3c7;color:#92400e}
+.rv-time{color:#6b7b90;font-size:0.9rem;margin-bottom:14px}
+.rv-sec{margin:18px 0}
+.rv-sec h3{font-size:1.1rem;font-weight:700;color:#2c3e50;margin-bottom:10px}
+.rv-list{list-style:none;padding:0;margin:0}
+.rv-list li{padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:0.9rem;color:#3b4d64;display:flex;justify-content:space-between}
+.rv-list li:last-child{border-bottom:none}
+.rv-g{color:#6b7b90;font-weight:600}
+.rv-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.rv-sn{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;font-weight:700;font-size:0.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rv-st{font-size:0.92rem;color:#3b4d64;line-height:1.6;flex:1}
 .dtot{background:#e3eaf3;padding:14px 22px;border-radius:40px;display:flex;justify-content:space-between;font-weight:700;margin:12px 0;flex-wrap:wrap}
 .tdone{color:#22c55e;font-size:1.2rem}
 .gs{background:#f0f7e8;border-radius:20px;padding:14px 20px;margin:12px 0;border-left:5px solid #6b8e6b}
@@ -118,7 +147,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 .gi.chk{opacity:0.5;text-decoration:line-through}
 .gi input{width:18px;height:18px;accent-color:#6b8e6b;cursor:pointer;flex-shrink:0}
 .gi .gn{flex:1}
-.gshr{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.gshr{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center}
 .gshr button{padding:8px 16px;border-radius:30px;font-weight:600;font-size:0.85rem;cursor:pointer;border:none;font-family:inherit;transition:0.2s}
 .gcb{background:#2d4a2d;color:white}.gsh{background:#25D366;color:white}.gck{background:#1565c0;color:white}
 .abar{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
@@ -133,6 +162,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 </style>
 </head>
 <body>
+<div id="mainWrap">
 <div class="ctr">
 <div class="hero">
   <div class="hero-left">
@@ -150,7 +180,7 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
   <button class="lb" data-l="de" onclick="sl('de')">DE</button>
   <button class="lb" data-l="es" onclick="sl('es')">ES</button>
 </div></div>
-<div class="ibar"><span id="fd"></span><span class="today-badge" id="tb"></span><span class="clk" id="ck"></span></div>
+<div class="ibar"><span id="fd"></span><span class="today-badge" id="tb"></span><span class="clk" id="ck"></span><span class="wth" id="wth"></span></div>
 <div class="wt">
   <div><div class="wt-title" id="wl"></div><div class="wt-goal" id="wg"></div></div>
   <div class="wt-btns" id="wbs"></div>
@@ -163,18 +193,21 @@ body{background:#f0f4fa;padding:16px 12px;display:flex;flex-direction:column;ali
 <div class="abar" id="acts"></div>
 <div class="ft">Powered by <a href="https://hexis.fit">hexis.fit</a></div>
 </div>
+</div>
+<div id="recipeView"></div>
 <script>
 var C=XCLIENTJSONX;
 var DB=XDBJSONX;
 var L='XLANGX',TZ='XTZX',WK=parseInt('XWEEKSX')||4,TD=parseInt('XDAYSX')||28;
 var cd=1,done={},wtr=0,gper='day';
-var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'}};
+var T={water:{en:'Water',uk:'Вода',ru:'Вода',de:'Wasser',es:'Agua'},wg:{en:'Target: 2.4 L (8 x 300ml)',uk:'2.4 л (8 x 300мл)',ru:'2.4 л (8 x 300мл)',de:'Ziel: 2.4 L',es:'Meta: 2.4 L'},dn:{en:'Done',uk:'Готово',ru:'Готово',de:'Erledigt',es:'Hecho'},ing:{en:'Ingredients',uk:'Iнгредiєнти',ru:'Ингредиенты',de:'Zutaten',es:'Ingredientes'},gl:{en:'Grocery list',uk:'Список продуктiв',ru:'Список продуктов',de:'Einkaufsliste',es:'Compras'},cp:{en:'Copy all',uk:'Копiювати',ru:'Копировать',de:'Kopieren',es:'Copiar'},sn:{en:'Share',uk:'Надiслати',ru:'Отправить',de:'Teilen',es:'Compartir'},sc:{en:'Send checked',uk:'Вiдмiченi',ru:'Отмеченные',de:'Markierte',es:'Marcados'},p1:{en:'1 day',uk:'1 день',ru:'1 день',de:'1 Tag',es:'1 dia'},p7:{en:'1 week',uk:'1 тиждень',ru:'1 неделя',de:'1 Woche',es:'1 semana'},p14:{en:'2 weeks',uk:'2 тижнi',ru:'2 недели',de:'2 Wochen',es:'2 semanas'},pa:{en:'All',uk:'Весь курс',ru:'Весь курс',de:'Alles',es:'Todo'},Breakfast:{en:'Breakfast',uk:'Снiданок',ru:'Завтрак',de:'Fruehstueck',es:'Desayuno'},Lunch:{en:'Lunch',uk:'Обiд',ru:'Обед',de:'Mittagessen',es:'Almuerzo'},Dinner:{en:'Dinner',uk:'Вечеря',ru:'Ужин',de:'Abendessen',es:'Cena'},Snack1:{en:'Snack',uk:'Перекус',ru:'Перекус',de:'Snack',es:'Snack'},Snack2:{en:'Snack 2',uk:'Перекус 2',ru:'Перекус 2',de:'Snack 2',es:'Snack 2'},crs:{en:'-week course',uk:'-тижневий курс',ru:'-недельный курс',de:'-Wochen-Kurs',es:' semanas'},detail:{en:'Details',uk:'Details',ru:'Details',de:'Details',es:'Detalles'},stps:{en:'How to cook',uk:'How to cook',ru:'How to cook',de:'Zubereitung',es:'Preparacion'},back:{en:'Back',uk:'Назад',ru:'Назад',de:'Zurueck',es:'Volver'}};
 var IC={Breakfast:'B',Lunch:'L',Dinner:'D',Snack1:'S',Snack2:'S'};
 var DNM={en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],uk:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],de:['Mo','Di','Mi','Do','Fr','Sa','So'],es:['Lu','Ma','Mi','Ju','Vi','Sa','Do']};
 function t(k){return T[k]&&T[k][L]||T[k]&&T[k].en||k}
-function sdate(){var d=C.courseStart?new Date(C.courseStart):new Date();if(!C.courseStart){var w=d.getDay();d.setDate(d.getDate()-(w===0?6:w-1))}d.setHours(0,0,0,0);return d}
+function tzToday(){try{var f=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'});var s=f.format(new Date());var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}catch(e){var d=new Date();d.setHours(0,0,0,0);return d}}
+function sdate(){if(C.courseStart){var d=new Date(C.courseStart);d.setHours(0,0,0,0);return d}var d=tzToday();var w=d.getDay();d.setDate(d.getDate()-(w===0?6:w-1));d.setHours(0,0,0,0);return d}
 function ddate(n){var s=new Date(sdate().getTime());s.setDate(s.getDate()+n-1);return s}
-function tdn(){var n=new Date(),s=sdate(),d=Math.floor((n-s)/86400000)+1;return d>=1&&d<=TD?d:1}
+function tdn(){var t=tzToday(),s=sdate(),d=Math.floor((t-s)/86400000)+1;return d>=1&&d<=TD?d:1}
 function sl(l){L=l;document.querySelectorAll('.lb').forEach(function(b){b.classList.toggle('active',b.dataset.l===l)});document.getElementById('wl').textContent=t('water');document.getElementById('wg').textContent=t('wg');document.getElementById('csub').textContent=WK+t('crs')+' - '+TD+' days';rdts();ren();clk()}
 function init(){
   try{
@@ -185,13 +218,13 @@ function init(){
     if(C.filterHalal)fb+='<span class="fb" style="background:#e0e7ff;color:#3730a3">Halal</span>';
     if(C.filterLF)fb+='<span class="fb" style="background:#fef3c7;color:#92400e">LF</span>';
     document.getElementById('fb').innerHTML=fb;
-    sl(L);iw();rdts();ren();clk();
+    sl(L);iw();rdts();ren();clk();lw();
     document.getElementById('acts').innerHTML='<a class="ab wa" href="https://wa.me/XWAX" target="_blank">WhatsApp</a><button class="ab" onclick="shr()">Share</button>';
   }catch(e){document.getElementById('ms').innerHTML='<p style="padding:40px;color:red;text-align:center;grid-column:1/-1">ERR: '+e.message+'</p>'}
 }
-function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')"><span>'+i+'</span><span class="wv">'+(i*300)+'ml</span></button>';document.getElementById('wbs').innerHTML=h}
+function iw(){var h='';for(var i=1;i<=8;i++)h+='<button class="wb" onclick="tw('+i+')">'+i+'</button>';document.getElementById('wbs').innerHTML=h}
 function tw(n){wtr=wtr>=n?n-1:n;document.querySelectorAll('.wb').forEach(function(b,i){b.classList.toggle('on',i<wtr)});document.getElementById('wc').textContent=(wtr*0.3).toFixed(1)+' / 2.4 L'}
-function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[(d-1)%7]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
+function rdts(){var dn=DNM[L]||DNM.en,td=tdn(),h='';for(var d=1;d<=TD;d++){var dt=ddate(d),dd=dt.getDate()+'.'+(dt.getMonth()+1);var wd=dt.getDay();var wi=wd===0?6:wd-1;var c='dt';if(d===cd)c+=' act';if(d===td)c+=' now';h+='<button class="'+c+'" onclick="sd('+d+')">'+dn[wi]+'<span class="dn">'+dd+'</span></button>'}document.getElementById('dts').innerHTML=h}
 function sd(d){cd=d;rdts();ren()}
 function gm(d){if(!DB||!DB.menu28)return[];var r=DB.menu28.filter(function(m){return m.day===d});if(!r.length)r=DB.menu28.filter(function(m){return m.day===((d-1)%28)+1});return r.filter(function(s){var rc=DB.recipes[s.recipeId];if(!rc)return false;if(C.filterVegan&&!rc.vegan)return false;if(C.filterHalal&&!rc.halal)return false;if(C.filterLF&&!rc.lactoseFree)return false;if(C.filterSpeed&&rc.cookSpeed!==C.filterSpeed)return false;return true})}
 function ren(){
@@ -205,10 +238,10 @@ function ren(){
     var tg='';if(r.vegan)tg+='<span class="mtag tv">Vegan</span>';if(r.halal)tg+='<span class="mtag th">Halal</span>';if(r.lactoseFree)tg+='<span class="mtag tl">LF</span>';
     var ig='';
     if(r.ingredients){ig='<div class="mi"><h4>'+t('ing')+'</h4>';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;ig+='<div class="ir"><span>'+n+'</span><span class="ig">'+Math.round(i.gramsBase*f)+' g</span></div>'});ig+='</div>'}
-    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
+    h+='<div class="mc"><div class="mt">'+IC[s.slot]+' '+t(s.slot)+'</div><div class="mn">'+nm+(r.photo?' &#128247;':'')+'</div><div class="mb">'+kc+' kcal - P'+p+' F'+fa+' C'+ca+' - '+r.cookTimeMin+'min</div>';
     if(tg)h+='<div class="mtags">'+tg+'</div>';
     h+=ig;
-    h+='<button class="db'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div>';
+    h+='<div class="mc-btns"><button class="dbtn" onclick="orp(&#39;'+s.recipeId+'&#39;,'+f+')">&#128214; '+t('detail')+'</button><button class="dbtn dn'+(isd?' on':'')+'" data-k="'+dk+'" onclick="td(this)">'+t('dn')+'</button></div></div>';
   });
   document.getElementById('ms').innerHTML=h||'<p style="padding:40px;color:#94a3b8;text-align:center;grid-column:1/-1">No meals</p>';
   ut();rg();
@@ -268,6 +301,50 @@ function clk(){
   setTimeout(clk,30000);
 }
 function shr(){if(navigator.share)navigator.share({title:'Wellness',url:location.href}).catch(function(){});else{navigator.clipboard.writeText(location.href);alert('Link copied')}}
+function orp(rid,factor){
+  var r=DB.recipes[rid];if(!r)return;var f=factor||1;
+  var nm=r.names?(r.names[L]||r.names.en):'?';
+  var kc=Math.round((r.baseKcal||0)*f);
+  var pr=Math.round((r.protein||0)*f),fa=Math.round((r.fat||0)*f),ca=Math.round((r.carbs||0)*f);
+  document.getElementById('mainWrap').style.display='none';
+  var rv=document.getElementById('recipeView');
+  var h='<button class="rv-back" id="rvBack">&#8592; '+t('back')+'</button>';
+  h+='<div class="rv-card">';
+  if(r.photo)h+='<img class="rv-photo" src="'+r.photo+'">';
+  h+='<div class="rv-body">';
+  h+='<div class="rv-title">'+nm+'</div>';
+  if(r.cookTimeMin)h+='<div class="rv-time">&#9201; '+r.cookTimeMin+' min</div>';
+  h+='<div class="rv-macros"><div class="rv-pill rk">&#128293; '+kc+' kcal</div><div class="rv-pill">P '+pr+'g</div><div class="rv-pill">F '+fa+'g</div><div class="rv-pill">C '+ca+'g</div></div>';
+  var tg=[];if(r.vegan)tg.push('<span class="mtag tv">&#127793; Vegan</span>');if(r.halal)tg.push('<span class="mtag th">&#9770; Halal</span>');if(r.lactoseFree)tg.push('<span class="mtag tl">&#129371; LF</span>');
+  if(tg.length)h+='<div class="mtags">'+tg.join('')+'</div>';
+  if(r.ingredients&&r.ingredients.length){h+='<div class="rv-sec"><h3>&#128722; '+t('ing')+'</h3><ul class="rv-list">';r.ingredients.forEach(function(i){var n=DB.ingredientNames[i.key]?(DB.ingredientNames[i.key][L]||DB.ingredientNames[i.key].en):i.key;h+='<li><span>'+n+'</span><span class="rv-g">'+Math.round(i.gramsBase*f)+' g</span></li>'});h+='</ul></div>'}
+  if(r.steps&&r.steps.length){h+='<div class="rv-sec"><h3>&#128104;&#8205;&#127859; '+t('stps')+'</h3>';r.steps.forEach(function(s,i){var txt=typeof s==='string'?s:(s[L]||s.en||'');if(txt)h+='<div class="rv-step"><div class="rv-sn">'+(i+1)+'</div><div class="rv-st">'+txt+'</div></div>'});h+='</div>'}
+  h+='</div></div>';
+  rv.innerHTML=h;rv.style.display='block';
+  document.getElementById('rvBack').addEventListener('click',crb);
+  window.scrollTo(0,0);
+}
+function crb(){document.getElementById('recipeView').style.display='none';document.getElementById('recipeView').innerHTML='';document.getElementById('mainWrap').style.display='block'}
+function lw(){
+  var city=C.city;if(!city)return;
+  var we=document.getElementById('wth');if(!we)return;
+  var WC={0:'&#9728;',1:'&#127780;',2:'&#9925;',3:'&#9729;',45:'&#127787;',48:'&#127787;',51:'&#127782;',53:'&#127782;',55:'&#127782;',61:'&#127783;',63:'&#127783;',65:'&#127783;',71:'&#127784;',73:'&#127784;',75:'&#127784;',80:'&#127782;',81:'&#127783;',82:'&#127783;',95:'&#9889;',96:'&#9889;',99:'&#9889;'};
+  fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(city)+'&count=1&language=en')
+  .then(function(r){return r.json()})
+  .then(function(d){
+    if(!d.results||!d.results.length)return;
+    var loc=d.results[0];
+    return fetch('https://api.open-meteo.com/v1/forecast?latitude='+loc.latitude+'&longitude='+loc.longitude+'&current_weather=true&timezone='+encodeURIComponent(TZ))
+  })
+  .then(function(r){if(r)return r.json()})
+  .then(function(d){
+    if(!d||!d.current_weather)return;
+    var cw=d.current_weather;
+    var icon=WC[cw.weathercode]||'';
+    we.innerHTML=icon+' '+Math.round(cw.temperature)+'&#176;C';
+  })
+  .catch(function(){});
+}
 window.onload=init;
 </script>
 </body>
