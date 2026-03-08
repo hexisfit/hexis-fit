@@ -565,6 +565,13 @@
             </select>
         </div>
 
+        <div id="menuClientInfo" style="display:none;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);border-radius:16px;padding:14px 18px;margin-bottom:12px">
+            <div id="menuClientInfoText" style="font-size:0.85rem;color:#c4b5fd;line-height:1.6"></div>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+                <button class="modal-save" style="margin-top:0;font-size:0.8rem;padding:8px 16px" onclick="autoGenerateMenu()">🤖 Автогенерация меню</button>
+                <button class="menu-nav-btn" style="font-size:0.8rem" onclick="clearMenu()">🗑️ Очистить</button>
+            </div>
+        </div>
         <div id="menuContent" style="display:none">
             <div class="menu-nav">
                 <button class="menu-nav-btn" onclick="menuPrevWeek()">◀</button>
@@ -1586,13 +1593,22 @@ async function loadMenuPlanner(){
     if(menuClientAlias) onMenuClientChange();
 }
 
+let menuClientObj=null;
 async function onMenuClientChange(){
     const alias=document.getElementById('menuClientSelect').value;
     menuClientAlias=alias;
     const content=document.getElementById('menuContent');
-    if(!alias){content.style.display='none';return;}
+    if(!alias){content.style.display='none';menuClientObj=null;return;}
     content.style.display='block';
     menuCurrentWeek=0;
+
+    // Load client data for filters/kcal/weeks
+    try{
+        const cr=await fetch('/api/clients',{headers:{'x-coach-pwd':coachPwd}});
+        const cd=await cr.json();
+        menuClientObj=(cd.clients||[]).find(c=>c.alias===alias)||null;
+    }catch(e){menuClientObj=null;}
+    updateMenuClientInfo();
 
     // Try to load client-specific menu
     try{
@@ -1622,9 +1638,11 @@ function getMenuEntry(day, slot){
 }
 
 function getTotalDays(){
-    if(!menuData.length) return 28;
+    const clientWeeks=menuClientObj?parseInt(menuClientObj.courseWeeks)||4:4;
+    const clientDays=clientWeeks*7;
+    if(!menuData.length) return clientDays;
     const maxDay = Math.max(...menuData.filter(m=>m.recipeId).map(s=>s.day||0), 0);
-    return Math.max(maxDay, 28);
+    return Math.max(maxDay, clientDays);
 }
 
 function getTotalWeeks(){ return Math.ceil(getTotalDays()/7); }
@@ -1798,6 +1816,93 @@ function pickRecipe(recipeId){
 function removeMenuSlot(day,slot){
     menuData=menuData.filter(m=>!(m.day===day&&m.slot===slot));
     renderMenuGrid();
+}
+
+function updateMenuClientInfo(){
+    const info=document.getElementById('menuClientInfo');
+    const text=document.getElementById('menuClientInfoText');
+    if(!menuClientObj){info.style.display='none';return;}
+    info.style.display='block';
+    const c=menuClientObj;
+    const filters=[];
+    if(c.filterVegan)filters.push('🌱 Vegan');
+    if(c.filterHalal)filters.push('☪ Halal');
+    if(c.filterLF)filters.push('🥛 Без лактозы');
+    if(c.filterSpeed)filters.push('⚡ '+c.filterSpeed);
+    const weeks=parseInt(c.courseWeeks)||4;
+    text.innerHTML='<strong>'+esc(c.name)+'</strong> · '+esc(c.kcal||'?')+' kcal · '+weeks+' нед.'+
+        (filters.length?' · '+filters.join(' '):'');
+}
+
+function clearMenu(){
+    if(!confirm('Очистить всё меню?'))return;
+    menuData=[];
+    renderMenuGrid();
+    toast('🗑️ Меню очищено');
+}
+
+function autoGenerateMenu(){
+    if(!fullRecipeDB||!fullRecipeDB.recipes){toast('❌ Нет базы рецептов');return;}
+    if(!menuClientObj){toast('❌ Нет данных клиента');return;}
+    const c=menuClientObj;
+    const targetKcal=parseInt(String(c.kcal).replace(/[^0-9]/g,''))||1600;
+    const weeks=parseInt(c.courseWeeks)||4;
+    const totalDays=weeks*7;
+
+    // Filter recipes by client preferences
+    const all=Object.values(fullRecipeDB.recipes);
+    function passes(r){
+        if(c.filterVegan&&!r.vegan)return false;
+        if(c.filterHalal&&!r.halal)return false;
+        if(c.filterLF&&!r.lactoseFree)return false;
+        if(c.filterSpeed&&r.cookSpeed!==c.filterSpeed)return false;
+        return true;
+    }
+    const breakfasts=all.filter(r=>r.meal==='Breakfast'&&passes(r));
+    const lunches=all.filter(r=>r.meal==='Lunch'&&passes(r));
+    const dinners=all.filter(r=>r.meal==='Dinner'&&passes(r));
+    const snacks=all.filter(r=>r.meal==='Snack'&&passes(r));
+
+    if(!breakfasts.length||!lunches.length||!dinners.length){
+        toast('❌ Недостаточно рецептов с такими фильтрами (нужны завтрак+обед+ужин)');
+        return;
+    }
+
+    // Calorie distribution: Breakfast 27%, Lunch 37%, Dinner 27%, Snacks 9%
+    const bKcal=Math.round(targetKcal*0.27);
+    const lKcal=Math.round(targetKcal*0.37);
+    const dKcal=Math.round(targetKcal*0.27);
+    const sKcal=Math.round(targetKcal*0.045);
+
+    function pick(arr,idx){return arr[idx%arr.length];}
+    function factor(recipe,target){return recipe.baseKcal>0?Math.round(target/recipe.baseKcal*100)/100:1;}
+
+    const newMenu=[];
+    for(let d=1;d<=totalDays;d++){
+        const bi=d-1;
+        const br=pick(breakfasts,bi);
+        newMenu.push({day:d,slot:'Breakfast',recipeId:br.id,scaledFactor:factor(br,bKcal),scaledKcal:bKcal});
+
+        if(snacks.length){
+            const s1=pick(snacks,bi*2);
+            newMenu.push({day:d,slot:'Snack1',recipeId:s1.id,scaledFactor:factor(s1,sKcal),scaledKcal:sKcal});
+        }
+
+        const lr=pick(lunches,bi);
+        newMenu.push({day:d,slot:'Lunch',recipeId:lr.id,scaledFactor:factor(lr,lKcal),scaledKcal:lKcal});
+
+        if(snacks.length){
+            const s2=pick(snacks,bi*2+1);
+            newMenu.push({day:d,slot:'Snack2',recipeId:s2.id,scaledFactor:factor(s2,sKcal),scaledKcal:sKcal});
+        }
+
+        const dr=pick(dinners,bi);
+        newMenu.push({day:d,slot:'Dinner',recipeId:dr.id,scaledFactor:factor(dr,dKcal),scaledKcal:dKcal});
+    }
+
+    menuData=newMenu;
+    renderMenuGrid();
+    toast('✅ Меню сгенерировано: '+totalDays+' дней, ~'+targetKcal+' kcal/день');
 }
 
 async function saveMenu(){
