@@ -15,8 +15,9 @@ async function blobGet(key: string): Promise<any> {
 }
 
 export default async function handler(req: Request) {
-  const url = new URL(req.url);
-  const alias = url.pathname.replace("/c/", "").replace(".html", "").toLowerCase();
+  const u = req.url || "";
+  const pm = u.match(/[?&]path=([^&]*)/);
+  const alias = (pm ? pm[1] : u.replace(/.*\/c\//, "").split("?")[0]).replace(".html", "").toLowerCase();
   if (!alias) return new Response("Not found", { status: 404 });
 
   const client: any = await blobGet("clients/" + alias);
