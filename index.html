@@ -29,7 +29,8 @@
 
         /* ADMIN */
         .admin{display:none;padding:20px;max-width:900px;margin:0 auto;position:relative}
-        .admin::before{content:'';position:fixed;top:0;left:0;right:0;height:300px;background:linear-gradient(180deg,rgba(168,85,247,0.08) 0%,rgba(236,72,153,0.04) 50%,transparent 100%);pointer-events:none;z-index:0}
+        .admin::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=60') center/cover no-repeat;opacity:0.06;filter:saturate(0.5);pointer-events:none;z-index:0}
+        .admin::after{content:'';position:fixed;top:0;left:0;right:0;height:400px;background:linear-gradient(180deg,rgba(168,85,247,0.08) 0%,rgba(236,72,153,0.04) 50%,transparent 100%);pointer-events:none;z-index:0}
         .admin-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
         .brand{display:flex;align-items:center;gap:12px}
         .brand-icon{width:48px;height:48px;background:linear-gradient(135deg,#a855f7,#ec4899);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 4px 20px rgba(168,85,247,0.3)}
@@ -59,8 +60,6 @@
         .fs option{background:#1e1028;color:#e2e8f0}
         .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
         .hint{color:#64748b;font-size:0.78rem;margin-top:4px;font-style:italic}
-        .unit-btn{background:transparent;border:none;color:#64748b;padding:8px 16px;border-radius:10px;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:0.2s}
-        .unit-btn.active{background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(236,72,153,0.1));color:#e879f9}
 
         /* Buttons */
         .btn-create{width:100%;padding:16px;background:linear-gradient(135deg,#a855f7,#ec4899);color:white;border:none;border-radius:16px;font-size:1.05rem;font-weight:800;cursor:pointer;transition:0.3s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;box-shadow:0 4px 20px rgba(168,85,247,0.2)}
@@ -108,6 +107,116 @@
         .quote{text-align:center;padding:16px;color:#64748b;font-size:0.8rem;font-style:italic;position:relative;z-index:1;margin-top:20px}
         .quote span{color:#c084fc;font-weight:600}
 
+        /* Recipe Editor */
+        .re-search{display:flex;gap:8px;margin-bottom:16px}
+        .re-search input{flex:1}
+        .re-add-btn{background:linear-gradient(135deg,#22c55e,#10b981);color:white;border:none;padding:12px 20px;border-radius:12px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;white-space:nowrap;transition:0.3s}
+        .re-add-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(34,197,94,0.3)}
+        .re-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:14px;margin-bottom:6px;transition:0.3s;gap:10px}
+        .re-item:hover{background:rgba(168,85,247,0.04);border-color:rgba(168,85,247,0.12)}
+        .re-item-info{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+        .re-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+        .re-item-name{font-weight:600;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .re-item-meta{color:#64748b;font-size:0.75rem;font-family:'JetBrains Mono',monospace}
+        .re-edit-btn{background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.2);color:#c084fc;padding:7px 14px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:inherit;transition:0.2s;white-space:nowrap}
+        .re-edit-btn:hover{background:rgba(168,85,247,0.2)}
+        .re-del-btn{background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.15);color:#fb7185;padding:7px 10px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-family:inherit;transition:0.2s}
+        .re-del-btn:hover{background:rgba(251,113,133,0.2)}
+
+        /* Modal */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:1000;justify-content:center;align-items:flex-start;padding:20px;overflow-y:auto}
+        .modal-overlay.open{display:flex}
+        .modal{background:#1a1025;border:1px solid rgba(255,255,255,0.08);border-radius:24px;max-width:700px;width:100%;padding:28px;margin:40px auto;position:relative}
+        .modal-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:0.2s}
+        .modal-close:hover{background:rgba(251,113,133,0.1);color:#fb7185}
+        .modal h2{font-size:1.2rem;font-weight:700;margin-bottom:20px;background:linear-gradient(135deg,#f0abfc,#e2e8f0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:inline-block}
+        .modal .section-title{color:#c084fc;font-weight:700;font-size:0.9rem;margin:20px 0 10px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:6px}
+        .ing-row{display:grid;grid-template-columns:1fr 80px 36px;gap:8px;margin-bottom:6px;align-items:center}
+        .ing-row select,.ing-row input{padding:8px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#e2e8f0;font-size:0.85rem;font-family:inherit;outline:none}
+        .ing-row select{min-width:0}
+        .ing-del{background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.15);color:#fb7185;border-radius:8px;cursor:pointer;font-size:0.9rem;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+        .ing-add{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:#22c55e;padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:inherit;margin-top:4px}
+        .modal-save{width:100%;padding:14px;background:linear-gradient(135deg,#a855f7,#ec4899);color:white;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:20px;transition:0.3s}
+        .modal-save:hover{transform:translateY(-1px);box-shadow:0 6px 25px rgba(168,85,247,0.3)}
+        .chk-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+        .chk-row label{display:flex;align-items:center;gap:6px;color:#94a3b8;font-size:0.85rem;cursor:pointer}
+        .chk-row input[type=checkbox]{width:18px;height:18px;accent-color:#a855f7}
+        .names-grid{display:grid;grid-template-columns:40px 1fr;gap:6px 10px;align-items:center;margin-bottom:12px}
+        .names-grid span{color:#94a3b8;font-size:0.8rem;text-align:right}
+        .names-grid input{padding:8px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#e2e8f0;font-size:0.85rem;font-family:inherit;outline:none}
+        .re-count{color:#64748b;font-size:0.8rem;margin-bottom:12px}
+
+        /* Steps */
+        .step-block{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px;margin-bottom:8px;position:relative}
+        .step-block .step-num{position:absolute;top:10px;left:12px;background:linear-gradient(135deg,#a855f7,#ec4899);color:white;width:24px;height:24px;border-radius:50%;font-size:0.75rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+        .step-block textarea{width:100%;min-height:50px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#e2e8f0;padding:8px 10px;font-size:0.83rem;font-family:inherit;resize:vertical;outline:none;margin-top:4px}
+        .step-langs{display:grid;grid-template-columns:40px 1fr;gap:4px 8px;align-items:start;padding-left:32px}
+        .step-langs span{color:#64748b;font-size:0.75rem;text-align:right;padding-top:10px}
+        .step-del{position:absolute;top:10px;right:10px;background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.15);color:#fb7185;border-radius:6px;cursor:pointer;font-size:0.7rem;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+        .step-add{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:#22c55e;padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:inherit;margin-top:4px}
+
+        /* Photo preview */
+        .photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-top:8px;display:none}
+        .photo-upload-area{display:flex;gap:8px;align-items:start}
+        .photo-upload-area input[type=file]{display:none}
+        .photo-upload-btn{background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);color:#c084fc;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:inherit;white-space:nowrap;transition:0.2s}
+        .photo-upload-btn:hover{background:rgba(168,85,247,0.2)}
+
+        /* AI button */
+        .ai-btn{background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:white;border:none;padding:10px 18px;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.8rem;white-space:nowrap;transition:0.3s;display:inline-flex;align-items:center;gap:6px}
+        .ai-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(139,92,246,0.3)}
+        .ai-btn:disabled{opacity:0.5;cursor:wait;transform:none}
+        .ai-btn.loading::after{content:'';width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:aispin 0.6s linear infinite;margin-left:4px}
+        @keyframes aispin{to{transform:rotate(360deg)}}
+
+        /* Ingredient catalog */
+        .cat-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:12px;margin-bottom:4px;transition:0.2s;gap:8px}
+        .cat-item:hover{background:rgba(168,85,247,0.04);border-color:rgba(168,85,247,0.12)}
+        .cat-key{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#a855f7;min-width:120px}
+        .cat-names{font-size:0.8rem;color:#94a3b8;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .cat-actions{display:flex;gap:4px;flex-shrink:0}
+        .new-ing-inline{display:none;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:12px;padding:12px;margin-top:8px}
+        .new-ing-inline.open{display:block}
+
+        /* Menu Planner */
+        .menu-nav{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+        .menu-nav-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:600;font-size:0.85rem;font-family:inherit;transition:0.2s}
+        .menu-nav-btn:hover{background:rgba(168,85,247,0.1);color:#c084fc}
+        .menu-nav-btn.active{background:rgba(168,85,247,0.15);color:#e879f9;border-color:rgba(168,85,247,0.3)}
+        .menu-week-label{color:#c084fc;font-weight:700;font-size:1rem;min-width:120px;text-align:center}
+        .menu-grid{display:grid;grid-template-columns:80px repeat(5,1fr);gap:4px}
+        .menu-header{background:rgba(168,85,247,0.1);padding:10px 6px;border-radius:10px;text-align:center;font-weight:700;font-size:0.75rem;color:#c084fc}
+        .menu-day-label{background:rgba(255,255,255,0.03);padding:10px 6px;border-radius:10px;text-align:center;font-weight:700;font-size:0.85rem;color:#e879f9;display:flex;align-items:center;justify-content:center}
+        .menu-cell{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:10px;padding:6px;min-height:60px;cursor:pointer;transition:0.2s;position:relative}
+        .menu-cell:hover{background:rgba(168,85,247,0.06);border-color:rgba(168,85,247,0.15)}
+        .menu-cell.empty{display:flex;align-items:center;justify-content:center}
+        .menu-cell.empty::after{content:'＋';color:#475569;font-size:1.2rem}
+        .menu-cell-name{font-size:0.7rem;font-weight:600;color:#e2e8f0;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+        .menu-cell-kcal{font-size:0.65rem;color:#a855f7;font-family:'JetBrains Mono',monospace;margin-top:2px}
+        .menu-cell-del{position:absolute;top:2px;right:2px;background:rgba(251,113,133,0.2);color:#fb7185;border:none;border-radius:4px;width:16px;height:16px;font-size:0.6rem;cursor:pointer;display:none;align-items:center;justify-content:center}
+        .menu-cell:hover .menu-cell-del{display:flex}
+        .menu-day-total{background:rgba(255,255,255,0.01);padding:6px;border-radius:8px;text-align:center;font-size:0.7rem;color:#94a3b8;font-family:'JetBrains Mono',monospace}
+        .menu-day-total strong{color:#c084fc}
+
+        /* Favorite star */
+        .fav-star{cursor:pointer;font-size:1rem;transition:0.2s;background:none;border:none;padding:2px}
+        .fav-star:hover{transform:scale(1.3)}
+        .fav-star.on{filter:drop-shadow(0 0 4px rgba(250,204,21,0.5))}
+
+        /* Picker tabs */
+        .picker-tabs{display:flex;gap:4px;margin-bottom:8px}
+        .picker-tab{flex:1;padding:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#64748b;border-radius:10px;text-align:center;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:0.2s}
+        .picker-tab.active{background:rgba(168,85,247,0.12);color:#e879f9;border-color:rgba(168,85,247,0.2)}
+
+        /* Recipe picker modal */
+        .picker-list{max-height:400px;overflow-y:auto;margin-top:12px}
+        .picker-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:10px;margin-bottom:4px;cursor:pointer;transition:0.2s}
+        .picker-item:hover{background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.2)}
+        .picker-item-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+        .picker-item-info{flex:1;min-width:0}
+        .picker-item-name{font-size:0.85rem;font-weight:600}
+        .picker-item-meta{font-size:0.7rem;color:#64748b;font-family:'JetBrains Mono',monospace}
+
         @media(max-width:600px){
             .login-card{padding:32px 20px}
             .fr{grid-template-columns:1fr}
@@ -148,9 +257,11 @@
     </div>
 
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('create')">➕ Создать клиента</button>
-        <button class="tab" onclick="switchTab('list')">👥 Мои клиенты</button>
-        <button class="tab" onclick="switchTab('recipes')">🍽️ База рецептов</button>
+        <button class="tab active" onclick="switchTab('create')">➕ Создать</button>
+        <button class="tab" onclick="switchTab('list')">👥 Клиенты</button>
+        <button class="tab" onclick="switchTab('recipes')">🍽️ Рецепты</button>
+        <button class="tab" onclick="switchTab('ingredients')">📦 Продукты</button>
+        <button class="tab" onclick="switchTab('menu')">📅 Меню</button>
     </div>
 
     <!-- CREATE -->
@@ -170,30 +281,24 @@
             </div>
         </div>
 
-        <div style="display:flex;justify-content:center;margin-bottom:12px">
-            <div style="display:inline-flex;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:3px;gap:2px">
-                <button type="button" class="unit-btn active" id="btnMetric" onclick="switchUnits('metric')">🇪🇺 Метрика (см/кг)</button>
-                <button type="button" class="unit-btn" id="btnImperial" onclick="switchUnits('imperial')">🇺🇸 Имперская (ft/lbs)</button>
-            </div>
-        </div>
-        <div class="fr" id="rowMetric">
+        <div class="fr">
             <div class="fg">
                 <label class="fl">📏 Рост (см)</label>
-                <input type="number" class="fi" id="cHM" placeholder="165" oninput="convertUnits('metric')">
+                <input type="text" class="fi" id="cHM" placeholder="165 cm">
             </div>
             <div class="fg">
                 <label class="fl">⚖️ Вес (кг)</label>
-                <input type="number" class="fi" id="cWM" placeholder="60" oninput="convertUnits('metric')">
+                <input type="text" class="fi" id="cWM" placeholder="60 kg">
             </div>
         </div>
-        <div class="fr" id="rowImperial" style="display:none">
+        <div class="fr">
             <div class="fg">
-                <label class="fl">📏 Рост (ft'in")</label>
-                <input type="text" class="fi" id="cHI" placeholder="5'5&quot;" oninput="convertUnits('imperial')">
+                <label class="fl">📏 Рост (имп.)</label>
+                <input type="text" class="fi" id="cHI" placeholder="5'5&quot;">
             </div>
             <div class="fg">
-                <label class="fl">⚖️ Вес (lbs)</label>
-                <input type="number" class="fi" id="cWI" placeholder="132" oninput="convertUnits('imperial')">
+                <label class="fl">⚖️ Вес (имп.)</label>
+                <input type="text" class="fi" id="cWI" placeholder="132 lbs">
             </div>
         </div>
         <div class="fr">
@@ -302,25 +407,267 @@
     <!-- RECIPES -->
     <div class="panel" id="panelRecipes">
         <div class="panel-title">🍽️ База рецептов</div>
-        <div class="panel-desc">Загрузите базу рецептов из JSON. Конвертируйте Excel через Coach Panel.</div>
+        <div class="panel-desc">Поиск, редактирование и добавление рецептов</div>
 
         <div id="recipeStats" style="margin-bottom:20px"></div>
 
-        <div class="fg">
-            <label class="fl">📂 Загрузить JSON базу рецептов</label>
-            <input type="file" id="recipeFile" accept=".json" style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#e2e8f0;font-family:inherit" onchange="previewRecipeFile()">
+        <!-- Search + Add -->
+        <div class="re-search">
+            <input class="fi" type="text" id="recipeSearch" placeholder="🔍 Поиск по названию..." oninput="filterRecipeList()">
+            <button class="re-add-btn" onclick="openRecipeEditor(null)">＋ Новый</button>
+        </div>
+        <div class="re-count" id="recipeCount"></div>
+
+        <!-- Recipe list -->
+        <div id="recipeEditorList"></div>
+
+        <!-- Upload section (collapsed) -->
+        <details style="margin-top:24px">
+            <summary style="cursor:pointer;color:#64748b;font-size:0.85rem;padding:8px 0">📂 Загрузить JSON базу рецептов</summary>
+            <div style="margin-top:12px">
+                <div class="fg">
+                    <input type="file" id="recipeFile" accept=".json" style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#e2e8f0;font-family:inherit" onchange="previewRecipeFile()">
+                </div>
+                <div id="recipePreview" style="display:none;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.15);border-radius:16px;padding:16px;margin-bottom:16px">
+                    <div style="font-weight:700;color:#c084fc;margin-bottom:8px">📊 Превью базы:</div>
+                    <div id="recipePreviewContent" style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#94a3b8"></div>
+                </div>
+                <button class="btn-create" id="uploadRecipesBtn" onclick="uploadRecipes()" style="display:none">
+                    📤 Загрузить базу рецептов на сервер
+                </button>
+            </div>
+        </details>
+    </div>
+
+    <!-- RECIPE EDITOR MODAL -->
+    <div class="modal-overlay" id="recipeModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeRecipeModal()">✕</button>
+            <h2 id="recipeModalTitle">✏️ Редактировать рецепт</h2>
+
+            <div class="fg">
+                <label class="fl">ID рецепта</label>
+                <input class="fi" id="reId" placeholder="R041" style="font-family:'JetBrains Mono',monospace">
+                <div class="hint">Уникальный код, напр. R041. Для нового — автоматически.</div>
+            </div>
+
+            <div class="section-title">📝 Названия (5 языков) <button class="ai-btn" onclick="aiTranslateRecipe()" id="aiRecipeBtn">🤖 AI заполнить</button></div>
+            <div class="names-grid">
+                <span>🇬🇧</span><input class="fi" id="reName_en" placeholder="English name">
+                <span>🇩🇪</span><input class="fi" id="reName_de" placeholder="Deutscher Name">
+                <span>🇷🇺</span><input class="fi" id="reName_ru" placeholder="Название на русском">
+                <span>🇺🇦</span><input class="fi" id="reName_uk" placeholder="Назва українською">
+                <span>🇪🇸</span><input class="fi" id="reName_es" placeholder="Nombre en español">
+            </div>
+
+            <div class="section-title">⚙️ Свойства</div>
+            <div class="fr">
+                <div class="fg">
+                    <label class="fl">Приём пищи</label>
+                    <select class="fs" id="reMeal">
+                        <option value="Breakfast">🍳 Breakfast</option>
+                        <option value="Lunch">🥗 Lunch</option>
+                        <option value="Dinner">🍽️ Dinner</option>
+                        <option value="Snack">🍎 Snack</option>
+                    </select>
+                </div>
+                <div class="fg">
+                    <label class="fl">Время готовки (мин)</label>
+                    <input class="fi" id="reCookTime" type="number" value="15">
+                </div>
+            </div>
+            <div class="fr">
+                <div class="fg">
+                    <label class="fl">Скорость</label>
+                    <select class="fs" id="reCookSpeed">
+                        <option value="FAST">FAST</option>
+                        <option value="MED">MED</option>
+                        <option value="SLOW">SLOW</option>
+                    </select>
+                </div>
+                <div class="fg">
+                    <label class="fl">Авторский стиль</label>
+                    <input class="fi" id="reAuthor" placeholder="Jamie Oliver style">
+                </div>
+            </div>
+            <div class="chk-row">
+                <label><input type="checkbox" id="reVegan"> 🌱 Vegan</label>
+                <label><input type="checkbox" id="reHalal"> ☪️ Halal</label>
+                <label><input type="checkbox" id="reLF"> 🥛 Lactose-free</label>
+                <label><input type="checkbox" id="reBatch"> 📦 Batch cooking</label>
+            </div>
+
+            <div class="section-title">🔥 Нутриенты (на базовую порцию)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px">
+                <div class="fg"><label class="fl">Kcal</label><input class="fi" id="reKcal" type="number"></div>
+                <div class="fg"><label class="fl">Protein</label><input class="fi" id="reP" type="number" step="0.1"></div>
+                <div class="fg"><label class="fl">Fat</label><input class="fi" id="reF" type="number" step="0.1"></div>
+                <div class="fg"><label class="fl">Carbs</label><input class="fi" id="reC" type="number" step="0.1"></div>
+                <div class="fg"><label class="fl">Порция г</label><input class="fi" id="rePortion" type="number"></div>
+            </div>
+
+            <div class="section-title">📸 Фото блюда</div>
+            <div class="fg">
+                <div class="photo-upload-area">
+                    <input class="fi" id="rePhoto" placeholder="URL фото или загрузите файл ↓" oninput="previewPhoto()" style="flex:1">
+                    <label class="photo-upload-btn" onclick="document.getElementById('rePhotoFile').click()">📁 Файл</label>
+                    <input type="file" id="rePhotoFile" accept="image/*" onchange="handlePhotoUpload(this)">
+                </div>
+                <div class="hint">Вставьте URL или загрузите фото (сохранится как base64 в JSON)</div>
+                <img class="photo-preview" id="rePhotoPreview">
+            </div>
+
+            <div class="section-title">🥕 Ингредиенты</div>
+            <div id="reIngredientsWrap"></div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+                <button class="ing-add" onclick="addIngredientRow()">＋ Ингредиент из списка</button>
+                <button class="ing-add" style="background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.2);color:#06b6d4" onclick="openQuickAddIngredient()">＋ Новый продукт</button>
+            </div>
+
+            <!-- Quick add ingredient inline in modal -->
+            <div class="new-ing-inline" id="quickIngForm">
+                <div style="font-weight:700;color:#06b6d4;margin-bottom:8px;font-size:0.85rem">Быстрое добавление продукта в справочник</div>
+                <div class="fg">
+                    <input class="fi" id="qIng_ru" placeholder="Название на русском" oninput="quickCheckIngredient()" style="font-size:0.85rem">
+                    <div id="qIngCheckResult" style="font-size:0.8rem;margin-top:4px"></div>
+                </div>
+                <div id="qIngDetails" style="display:none">
+                    <div class="fg">
+                        <input class="fi" id="qIngKey" placeholder="ключ: chicken_thigh" style="font-family:'JetBrains Mono',monospace;font-size:0.8rem">
+                    </div>
+                    <div class="fg">
+                        <input class="fi" id="qIng_en" placeholder="English name" style="font-size:0.8rem">
+                    </div>
+                </div>
+                <div style="display:flex;gap:6px;margin-top:6px">
+                    <button class="ing-add" style="font-size:0.75rem;opacity:0.4;pointer-events:none" id="qIngSaveBtn" onclick="quickSaveIngredient()">💾 Добавить в справочник</button>
+                    <button class="ing-add" style="font-size:0.75rem;background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:#94a3b8" onclick="document.getElementById('quickIngForm').classList.remove('open')">Отмена</button>
+                </div>
+            </div>
+
+            <div class="section-title">👨‍🍳 Процесс приготовления</div>
+            <div id="reStepsWrap"></div>
+            <button class="step-add" onclick="addStepRow()">＋ Добавить шаг</button>
+
+            <button class="modal-save" onclick="saveRecipe()">💾 Сохранить рецепт</button>
+        </div>
+    </div>
+
+    <!-- MENU PLANNER -->
+    <div class="panel" id="panelMenu">
+        <div class="panel-title">📅 Карта меню</div>
+        <div class="panel-desc">Назначайте блюда на каждый день для конкретного клиента.</div>
+
+        <div class="fg" style="margin-bottom:16px">
+            <label class="fl">👤 Клиент</label>
+            <select class="fs" id="menuClientSelect" onchange="onMenuClientChange()">
+                <option value="">-- Выберите клиента --</option>
+            </select>
         </div>
 
-        <div id="recipePreview" style="display:none;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.15);border-radius:16px;padding:16px;margin-bottom:16px">
-            <div style="font-weight:700;color:#c084fc;margin-bottom:8px">📊 Превью базы:</div>
-            <div id="recipePreviewContent" style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#94a3b8"></div>
+        <div id="menuContent" style="display:none">
+            <div class="menu-nav">
+                <button class="menu-nav-btn" onclick="menuPrevWeek()">◀</button>
+                <div class="menu-week-label" id="menuWeekLabel">Неделя 1</div>
+                <button class="menu-nav-btn" onclick="menuNextWeek()">▶</button>
+                <span style="color:#64748b;font-size:0.8rem;margin-left:auto" id="menuDaysInfo"></span>
+            </div>
+
+            <div id="menuGrid"></div>
+
+            <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+                <button class="modal-save" style="flex:1;margin-top:0" onclick="saveMenu()">💾 Сохранить меню клиента</button>
+                <button class="menu-nav-btn" onclick="addMenuWeek()">＋ Неделя</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECIPE PICKER MODAL -->
+    <div class="modal-overlay" id="pickerModal">
+        <div class="modal" style="max-width:500px">
+            <button class="modal-close" onclick="closePickerModal()">✕</button>
+            <h2 id="pickerTitle">Выберите блюдо</h2>
+            <div class="picker-tabs">
+                <button class="picker-tab active" onclick="setPickerTab('all')" id="ptAll">📋 Все рецепты</button>
+                <button class="picker-tab" onclick="setPickerTab('fav')" id="ptFav">⭐ Избранное</button>
+            </div>
+            <div class="fg">
+                <input class="fi" id="pickerSearch" placeholder="🔍 Поиск по названию или ингредиенту..." oninput="filterPicker()">
+            </div>
+            <div style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap" id="pickerFilters">
+                <button class="menu-nav-btn active" onclick="filterPickerMeal('')" data-meal="">Все</button>
+                <button class="menu-nav-btn" onclick="filterPickerMeal('Breakfast')" data-meal="Breakfast">🍳</button>
+                <button class="menu-nav-btn" onclick="filterPickerMeal('Lunch')" data-meal="Lunch">🥗</button>
+                <button class="menu-nav-btn" onclick="filterPickerMeal('Dinner')" data-meal="Dinner">🍽️</button>
+                <button class="menu-nav-btn" onclick="filterPickerMeal('Snack')" data-meal="Snack">🍎</button>
+            </div>
+            <div class="picker-list" id="pickerList"></div>
+            <button style="width:100%;padding:10px;background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.15);color:#fb7185;border-radius:12px;cursor:pointer;font-family:inherit;font-weight:600;margin-top:8px" onclick="pickRecipe(null)">🗑️ Очистить ячейку</button>
+        </div>
+    </div>
+
+    <!-- INGREDIENTS CATALOG -->
+    <div class="panel" id="panelIngredients">
+        <div class="panel-title">📦 Справочник продуктов</div>
+        <div class="panel-desc">Единая база ингредиентов. Сначала проверяем — потом создаём.</div>
+
+        <div class="re-search">
+            <input class="fi" type="text" id="ingSearch" placeholder="🔍 Поиск продукта..." oninput="filterIngList()">
+            <button class="re-add-btn" onclick="startNewIngredient()">＋ Новый продукт</button>
+        </div>
+        <div class="re-count" id="ingCount"></div>
+
+        <!-- Step 1: Check name -->
+        <div class="new-ing-inline" id="ingStep1">
+            <div style="font-weight:700;color:#22c55e;margin-bottom:10px">Шаг 1: Проверка — введите название на русском</div>
+            <div class="fg">
+                <input class="fi" id="ingCheckName" placeholder="Например: Куриное бедро" oninput="checkIngredientExists()">
+            </div>
+            <div id="ingCheckResult" style="margin-top:8px;font-size:0.85rem"></div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="modal-save" style="flex:1;margin-top:0;opacity:0.4;pointer-events:none" id="ingStep1Btn" onclick="showIngStep2()">✅ Продукт не найден — создать карточку</button>
+                <button style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:12px 20px;border-radius:14px;cursor:pointer;font-family:inherit" onclick="cancelNewIngredient()">Отмена</button>
+            </div>
         </div>
 
-        <button class="btn-create" id="uploadRecipesBtn" onclick="uploadRecipes()" style="display:none">
-            📤 Загрузить базу рецептов на сервер
-        </button>
+        <!-- Step 2: Full card -->
+        <div class="new-ing-inline" id="ingStep2">
+            <div style="font-weight:700;color:#22c55e;margin-bottom:10px">Шаг 2: Заполните карточку продукта <button class="ai-btn" onclick="aiTranslateIngredient()" id="aiIngBtn">🤖 AI заполнить</button></div>
+            <div class="fg">
+                <label class="fl">Ключ (латиницей, snake_case)</label>
+                <input class="fi" id="newIngKey" placeholder="chicken_thigh" style="font-family:'JetBrains Mono',monospace">
+                <div class="hint">Уникальный ID: только латиница, цифры и _ (автоматически из русского названия)</div>
+            </div>
+            <div class="names-grid">
+                <span>🇷🇺</span><input class="fi" id="newIng_ru" placeholder="Куриное бедро" readonly style="background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.2)">
+                <span>🇬🇧</span><input class="fi" id="newIng_en" placeholder="Chicken thigh">
+                <span>🇩🇪</span><input class="fi" id="newIng_de" placeholder="Hähnchenschenkel">
+                <span>🇺🇦</span><input class="fi" id="newIng_uk" placeholder="Куряче стегно">
+                <span>🇪🇸</span><input class="fi" id="newIng_es" placeholder="Muslo de pollo">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="modal-save" style="flex:1;margin-top:0" onclick="saveNewIngredient()">💾 Сохранить продукт</button>
+                <button style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:12px 20px;border-radius:14px;cursor:pointer;font-family:inherit" onclick="cancelNewIngredient()">Отмена</button>
+            </div>
+        </div>
 
-        <div id="recipeList" style="margin-top:24px"></div>
+        <!-- Edit ingredient card -->
+        <div class="new-ing-inline" id="ingEditForm">
+            <div style="font-weight:700;color:#c084fc;margin-bottom:10px">✏️ Редактировать продукт: <span id="ingEditKey" style="font-family:'JetBrains Mono',monospace"></span> <button class="ai-btn" onclick="aiTranslateEditIngredient()" id="aiEditIngBtn">🤖 AI заполнить</button></div>
+            <div class="names-grid">
+                <span>🇷🇺</span><input class="fi" id="editIng_ru" placeholder="Название RU">
+                <span>🇬🇧</span><input class="fi" id="editIng_en" placeholder="Name EN">
+                <span>🇩🇪</span><input class="fi" id="editIng_de" placeholder="Name DE">
+                <span>🇺🇦</span><input class="fi" id="editIng_uk" placeholder="Назва UK">
+                <span>🇪🇸</span><input class="fi" id="editIng_es" placeholder="Nombre ES">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="modal-save" style="flex:1;margin-top:0" onclick="saveEditIngredient()">💾 Сохранить</button>
+                <button style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:12px 20px;border-radius:14px;cursor:pointer;font-family:inherit" onclick="document.getElementById('ingEditForm').classList.remove('open')">Отмена</button>
+            </div>
+        </div>
+
+        <div id="ingCatalogList"></div>
     </div>
 
     <div class="quote">✨ <span>Strong is the new beautiful</span> · Создавайте персональные планы за секунды</div>
@@ -372,11 +719,13 @@ function doLogout(){
 
 // === TABS ===
 function switchTab(tab){
-    const tabs=['create','list','recipes'];
+    const tabs=['create','list','recipes','ingredients','menu'];
     document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
     tabs.forEach(t=>document.getElementById('panel'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab));
     if(tab==='list') loadClients();
     if(tab==='recipes') loadRecipeStats();
+    if(tab==='ingredients') loadIngCatalog();
+    if(tab==='menu') loadMenuPlanner();
 }
 
 // === RECIPES ===
@@ -386,9 +735,20 @@ async function loadRecipeStats(){
     const wrap=document.getElementById('recipeStats');
     try{
         const res=await fetch('/api/recipes/stats',{headers:{'x-coach-pwd':coachPwd}});
-        const data=await res.json();
-        if(!data.uploaded){
-            wrap.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">📭 База рецептов ещё не загружена</div>';
+        if(!res.ok){
+            wrap.innerHTML='';
+            loadRecipeList();
+            return;
+        }
+        let data;
+        try{ data=await res.json(); }catch(e){
+            wrap.innerHTML='';
+            loadRecipeList();
+            return;
+        }
+        if(!data||!data.uploaded){
+            wrap.innerHTML='';
+            loadRecipeList();
             return;
         }
         wrap.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
@@ -465,26 +825,1022 @@ async function uploadRecipes(){
     }
 }
 
+let fullRecipeDB = null; // cached DB
+let editingRecipeId = null; // null = new
+
 async function loadRecipeList(){
-    const wrap=document.getElementById('recipeList');
+    const wrap=document.getElementById('recipeEditorList');
+    if(!wrap)return;
+    wrap.innerHTML='<div class="loading">⏳ Загрузка рецептов...</div>';
     try{
         const res=await fetch('/api/recipes',{headers:{'x-coach-pwd':coachPwd}});
-        if(!res.ok)return;
-        const db=await res.json();
-        const recipes=Object.values(db.recipes);
-        const mealIcons={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack:'🍎'};
-        wrap.innerHTML='<div style="font-weight:700;margin-bottom:12px;color:#c084fc">📋 Все рецепты</div>'+
-            recipes.map(r=>`<div class="cl-item">
-                <div class="cl-info">
-                    <div class="cl-av" style="background:${r.vegan?'#22c55e':r.meal==='Breakfast'?'#f59e0b':r.meal==='Lunch'?'#3b82f6':r.meal==='Dinner'?'#8b5cf6':'#ec4899'};font-size:1.2rem">${mealIcons[r.meal]||'🍴'}</div>
-                    <div>
-                        <div class="cl-name">${esc(r.names?.en||r.id)}</div>
-                        <div class="cl-meta">🔥 ${r.baseKcal} kcal · P${r.protein} F${r.fat} C${r.carbs} · ⏱ ${r.cookTimeMin}min${r.vegan?' · 🌱':''}</div>
-                    </div>
-                </div>
-            </div>`).join('');
-    }catch(err){}
+        if(!res.ok){wrap.innerHTML='<div class="empty">📭 База не загружена. Используйте раздел ниже для загрузки JSON.</div>';return;}
+        let data;
+        try{ data=await res.json(); }catch(e){wrap.innerHTML='<div class="empty">📭 Сервер вернул не JSON. Загрузите базу рецептов.</div>';return;}
+        fullRecipeDB=data;
+        renderRecipeList();
+    }catch(err){
+        wrap.innerHTML='<div class="empty">❌ '+esc(err.message)+'</div>';
+    }
 }
+
+function renderRecipeList(){
+    if(!fullRecipeDB||!fullRecipeDB.recipes){document.getElementById('recipeEditorList').innerHTML='<div class="empty">📭 Нет рецептов</div>';return;}
+    const q=(document.getElementById('recipeSearch').value||'').toLowerCase();
+    const recipes=Object.values(fullRecipeDB.recipes).filter(r=>{
+        if(!q)return true;
+        const n=Object.values(r.names||{}).join(' ').toLowerCase();
+        return n.includes(q)||r.id.toLowerCase().includes(q);
+    });
+    const mealIcons={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack:'🍎'};
+    const mealColors={Breakfast:'#f59e0b',Lunch:'#3b82f6',Dinner:'#8b5cf6',Snack:'#ec4899'};
+    document.getElementById('recipeCount').textContent='Показано: '+recipes.length+' из '+Object.keys(fullRecipeDB.recipes).length;
+    document.getElementById('recipeEditorList').innerHTML=recipes.length?recipes.map(r=>`<div class="re-item">
+        <div class="re-item-info">
+            <button class="fav-star ${r.favorite?'on':''}" onclick="event.stopPropagation();toggleFavorite('${esc(r.id)}')">${r.favorite?'⭐':'☆'}</button>
+            <div class="re-icon" style="background:${r.vegan?'#22c55e':mealColors[r.meal]||'#8b5cf6'}">${mealIcons[r.meal]||'🍴'}</div>
+            <div style="min-width:0">
+                <div class="re-item-name">${esc(r.names?.ru||r.names?.en||r.id)}${r.photo?' <span style="color:#06b6d4;font-size:0.9rem" title="Есть фото">📷</span>':''}</div>
+                <div class="re-item-meta">🔥${r.baseKcal} · P${r.protein} F${r.fat} C${r.carbs} · ⏱${r.cookTimeMin}m${r.vegan?' · 🌱':''}${r.halal?' · ☪️':''}${r.lactoseFree?' · 🥛':''}</div>
+            </div>
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="re-edit-btn" onclick="openRecipeEditor('${esc(r.id)}')">✏️ Ред.</button>
+            <button class="re-del-btn" onclick="deleteRecipe('${esc(r.id)}')">🗑️</button>
+        </div>
+    </div>`).join(''):'<div class="empty">🔍 Ничего не найдено</div>';
+}
+
+function filterRecipeList(){ renderRecipeList(); }
+
+function openRecipeEditor(id){
+    editingRecipeId=id;
+    const modal=document.getElementById('recipeModal');
+    const title=document.getElementById('recipeModalTitle');
+
+    if(id && fullRecipeDB && fullRecipeDB.recipes[id]){
+        // EDIT mode
+        const r=fullRecipeDB.recipes[id];
+        title.textContent='✏️ Редактировать: '+(r.names?.ru||r.names?.en||id);
+        document.getElementById('reId').value=r.id;
+        document.getElementById('reId').readOnly=true;
+        document.getElementById('reName_en').value=r.names?.en||'';
+        document.getElementById('reName_de').value=r.names?.de||'';
+        document.getElementById('reName_ru').value=r.names?.ru||'';
+        document.getElementById('reName_uk').value=r.names?.uk||'';
+        document.getElementById('reName_es').value=r.names?.es||'';
+        document.getElementById('reMeal').value=r.meal||'Breakfast';
+        document.getElementById('reCookTime').value=r.cookTimeMin||15;
+        document.getElementById('reCookSpeed').value=r.cookSpeed||'FAST';
+        document.getElementById('reAuthor').value=r.authorStyle||'';
+        document.getElementById('reVegan').checked=!!r.vegan;
+        document.getElementById('reHalal').checked=!!r.halal;
+        document.getElementById('reLF').checked=!!r.lactoseFree;
+        document.getElementById('reBatch').checked=!!r.batchCooking;
+        document.getElementById('reKcal').value=r.baseKcal||0;
+        document.getElementById('reP').value=r.protein||0;
+        document.getElementById('reF').value=r.fat||0;
+        document.getElementById('reC').value=r.carbs||0;
+        document.getElementById('rePortion').value=r.portionWeight||0;
+        document.getElementById('rePhoto').value=r.photo||'';
+        previewPhoto();
+        renderIngredientRows(r.ingredients||[]);
+        renderStepRows(r.steps||[]);
+    } else {
+        // NEW mode
+        title.textContent='＋ Новый рецепт';
+        const nextId='R'+String(Object.keys(fullRecipeDB?.recipes||{}).length+1).padStart(3,'0');
+        document.getElementById('reId').value=nextId;
+        document.getElementById('reId').readOnly=false;
+        ['reName_en','reName_de','reName_ru','reName_uk','reName_es','reAuthor'].forEach(x=>document.getElementById(x).value='');
+        document.getElementById('reMeal').value='Breakfast';
+        document.getElementById('reCookTime').value=15;
+        document.getElementById('reCookSpeed').value='FAST';
+        ['reVegan','reHalal','reLF','reBatch'].forEach(x=>document.getElementById(x).checked=false);
+        ['reKcal','reP','reF','reC','rePortion'].forEach(x=>document.getElementById(x).value='');
+        document.getElementById('rePhoto').value='';
+        document.getElementById('rePhotoPreview').style.display='none';
+        renderIngredientRows([{key:'',gramsBase:100}]);
+        renderStepRows([]);
+    }
+    modal.classList.add('open');
+    document.body.style.overflow='hidden';
+}
+
+function closeRecipeModal(){
+    document.getElementById('recipeModal').classList.remove('open');
+    document.body.style.overflow='';
+}
+
+function getIngredientKeys(){
+    if(!fullRecipeDB||!fullRecipeDB.ingredientNames)return[];
+    return Object.keys(fullRecipeDB.ingredientNames).sort();
+}
+
+function renderIngredientRows(ings){
+    const wrap=document.getElementById('reIngredientsWrap');
+    const keys=getIngredientKeys();
+    const opts=keys.map(k=>'<option value="'+esc(k)+'">'+esc(fullRecipeDB.ingredientNames[k]?.ru||fullRecipeDB.ingredientNames[k]?.en||k)+'</option>').join('');
+    wrap.innerHTML=ings.map((ing,i)=>`<div class="ing-row" data-idx="${i}">
+        <select onchange="this.dataset.val=this.value">${'<option value="">-- выберите --</option>'+opts.replace('value="'+esc(ing.key)+'"','value="'+esc(ing.key)+'" selected')}</select>
+        <input type="number" value="${ing.gramsBase||0}" placeholder="г" min="0">
+        <button class="ing-del" onclick="this.parentElement.remove()">✕</button>
+    </div>`).join('');
+}
+
+function addIngredientRow(){
+    const wrap=document.getElementById('reIngredientsWrap');
+    const keys=getIngredientKeys();
+    const opts=keys.map(k=>'<option value="'+esc(k)+'">'+esc(fullRecipeDB.ingredientNames[k]?.ru||fullRecipeDB.ingredientNames[k]?.en||k)+'</option>').join('');
+    const div=document.createElement('div');
+    div.className='ing-row';
+    div.innerHTML=`<select><option value="">-- выберите --</option>${opts}</select><input type="number" value="100" placeholder="г" min="0"><button class="ing-del" onclick="this.parentElement.remove()">✕</button>`;
+    wrap.appendChild(div);
+}
+
+async function saveRecipe(){
+    const id=document.getElementById('reId').value.trim();
+    if(!id){toast('❌ Введите ID рецепта');return;}
+
+    const recipe={
+        id:id,
+        meal:document.getElementById('reMeal').value,
+        authorStyle:document.getElementById('reAuthor').value.trim(),
+        cookTimeMin:parseInt(document.getElementById('reCookTime').value)||15,
+        cookSpeed:document.getElementById('reCookSpeed').value,
+        batchCooking:document.getElementById('reBatch').checked,
+        vegan:document.getElementById('reVegan').checked,
+        halal:document.getElementById('reHalal').checked,
+        lactoseFree:document.getElementById('reLF').checked,
+        baseKcal:parseInt(document.getElementById('reKcal').value)||0,
+        protein:parseFloat(document.getElementById('reP').value)||0,
+        fat:parseFloat(document.getElementById('reF').value)||0,
+        carbs:parseFloat(document.getElementById('reC').value)||0,
+        portionWeight:parseInt(document.getElementById('rePortion').value)||0,
+        photo:document.getElementById('rePhoto').value.trim(),
+        names:{
+            en:document.getElementById('reName_en').value.trim(),
+            de:document.getElementById('reName_de').value.trim(),
+            ru:document.getElementById('reName_ru').value.trim(),
+            uk:document.getElementById('reName_uk').value.trim(),
+            es:document.getElementById('reName_es').value.trim()
+        },
+        ingredients:[]
+    };
+
+    // Collect ingredients
+    document.querySelectorAll('#reIngredientsWrap .ing-row').forEach(row=>{
+        const sel=row.querySelector('select');
+        const inp=row.querySelector('input');
+        if(sel.value){
+            recipe.ingredients.push({key:sel.value,gramsBase:parseInt(inp.value)||0});
+        }
+    });
+
+    // Collect steps
+    recipe.steps=collectSteps();
+
+    if(!recipe.names.en && !recipe.names.ru){toast('❌ Введите название хотя бы EN или RU');return;}
+
+    // Save to cached DB
+    if(!fullRecipeDB)fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
+    fullRecipeDB.recipes[id]=recipe;
+
+    // Upload full DB to server
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error);
+        toast('✅ Рецепт '+id+' сохранён!');
+        closeRecipeModal();
+        renderRecipeList();
+        loadRecipeStats();
+    }catch(err){
+        toast('❌ Ошибка сохранения: '+err.message);
+    }
+}
+
+async function deleteRecipe(id){
+    if(!confirm('Удалить рецепт '+id+'?'))return;
+    if(!fullRecipeDB||!fullRecipeDB.recipes[id]){toast('❌ Рецепт не найден');return;}
+    delete fullRecipeDB.recipes[id];
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        if(!res.ok){const d=await res.json();throw new Error(d.error);}
+        toast('🗑️ Рецепт удалён');
+        renderRecipeList();
+        loadRecipeStats();
+    }catch(err){
+        toast('❌ '+err.message);
+    }
+}
+
+// === PHOTO UPLOAD ===
+function previewPhoto(){
+    const url=document.getElementById('rePhoto').value.trim();
+    const img=document.getElementById('rePhotoPreview');
+    if(url){
+        img.src=url;
+        img.style.display='block';
+        img.onerror=function(){img.style.display='none';};
+    } else {
+        img.style.display='none';
+    }
+}
+
+function handlePhotoUpload(input){
+    const file=input.files[0];
+    if(!file)return;
+    if(file.size>2*1024*1024){toast('❌ Файл слишком большой (макс 2MB)');return;}
+    const reader=new FileReader();
+    reader.onload=function(e){
+        const base64=e.target.result;
+        document.getElementById('rePhoto').value=base64;
+        document.getElementById('rePhotoPreview').src=base64;
+        document.getElementById('rePhotoPreview').style.display='block';
+        toast('✅ Фото загружено');
+    };
+    reader.readAsDataURL(file);
+}
+
+// === AI FUNCTIONS via /api/ai-translate ===
+async function callAI(type, name, ingredients){
+    try{
+        const res=await fetch('/api/ai-translate',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify({type, name, ingredients})
+        });
+        const data=await res.json();
+        if(!res.ok) throw new Error(data.error||'Server error');
+        return data.data||null;
+    }catch(err){
+        console.error('AI error:',err);
+        toast('❌ AI ошибка: '+err.message);
+        return null;
+    }
+}
+
+// AI for ingredient translation (new product Step 2)
+async function aiTranslateIngredient(){
+    const ru=document.getElementById('newIng_ru').value.trim();
+    if(!ru){toast('❌ Сначала введите название на русском');return;}
+    const btn=document.getElementById('aiIngBtn');
+    btn.disabled=true;btn.classList.add('loading');btn.textContent='🤖 Думаю...';
+    const result=await callAI('ingredient', ru);
+    btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
+    if(result){
+        if(result.key) document.getElementById('newIngKey').value=result.key;
+        if(result.en) document.getElementById('newIng_en').value=result.en;
+        if(result.de) document.getElementById('newIng_de').value=result.de;
+        if(result.uk) document.getElementById('newIng_uk').value=result.uk;
+        if(result.es) document.getElementById('newIng_es').value=result.es;
+        toast('✅ AI заполнил переводы!');
+    }
+}
+
+// AI for edit ingredient
+async function aiTranslateEditIngredient(){
+    const ru=document.getElementById('editIng_ru').value.trim();
+    if(!ru){toast('❌ Нет русского названия');return;}
+    const btn=document.getElementById('aiEditIngBtn');
+    btn.disabled=true;btn.classList.add('loading');btn.textContent='🤖 Думаю...';
+    const result=await callAI('ingredient_edit', ru);
+    btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
+    if(result){
+        if(result.en) document.getElementById('editIng_en').value=result.en;
+        if(result.de) document.getElementById('editIng_de').value=result.de;
+        if(result.uk) document.getElementById('editIng_uk').value=result.uk;
+        if(result.es) document.getElementById('editIng_es').value=result.es;
+        toast('✅ Переводы заполнены!');
+    }
+}
+
+// AI for recipe — translations + steps
+async function aiTranslateRecipe(){
+    const ru=document.getElementById('reName_ru').value.trim();
+    const en=document.getElementById('reName_en').value.trim();
+    const name=ru||en;
+    if(!name){toast('❌ Введите название рецепта (RU или EN)');return;}
+    const btn=document.getElementById('aiRecipeBtn');
+    btn.disabled=true;btn.classList.add('loading');btn.textContent='🤖 Думаю...';
+
+    // Collect current ingredients for context
+    const ings=[];
+    document.querySelectorAll('#reIngredientsWrap .ing-row').forEach(row=>{
+        const sel=row.querySelector('select');
+        if(sel.value && fullRecipeDB?.ingredientNames?.[sel.value]){
+            ings.push(fullRecipeDB.ingredientNames[sel.value].ru||fullRecipeDB.ingredientNames[sel.value].en||sel.value);
+        }
+    });
+
+    const result=await callAI('recipe', name, ings.join(', '));
+    btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 AI заполнить';
+    if(result){
+        if(result.names){
+            if(result.names.en) document.getElementById('reName_en').value=result.names.en;
+            if(result.names.de) document.getElementById('reName_de').value=result.names.de;
+            if(result.names.ru) document.getElementById('reName_ru').value=result.names.ru;
+            if(result.names.uk) document.getElementById('reName_uk').value=result.names.uk;
+            if(result.names.es) document.getElementById('reName_es').value=result.names.es;
+        }
+        if(result.steps && result.steps.length){
+            renderStepRows(result.steps);
+            toast('✅ AI заполнил названия и '+result.steps.length+' шагов!');
+        } else {
+            toast('✅ AI заполнил названия!');
+        }
+    }
+}
+
+// === COOKING STEPS ===
+function renderStepRows(steps){
+    const wrap=document.getElementById('reStepsWrap');
+    if(!steps||!steps.length){
+        wrap.innerHTML='';
+        addStepRow();
+        return;
+    }
+    wrap.innerHTML=steps.map((s,i)=>`<div class="step-block" data-step="${i}">
+        <div class="step-num">${i+1}</div>
+        <button class="step-del" onclick="this.parentElement.remove();renumberSteps()">✕</button>
+        <div class="step-langs">
+            <span>🇬🇧</span><textarea placeholder="Step ${i+1} in English">${esc(s.en||'')}</textarea>
+            <span>🇩🇪</span><textarea placeholder="Schritt ${i+1}">${esc(s.de||'')}</textarea>
+            <span>🇷🇺</span><textarea placeholder="Шаг ${i+1}">${esc(s.ru||'')}</textarea>
+            <span>🇺🇦</span><textarea placeholder="Крок ${i+1}">${esc(s.uk||'')}</textarea>
+            <span>🇪🇸</span><textarea placeholder="Paso ${i+1}">${esc(s.es||'')}</textarea>
+        </div>
+    </div>`).join('');
+}
+
+function addStepRow(){
+    const wrap=document.getElementById('reStepsWrap');
+    const n=wrap.querySelectorAll('.step-block').length;
+    const div=document.createElement('div');
+    div.className='step-block';
+    div.innerHTML=`<div class="step-num">${n+1}</div>
+        <button class="step-del" onclick="this.parentElement.remove();renumberSteps()">✕</button>
+        <div class="step-langs">
+            <span>🇬🇧</span><textarea placeholder="Step ${n+1} in English"></textarea>
+            <span>🇩🇪</span><textarea placeholder="Schritt ${n+1}"></textarea>
+            <span>🇷🇺</span><textarea placeholder="Шаг ${n+1}"></textarea>
+            <span>🇺🇦</span><textarea placeholder="Крок ${n+1}"></textarea>
+            <span>🇪🇸</span><textarea placeholder="Paso ${n+1}"></textarea>
+        </div>`;
+    wrap.appendChild(div);
+}
+
+function renumberSteps(){
+    document.querySelectorAll('#reStepsWrap .step-block').forEach((el,i)=>{
+        el.querySelector('.step-num').textContent=i+1;
+    });
+}
+
+function collectSteps(){
+    const steps=[];
+    document.querySelectorAll('#reStepsWrap .step-block').forEach(el=>{
+        const texts=el.querySelectorAll('textarea');
+        const s={en:texts[0].value.trim(),de:texts[1].value.trim(),ru:texts[2].value.trim(),uk:texts[3].value.trim(),es:texts[4].value.trim()};
+        if(s.en||s.ru) steps.push(s);
+    });
+    return steps;
+}
+
+// === QUICK ADD INGREDIENT (in modal) ===
+function openQuickAddIngredient(){
+    const f=document.getElementById('quickIngForm');
+    f.classList.add('open');
+    document.getElementById('qIng_ru').value='';
+    document.getElementById('qIng_en').value='';
+    document.getElementById('qIngKey').value='';
+    document.getElementById('qIngCheckResult').innerHTML='';
+    document.getElementById('qIngDetails').style.display='none';
+    document.getElementById('qIngSaveBtn').style.opacity='0.4';
+    document.getElementById('qIngSaveBtn').style.pointerEvents='none';
+    document.getElementById('qIng_ru').focus();
+}
+
+function quickCheckIngredient(){
+    const name=document.getElementById('qIng_ru').value.trim().toLowerCase();
+    const result=document.getElementById('qIngCheckResult');
+    const btn=document.getElementById('qIngSaveBtn');
+    const details=document.getElementById('qIngDetails');
+
+    if(!name||name.length<2){
+        result.innerHTML='';
+        btn.style.opacity='0.4';btn.style.pointerEvents='none';
+        details.style.display='none';
+        return;
+    }
+    if(!fullRecipeDB||!fullRecipeDB.ingredientNames){
+        result.innerHTML='<span style="color:#fbbf24">⚠️ База не загружена</span>';
+        return;
+    }
+    // Check for exact match
+    for(const [k,v] of Object.entries(fullRecipeDB.ingredientNames)){
+        if((v.ru||'').toLowerCase()===name||(v.en||'').toLowerCase()===name){
+            result.innerHTML='<span style="color:#fb7185">❌ Уже есть: <strong>'+esc(v.ru||v.en)+'</strong> ('+esc(k)+')</span>';
+            btn.style.opacity='0.4';btn.style.pointerEvents='none';
+            details.style.display='none';
+            return;
+        }
+    }
+    // OK — show details
+    result.innerHTML='<span style="color:#22c55e">✅ Можно создавать</span>';
+    details.style.display='block';
+    document.getElementById('qIngKey').value=transliterate(document.getElementById('qIng_ru').value.trim());
+    btn.style.opacity='1';btn.style.pointerEvents='auto';
+}
+
+function quickSaveIngredient(){
+    const ru=document.getElementById('qIng_ru').value.trim();
+    const key=document.getElementById('qIngKey').value.trim().replace(/\s+/g,'_').toLowerCase();
+    const en=document.getElementById('qIng_en').value.trim();
+    if(!key||!ru){toast('❌ Заполните название и ключ');return;}
+    if(!fullRecipeDB) fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
+    if(fullRecipeDB.ingredientNames[key]){toast('❌ Ключ '+key+' уже занят');return;}
+    fullRecipeDB.ingredientNames[key]={en:en,de:'',ru:ru,uk:'',es:''};
+    document.getElementById('quickIngForm').classList.remove('open');
+    toast('✅ Продукт "'+ru+'" добавлен');
+    refreshIngredientDropdowns();
+    addIngredientRowWithKey(key);
+}
+
+function refreshIngredientDropdowns(){
+    // Update all existing select elements in ingredients
+    const keys=getIngredientKeys();
+    document.querySelectorAll('#reIngredientsWrap .ing-row select').forEach(sel=>{
+        const curVal=sel.value;
+        const opts='<option value="">-- выберите --</option>'+keys.map(k=>'<option value="'+esc(k)+'"'+(k===curVal?' selected':'')+'>'+esc(fullRecipeDB.ingredientNames[k]?.ru||fullRecipeDB.ingredientNames[k]?.en||k)+'</option>').join('');
+        sel.innerHTML=opts;
+    });
+}
+
+function addIngredientRowWithKey(preKey){
+    const wrap=document.getElementById('reIngredientsWrap');
+    const keys=getIngredientKeys();
+    const opts=keys.map(k=>'<option value="'+esc(k)+'"'+(k===preKey?' selected':'')+'>'+esc(fullRecipeDB.ingredientNames[k]?.ru||fullRecipeDB.ingredientNames[k]?.en||k)+'</option>').join('');
+    const div=document.createElement('div');
+    div.className='ing-row';
+    div.innerHTML=`<select><option value="">-- выберите --</option>${opts}</select><input type="number" value="100" placeholder="г" min="0"><button class="ing-del" onclick="this.parentElement.remove()">✕</button>`;
+    wrap.appendChild(div);
+}
+
+// === INGREDIENTS CATALOG ===
+let editingIngKey = null;
+
+async function loadIngCatalog(){
+    if(!fullRecipeDB){
+        try{
+            const res=await fetch('/api/recipes',{headers:{'x-coach-pwd':coachPwd}});
+            if(res.ok){ try{fullRecipeDB=await res.json();}catch(e){} }
+        }catch(e){}
+    }
+    renderIngCatalog();
+}
+
+function renderIngCatalog(){
+    const wrap=document.getElementById('ingCatalogList');
+    if(!fullRecipeDB||!fullRecipeDB.ingredientNames){
+        wrap.innerHTML='<div class="empty">📭 Сначала загрузите базу рецептов</div>';
+        document.getElementById('ingCount').textContent='';
+        return;
+    }
+    const q=(document.getElementById('ingSearch').value||'').toLowerCase();
+    const all=Object.entries(fullRecipeDB.ingredientNames);
+    const filtered=all.filter(([k,v])=>{
+        if(!q)return true;
+        return k.toLowerCase().includes(q)||Object.values(v).join(' ').toLowerCase().includes(q);
+    });
+    document.getElementById('ingCount').textContent='Показано: '+filtered.length+' из '+all.length;
+    wrap.innerHTML=filtered.length?filtered.map(([k,v])=>`<div class="cat-item">
+        <div class="cat-key">${esc(k)}</div>
+        <div class="cat-names">🇷🇺 ${esc(v.ru||'-')} · 🇬🇧 ${esc(v.en||'-')}</div>
+        <div class="cat-actions">
+            <button class="re-edit-btn" onclick="editIngredient('${esc(k)}')">✏️</button>
+            <button class="re-del-btn" onclick="deleteIngredient('${esc(k)}')">🗑️</button>
+        </div>
+    </div>`).join(''):'<div class="empty">🔍 Ничего не найдено</div>';
+}
+
+function filterIngList(){ renderIngCatalog(); }
+
+// --- STEP 1: Start new ingredient ---
+function startNewIngredient(){
+    cancelNewIngredient();
+    document.getElementById('ingStep1').classList.add('open');
+    document.getElementById('ingCheckName').value='';
+    document.getElementById('ingCheckResult').innerHTML='';
+    document.getElementById('ingStep1Btn').style.opacity='0.4';
+    document.getElementById('ingStep1Btn').style.pointerEvents='none';
+    document.getElementById('ingCheckName').focus();
+}
+
+function cancelNewIngredient(){
+    ['ingStep1','ingStep2','ingEditForm'].forEach(id=>document.getElementById(id).classList.remove('open'));
+}
+
+function checkIngredientExists(){
+    const name=document.getElementById('ingCheckName').value.trim().toLowerCase();
+    const result=document.getElementById('ingCheckResult');
+    const btn=document.getElementById('ingStep1Btn');
+
+    if(!name||name.length<2){
+        result.innerHTML='';
+        btn.style.opacity='0.4';
+        btn.style.pointerEvents='none';
+        return;
+    }
+
+    if(!fullRecipeDB||!fullRecipeDB.ingredientNames){
+        result.innerHTML='<span style="color:#fbbf24">⚠️ База не загружена</span>';
+        btn.style.opacity='0.4';
+        btn.style.pointerEvents='none';
+        return;
+    }
+
+    // Search through all RU names for exact or close match
+    const matches=[];
+    for(const [k,v] of Object.entries(fullRecipeDB.ingredientNames)){
+        const ru=(v.ru||'').toLowerCase();
+        const en=(v.en||'').toLowerCase();
+        const uk=(v.uk||'').toLowerCase();
+        if(ru===name||en===name||uk===name){
+            matches.push({key:k,exact:true,name:v.ru||v.en});
+        } else if(ru.includes(name)||en.includes(name)||name.includes(ru)){
+            matches.push({key:k,exact:false,name:v.ru||v.en});
+        }
+    }
+
+    const exactMatch=matches.find(m=>m.exact);
+    if(exactMatch){
+        result.innerHTML='<span style="color:#fb7185">❌ Продукт уже есть: <strong>'+esc(exactMatch.name)+'</strong> (ключ: '+esc(exactMatch.key)+')</span>';
+        btn.style.opacity='0.4';
+        btn.style.pointerEvents='none';
+        btn.innerHTML='❌ Продукт уже существует';
+        return;
+    }
+
+    if(matches.length>0){
+        result.innerHTML='<span style="color:#fbbf24">⚠️ Похожие продукты найдены:</span><br>'+
+            matches.map(m=>'  · <strong>'+esc(m.name)+'</strong> <span style="color:#64748b">('+esc(m.key)+')</span>').join('<br>')+
+            '<br><span style="color:#94a3b8;font-size:0.8rem">Если это не то — нажмите кнопку ниже для создания нового</span>';
+    } else {
+        result.innerHTML='<span style="color:#22c55e">✅ Такого продукта нет в базе — можно создавать!</span>';
+    }
+
+    btn.style.opacity='1';
+    btn.style.pointerEvents='auto';
+    btn.innerHTML='✅ Создать карточку продукта →';
+}
+
+// --- STEP 2: Show full card ---
+function showIngStep2(){
+    const ruName=document.getElementById('ingCheckName').value.trim();
+    if(!ruName){toast('❌ Введите название');return;}
+
+    document.getElementById('ingStep1').classList.remove('open');
+    document.getElementById('ingStep2').classList.add('open');
+
+    // Auto-fill RU name (read-only)
+    document.getElementById('newIng_ru').value=ruName;
+
+    // Auto-generate key from RU name using transliteration
+    const key=transliterate(ruName);
+    document.getElementById('newIngKey').value=key;
+
+    // Focus EN name
+    document.getElementById('newIng_en').value='';
+    document.getElementById('newIng_de').value='';
+    document.getElementById('newIng_uk').value='';
+    document.getElementById('newIng_es').value='';
+    document.getElementById('newIng_en').focus();
+}
+
+function transliterate(str){
+    const map={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya','і':'i','ї':'yi','є':'ye','ґ':'g'};
+    return str.toLowerCase().split('').map(c=>map[c]!==undefined?map[c]:(c===' '?'_':(/[a-z0-9_]/.test(c)?c:''))).join('').replace(/_+/g,'_').replace(/^_|_$/g,'');
+}
+
+async function saveNewIngredient(){
+    const key=document.getElementById('newIngKey').value.trim().replace(/\s+/g,'_').toLowerCase();
+    if(!key){toast('❌ Введите ключ');return;}
+    if(!/^[a-z0-9_]+$/.test(key)){toast('❌ Ключ: только латиница, цифры, _');return;}
+
+    const ru=document.getElementById('newIng_ru').value.trim();
+    const en=document.getElementById('newIng_en').value.trim();
+    if(!ru){toast('❌ Нет русского названия');return;}
+
+    if(!fullRecipeDB) fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
+
+    // Final duplicate check by key
+    if(fullRecipeDB.ingredientNames[key]){
+        toast('❌ Ключ '+key+' уже занят! Измените ключ.');
+        return;
+    }
+
+    fullRecipeDB.ingredientNames[key]={
+        en:en,
+        de:document.getElementById('newIng_de').value.trim(),
+        ru:ru,
+        uk:document.getElementById('newIng_uk').value.trim(),
+        es:document.getElementById('newIng_es').value.trim()
+    };
+
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
+        toast('✅ Продукт "'+ru+'" добавлен в справочник!');
+        cancelNewIngredient();
+        renderIngCatalog();
+    }catch(err){
+        toast('❌ '+err.message);
+    }
+}
+
+// --- EDIT existing ingredient ---
+function editIngredient(key){
+    cancelNewIngredient();
+    const v=fullRecipeDB.ingredientNames[key];
+    if(!v)return;
+    editingIngKey=key;
+    document.getElementById('ingEditForm').classList.add('open');
+    document.getElementById('ingEditKey').textContent=key;
+    document.getElementById('editIng_ru').value=v.ru||'';
+    document.getElementById('editIng_en').value=v.en||'';
+    document.getElementById('editIng_de').value=v.de||'';
+    document.getElementById('editIng_uk').value=v.uk||'';
+    document.getElementById('editIng_es').value=v.es||'';
+}
+
+async function saveEditIngredient(){
+    if(!editingIngKey)return;
+    const ru=document.getElementById('editIng_ru').value.trim();
+    const en=document.getElementById('editIng_en').value.trim();
+    if(!ru&&!en){toast('❌ Введите название RU или EN');return;}
+
+    fullRecipeDB.ingredientNames[editingIngKey]={
+        en:en,
+        de:document.getElementById('editIng_de').value.trim(),
+        ru:ru,
+        uk:document.getElementById('editIng_uk').value.trim(),
+        es:document.getElementById('editIng_es').value.trim()
+    };
+
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
+        toast('✅ Продукт обновлён!');
+        document.getElementById('ingEditForm').classList.remove('open');
+        editingIngKey=null;
+        renderIngCatalog();
+    }catch(err){toast('❌ '+err.message);}
+}
+
+async function deleteIngredient(key){
+    // Count how many recipes use this ingredient
+    let usedIn=0;
+    if(fullRecipeDB&&fullRecipeDB.recipes){
+        for(const r of Object.values(fullRecipeDB.recipes)){
+            if((r.ingredients||[]).some(i=>i.key===key)) usedIn++;
+        }
+    }
+    const msg=usedIn>0
+        ? 'Продукт "'+key+'" используется в '+usedIn+' рецептах!\nВсё равно удалить?'
+        : 'Удалить продукт "'+key+'"?';
+    if(!confirm(msg))return;
+
+    delete fullRecipeDB.ingredientNames[key];
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
+        toast('🗑️ Продукт удалён');
+        renderIngCatalog();
+    }catch(err){toast('❌ '+err.message);}
+}
+
+// === FAVORITES ===
+function toggleFavorite(id){
+    if(!fullRecipeDB||!fullRecipeDB.recipes[id])return;
+    fullRecipeDB.recipes[id].favorite = !fullRecipeDB.recipes[id].favorite;
+    renderRecipeList();
+    fetch('/api/recipes',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+        body:JSON.stringify(fullRecipeDB)
+    }).catch(()=>{});
+    toast(fullRecipeDB.recipes[id].favorite ? '⭐ В избранном' : '☆ Убрано');
+}
+
+// === MENU PLANNER ===
+let menuCurrentWeek = 0;
+let menuData = [];
+let menuClientAlias = '';
+let pickerDay = 0;
+let pickerSlot = '';
+let pickerMealFilter = '';
+let pickerTabMode = 'all';
+const MENU_SLOTS = ['Breakfast','Snack1','Lunch','Snack2','Dinner'];
+const SLOT_LABELS = {'Breakfast':'🍳 Завтр.','Snack1':'🍎 Снек','Lunch':'🥗 Обед','Snack2':'🍎 Снек','Dinner':'🍽️ Ужин'};
+
+async function loadMenuPlanner(){
+    // Load recipe DB
+    if(!fullRecipeDB){
+        try{
+            const res=await fetch('/api/recipes',{headers:{'x-coach-pwd':coachPwd}});
+            if(res.ok){ try{fullRecipeDB=await res.json();}catch(e){} }
+        }catch(e){}
+    }
+    // Load clients into selector
+    const sel=document.getElementById('menuClientSelect');
+    try{
+        const res=await fetch('/api/clients',{headers:{'x-coach-pwd':coachPwd}});
+        const data=await res.json();
+        const clients=data.clients||[];
+        sel.innerHTML='<option value="">-- Выберите клиента --</option>'+
+            clients.map(c=>'<option value="'+esc(c.alias)+'"'+(c.alias===menuClientAlias?' selected':'')+'>'+esc(c.name)+' ('+esc(c.alias)+')</option>').join('');
+    }catch(e){
+        sel.innerHTML='<option value="">❌ Ошибка загрузки</option>';
+    }
+    if(menuClientAlias) onMenuClientChange();
+}
+
+async function onMenuClientChange(){
+    const alias=document.getElementById('menuClientSelect').value;
+    menuClientAlias=alias;
+    const content=document.getElementById('menuContent');
+    if(!alias){content.style.display='none';return;}
+    content.style.display='block';
+    menuCurrentWeek=0;
+
+    // Try to load client-specific menu
+    try{
+        const res=await fetch('/api/clients/'+alias+'/menu',{headers:{'x-coach-pwd':coachPwd}});
+        if(res.ok){
+            let data;
+            try{data=await res.json();}catch(e){data=null;}
+            if(data && data.menu && data.menu.length){
+                menuData=JSON.parse(JSON.stringify(data.menu));
+                renderMenuGrid();
+                return;
+            }
+        }
+    }catch(e){}
+
+    // Fallback to global menu28
+    if(fullRecipeDB && fullRecipeDB.menu28 && fullRecipeDB.menu28.length){
+        menuData=JSON.parse(JSON.stringify(fullRecipeDB.menu28));
+    } else {
+        menuData=[];
+    }
+    renderMenuGrid();
+}
+
+function getMenuEntry(day, slot){
+    return menuData.find(m => m.day === day && m.slot === slot);
+}
+
+function getTotalDays(){
+    if(!menuData.length) return 28;
+    const maxDay = Math.max(...menuData.filter(m=>m.recipeId).map(s=>s.day||0), 0);
+    return Math.max(maxDay, 28);
+}
+
+function getTotalWeeks(){ return Math.ceil(getTotalDays()/7); }
+
+function getDayKcal(day){
+    let total = 0;
+    menuData.filter(m=>m.day===day && m.recipeId).forEach(m=>{
+        total += m.scaledKcal || (fullRecipeDB?.recipes?.[m.recipeId]?.baseKcal||0);
+    });
+    return total;
+}
+
+function renderMenuGrid(){
+    const totalDays = getTotalDays();
+    const totalWeeks = getTotalWeeks();
+    document.getElementById('menuWeekLabel').textContent = 'Неделя '+(menuCurrentWeek+1)+' / '+totalWeeks;
+    const filled = menuData.filter(m=>m.recipeId).length;
+    document.getElementById('menuDaysInfo').textContent = totalDays+' дн · '+filled+' блюд';
+
+    const startDay = menuCurrentWeek * 7 + 1;
+    const endDay = Math.min(startDay + 6, totalDays);
+
+    let h = '<div class="menu-grid">';
+    // Header row
+    h += '<div class="menu-header">День</div>';
+    MENU_SLOTS.forEach(s => { h += '<div class="menu-header">'+SLOT_LABELS[s]+'</div>'; });
+
+    for(let d = startDay; d <= endDay; d++){
+        h += '<div class="menu-day-label"><div>'+d+'<div class="menu-day-total"><strong>'+getDayKcal(d)+'</strong> kcal</div></div></div>';
+        MENU_SLOTS.forEach(slot => {
+            const entry = getMenuEntry(d, slot);
+            if(entry && entry.recipeId && fullRecipeDB?.recipes?.[entry.recipeId]){
+                const r = fullRecipeDB.recipes[entry.recipeId];
+                const name = r.names?.ru || r.names?.en || entry.recipeId;
+                const kcal = entry.scaledKcal || r.baseKcal || 0;
+                const factor = entry.scaledFactor ? (' x'+entry.scaledFactor.toFixed(1)) : '';
+                h += '<div class="menu-cell" onclick="openPicker('+d+',\''+slot+'\')" title="'+esc(name)+'">';
+                h += '<div class="menu-cell-name">'+esc(name)+'</div>';
+                h += '<div class="menu-cell-kcal">'+kcal+factor+'</div>';
+                h += '<button class="menu-cell-del" onclick="event.stopPropagation();removeMenuSlot('+d+',\''+slot+'\')">✕</button>';
+                h += '</div>';
+            } else {
+                h += '<div class="menu-cell empty" onclick="openPicker('+d+',\''+slot+'\')"></div>';
+            }
+        });
+    }
+    h += '</div>';
+    document.getElementById('menuGrid').innerHTML = h;
+}
+
+function menuPrevWeek(){ if(menuCurrentWeek>0){menuCurrentWeek--;renderMenuGrid();} }
+function menuNextWeek(){ if(menuCurrentWeek<getTotalWeeks()-1){menuCurrentWeek++;renderMenuGrid();} }
+
+function addMenuWeek(){
+    const totalDays = getTotalDays();
+    const newDays = totalDays + 7;
+    if(!menuData.find(m=>m.day===newDays)){
+        menuData.push({day:newDays,slot:'_placeholder',recipeId:null,scaledFactor:0,scaledKcal:0});
+    }
+    toast('✅ Неделя добавлена. Дней: '+newDays);
+    renderMenuGrid();
+}
+
+// === RECIPE PICKER ===
+function openPicker(day, slot){
+    pickerDay = day;
+    pickerSlot = slot;
+    pickerMealFilter = '';
+    pickerTabMode = 'all';
+    document.getElementById('pickerTitle').textContent = 'День '+day+' · '+SLOT_LABELS[slot];
+    document.getElementById('pickerSearch').value = '';
+    document.getElementById('pickerModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.querySelectorAll('#pickerFilters .menu-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.meal===''));
+    document.getElementById('ptAll').classList.add('active');
+    document.getElementById('ptFav').classList.remove('active');
+    renderPickerList();
+}
+
+function closePickerModal(){
+    document.getElementById('pickerModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function setPickerTab(mode){
+    pickerTabMode = mode;
+    document.getElementById('ptAll').classList.toggle('active',mode==='all');
+    document.getElementById('ptFav').classList.toggle('active',mode==='fav');
+    renderPickerList();
+}
+
+function filterPicker(){ renderPickerList(); }
+
+function filterPickerMeal(meal){
+    pickerMealFilter = meal;
+    document.querySelectorAll('#pickerFilters .menu-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.meal===meal));
+    renderPickerList();
+}
+
+function renderPickerList(){
+    if(!fullRecipeDB||!fullRecipeDB.recipes){
+        document.getElementById('pickerList').innerHTML='<div class="empty">📭 Нет рецептов</div>';
+        return;
+    }
+    const q=(document.getElementById('pickerSearch').value||'').toLowerCase();
+    const mealIcons={Breakfast:'🍳',Lunch:'🥗',Dinner:'🍽️',Snack:'🍎'};
+    const mealColors={Breakfast:'#f59e0b',Lunch:'#3b82f6',Dinner:'#8b5cf6',Snack:'#ec4899'};
+
+    let recipes=Object.values(fullRecipeDB.recipes);
+
+    // Favorites filter
+    if(pickerTabMode==='fav'){
+        recipes=recipes.filter(r=>r.favorite);
+    }
+    if(pickerMealFilter){
+        recipes=recipes.filter(r=>r.meal===pickerMealFilter);
+    }
+    if(q){
+        recipes=recipes.filter(r=>{
+            const names=Object.values(r.names||{}).join(' ').toLowerCase();
+            if(names.includes(q)||r.id.toLowerCase().includes(q)) return true;
+            // Search by ingredient names
+            if(r.ingredients && fullRecipeDB.ingredientNames){
+                for(const ing of r.ingredients){
+                    const ingNames=fullRecipeDB.ingredientNames[ing.key];
+                    if(ingNames){
+                        const allIngNames=Object.values(ingNames).join(' ').toLowerCase();
+                        if(allIngNames.includes(q)||ing.key.toLowerCase().includes(q)) return true;
+                    }
+                }
+            }
+            return false;
+        });
+    }
+
+    // Sort: favorites first
+    recipes.sort((a,b)=>(b.favorite?1:0)-(a.favorite?1:0));
+
+    const favCount=Object.values(fullRecipeDB.recipes).filter(r=>r.favorite).length;
+    document.getElementById('ptFav').textContent='⭐ Избранное ('+favCount+')';
+
+    document.getElementById('pickerList').innerHTML=recipes.length?recipes.map(r=>
+        '<div class="picker-item" onclick="pickRecipe(\''+esc(r.id)+'\')">'+
+        '<div class="picker-item-icon" style="background:'+(r.vegan?'#22c55e':mealColors[r.meal]||'#8b5cf6')+'">'+
+        (mealIcons[r.meal]||'🍴')+'</div>'+
+        '<div class="picker-item-info">'+
+        '<div class="picker-item-name">'+(r.favorite?'⭐ ':'')+esc(r.names?.ru||r.names?.en||r.id)+(r.photo?' 📷':'')+'</div>'+
+        '<div class="picker-item-meta">🔥'+r.baseKcal+' · P'+r.protein+' F'+r.fat+' C'+r.carbs+' · ⏱'+r.cookTimeMin+'m'+(r.vegan?' 🌱':'')+'</div>'+
+        '</div></div>'
+    ).join(''):'<div class="empty">'+(pickerTabMode==='fav'?'⭐ Нет избранных рецептов. Отметьте звёздочкой во вкладке Рецепты.':'🔍 Ничего не найдено')+'</div>';
+}
+
+function pickRecipe(recipeId){
+    menuData=menuData.filter(m=>!(m.day===pickerDay && m.slot===pickerSlot));
+    if(recipeId && fullRecipeDB?.recipes?.[recipeId]){
+        const r=fullRecipeDB.recipes[recipeId];
+        menuData.push({
+            day:pickerDay,
+            slot:pickerSlot,
+            recipeId:recipeId,
+            scaledFactor:1,
+            scaledKcal:r.baseKcal||0
+        });
+    }
+    menuData=menuData.filter(m=>m.recipeId||m.slot==='_placeholder');
+    closePickerModal();
+    renderMenuGrid();
+    toast(recipeId?'✅ Назначено!':'🗑️ Очищено');
+}
+
+function removeMenuSlot(day,slot){
+    menuData=menuData.filter(m=>!(m.day===day&&m.slot===slot));
+    renderMenuGrid();
+}
+
+async function saveMenu(){
+    if(!menuClientAlias){toast('❌ Выберите клиента');return;}
+    const cleanMenu=menuData.filter(m=>m.recipeId);
+
+    // Save to client-specific endpoint
+    try{
+        const res=await fetch('/api/clients/'+menuClientAlias+'/menu',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify({menu:cleanMenu})
+        });
+        if(res.ok){
+            toast('✅ Меню сохранено для '+menuClientAlias+'!');
+            return;
+        }
+    }catch(e){}
+
+    // Fallback: save to global menu28
+    if(!fullRecipeDB) fullRecipeDB={recipes:{},ingredientNames:{},menu28:[],meta:{}};
+    fullRecipeDB.menu28=cleanMenu;
+    try{
+        const res=await fetch('/api/recipes',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
+            body:JSON.stringify(fullRecipeDB)
+        });
+        if(!res.ok){let d;try{d=await res.json();}catch(e){d={error:'Server error'};}throw new Error(d.error);}
+        toast('✅ Меню сохранено (глобально)');
+    }catch(err){toast('❌ '+err.message);}
+}
+
+// Close picker on overlay
+document.addEventListener('click',function(e){ if(e.target.id==='pickerModal') closePickerModal(); });
+
+// Close modal on overlay click
+document.addEventListener('click',function(e){
+    if(e.target.id==='recipeModal') closeRecipeModal();
+});
+document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') closeRecipeModal();
+});
 
 // === CREATE ===
 function updateLinkPreview(){
@@ -508,20 +1864,20 @@ async function createClient(){
             headers:{'Content-Type':'application/json','x-coach-pwd':coachPwd},
             body:JSON.stringify({
                 name,alias,
-                heightMet:document.getElementById('cHM').value.trim(),
-                weightMet:document.getElementById('cWM').value.trim(),
-                heightImp:document.getElementById('cHI').value.trim(),
-                weightImp:document.getElementById('cWI').value.trim(),
-                kcal:document.getElementById('cKcal').value.trim(),
+                heightMet:document.getElementById('cHM').value.trim()||'165 cm',
+                weightMet:document.getElementById('cWM').value.trim()||'60 kg',
+                heightImp:document.getElementById('cHI').value.trim()||"5'5\"",
+                weightImp:document.getElementById('cWI').value.trim()||'132 lbs',
+                kcal:document.getElementById('cKcal').value.trim()||'1500-1600',
                 courseWeeks:document.getElementById('cWeeks').value||'4',
                 courseStart:document.getElementById('cStart').value||'',
                 filterVegan:document.getElementById('cVegan').checked,
                 filterHalal:document.getElementById('cHalal').checked,
                 filterLF:document.getElementById('cLF').checked,
                 filterSpeed:document.getElementById('cSpeed').value||'',
-                city:document.getElementById('cCity').value.trim(),
+                city:document.getElementById('cCity').value.trim()||'Kleve, Germany',
                 timezone:document.getElementById('cTZ').value,
-                whatsapp:document.getElementById('cWA').value.trim(),
+                whatsapp:document.getElementById('cWA').value.trim()||'380505827191',
                 lang:document.getElementById('cLang').value
             })
         });
@@ -575,23 +1931,12 @@ async function loadClients(){
             const ini=(c.name||'??').substring(0,2).toUpperCase();
             const link=location.origin+'/c/'+c.alias;
             const date=c.created?new Date(c.created).toLocaleDateString('ru-RU'):'';
-            const weeks=c.courseWeeks||'4';
-            const start=c.courseStart||'—';
-            const filters=[];
-            if(c.filterVegan)filters.push('🌱Vegan');
-            if(c.filterHalal)filters.push('☪Halal');
-            if(c.filterLF)filters.push('🥛LF');
-            if(c.filterSpeed)filters.push('⚡'+c.filterSpeed);
-            const filterStr=filters.length?filters.join(' · '):'нет';
             return `<div class="cl-item">
                 <div class="cl-info">
                     <div class="cl-av" style="background:${col}">${ini}</div>
                     <div>
                         <div class="cl-name">${esc(c.name)}</div>
-                        <div class="cl-meta">🔥 ${esc(c.kcal)} kcal · ${langLabel(c.lang)} · ${date}</div>
-                        <div class="cl-meta">📏 ${esc(c.heightMet||'')} · ⚖️ ${esc(c.weightMet||'')} · 📍 ${esc(c.city||'')}</div>
-                        <div class="cl-meta">📅 ${weeks} нед. · старт: ${esc(start)} · 📱 ${esc(c.whatsapp||'—')}</div>
-                        <div class="cl-meta">🔽 фильтры: ${filterStr}</div>
+                        <div class="cl-meta">${esc(c.kcal)} kcal · ${langLabel(c.lang)} · ${date}</div>
                         <a class="cl-link" href="${link}" target="_blank">${link}</a>
                     </div>
                 </div>
@@ -619,29 +1964,6 @@ async function deleteClient(alias){
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function langLabel(l){const m={en:'🇬🇧 EN',uk:'🇺🇦 UA',ru:'🇷🇺 RU',de:'🇩🇪 DE',es:'🇪🇸 ES'};return m[l]||l||'EN';}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-
-var currentUnits='metric';
-function switchUnits(u){
-    currentUnits=u;
-    document.getElementById('btnMetric').classList.toggle('active',u==='metric');
-    document.getElementById('btnImperial').classList.toggle('active',u==='imperial');
-    document.getElementById('rowMetric').style.display=u==='metric'?'':'none';
-    document.getElementById('rowImperial').style.display=u==='imperial'?'':'none';
-}
-function convertUnits(from){
-    if(from==='metric'){
-        var cm=parseFloat(document.getElementById('cHM').value)||0;
-        var kg=parseFloat(document.getElementById('cWM').value)||0;
-        if(cm>0){var ti=cm/2.54;var ft=Math.floor(ti/12);var inch=Math.round(ti%12);document.getElementById('cHI').value=ft+"'"+inch+'"';}
-        if(kg>0){document.getElementById('cWI').value=Math.round(kg*2.20462);}
-    }else{
-        var lbs=parseFloat(document.getElementById('cWI').value)||0;
-        var hTxt=document.getElementById('cHI').value;
-        var hm=hTxt.match(/(\d+)'(\d+)/);
-        if(hm){var cm2=Math.round((parseInt(hm[1])*12+parseInt(hm[2]))*2.54);document.getElementById('cHM').value=cm2;}
-        if(lbs>0){document.getElementById('cWM').value=Math.round(lbs/2.20462);}
-    }
-}
 </script>
 </body>
 </html>
